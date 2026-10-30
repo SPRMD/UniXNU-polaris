@@ -13,6 +13,11 @@ class PlatformKernelBuildTests(unittest.TestCase):
         self.assertIn("XNU_EXTRA_LD_ARCHIVES", source)
         self.assertIn("-Wl,-force_load,{path}", source)
 
+    def test_archive_configs_are_enabled(self):
+        for name in ("polaris_defconfig", "polaris_display_defconfig"):
+            config = (ROOT / "configs" / name).read_text(encoding="utf-8")
+            self.assertIn("CONFIG_XNU_BUILD_ARCHIVES=y", config)
+
 
 if __name__ == "__main__":
     unittest.main()
