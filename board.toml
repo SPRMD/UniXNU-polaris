@@ -15,6 +15,7 @@ archives = [
   "build-corecrypto-14.py --namespace",
   "build-arm-driver.py ArmDTPlatform",
   "build-arm-driver.py ArmCpu",
+  "build-arm-driver.py ShengUfs",
   "build-libpthread-kernel.py",
   "build-mockfs-fixture.py",
 ]
@@ -61,6 +62,19 @@ fetch = ["KernelCache", "DeviceTree", "StaticTrustCache", "Cryptex1,SystemTrustC
 [ipsw.sha256]
 "044-76040-038.dmg" = "3f99b859c9728379110b66657c7b15285bcb1925ad8b5726542e2cdcf8b1028d"
 "044-76034-038.dmg" = "b4908cde41d23e6bc05e6af51a2c9eeb00cf0f863a6a18b1600c96a3fd70414f"
+
+# Provisional SHNGROOT userdata geometry for the 128 GB Polaris layout. The
+# first LBA comes from the official MIUI rawprogram0.xml (0x60000000 bytes /
+# 512); the size comes from the user's fastboot getvar output. Read the GPT
+# back from the actual phone and update this table before any write.
+[userdata]
+first_lba = 0x300000
+last_lba = 0xE52BFD7
+lba_bytes = 512
+windows = [
+  { name = "OS", component = "OS" },
+  { name = "SystemOS", component = "Cryptex1,SystemOS" },
+]
 
 # First userland milestone: prelink the source kernel against the iPadOS 17
 # kernelcache. The roots below are a deliberately small starting set (platform,

@@ -3,10 +3,11 @@
 
 Writes only the requested local output. No device access or Apple input is
 needed. This describes real polaris hardware without an Apple product
-identity: the old ABL-shim chain's iPhone X (D22AP) identity, framebuffer and
-UFS nodes belong to the retired XNU 8796 boot path and are deliberately not
-carried over. Measured board constants come from the upstream Xiaomi polaris
-device tree and the ios16_on_polaris_mix2s bring-up notes.
+identity: the old ABL-shim chain's iPhone X (D22AP) identity and framebuffer
+do not carry over. The UFS node is optional and is included only for the
+explicit storage-probe build; the default platform ADT remains storage-free.
+Measured board constants come from the upstream Xiaomi polaris device tree and
+the ios16_on_polaris_mix2s bring-up notes.
 """
 import argparse
 from pathlib import Path
@@ -75,7 +76,8 @@ def empty_nvram_proxy():
             ('nvram-proxy-data', bytes(image))]
 
 
-def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000, seed=None):
+def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000,
+          seed=None, include_ufs=False):
     if cpu_count not in range(1, 9):
         raise ValueError('cpu count must be 1..8')
     if dram_size not in (DRAM_SIZE_6, DRAM_SIZE_8):
@@ -96,6 +98,22 @@ def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000, s
             ('timebase-frequency', u32(TIMEBASE)),
             # Descriptive only; UniXNU platform drivers do not read these.
             ('clock-frequency', u32(GOLD_HZ if gold else SILVER_HZ)),
+        ]))
+    arm_io_children = [node('intc', [
+        ('compatible', b'arm,gic-v3\0'), ('interrupt-controller', b''),
+        ('reg', u64(GICD - ARMIO_BASE, 0x10000, GICR - ARMIO_BASE, 0x100000)),
+        ('redistributor-stride', u64(0x20000)),
+        ('virtual-timer-intid', u32(TIMER_INTID)),
+    ])]
+    if include_ufs:
+        # Stock Polaris DTB: ufshc@1d84000, SPI 265. The driver remains
+        # default-off at runtime; this node only makes its personality
+        # discoverable in an explicitly requested storage-probe payload.
+        arm_io_children.append(node('ufshc@1d84000', [
+            ('compatible', b'qcom,sdm845-ufshc\0qcom,ufshc\0'),
+            ('status', b'ok\0'),
+            ('reg', u64(0x01D84000 - ARMIO_BASE, 0x2500)),
+            ('interrupts', u32(0) + u32(265) + u32(0)),
         ]))
     return node('device-tree', [
         ('model', b'polaris-platform-bringup\0'),
@@ -119,12 +137,7 @@ def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000, s
             ('device_type', b'polaris-io\0'),
             ('#address-cells', u32(2)), ('#size-cells', u32(2)),
             ('ranges', u64(0, ARMIO_BASE, 0x100000000 - ARMIO_BASE)),
-        ], [node('intc', [
-            ('compatible', b'arm,gic-v3\0'), ('interrupt-controller', b''),
-            ('reg', u64(GICD - ARMIO_BASE, 0x10000, GICR - ARMIO_BASE, 0x100000)),
-            ('redistributor-stride', u64(0x20000)),
-            ('virtual-timer-intid', u32(TIMER_INTID)),
-        ])]),
+        ], arm_io_children),
     ])
 
 
@@ -137,13 +150,15 @@ def main():
     parser.add_argument('--cpu-regs', default='0',
                         help='Initial prefix of polaris affinities: 0,0x100,...,0x700')
     parser.add_argument('--psci-method', choices=['smc'], default='smc')
+    parser.add_argument('--include-ufs', action='store_true',
+                        help='include the optional qcom,sdm845-ufshc node for a storage-probe payload')
     args = parser.parse_args()
     try:
         regs = [int(value, 0) for value in args.cpu_regs.split(',')]
         if not regs or regs != [core << 8 for core in range(len(regs))]:
             raise ValueError('--cpu-regs must be the initial polaris affinity prefix')
         blob = build(cpu_count=len(regs), dram_size=DRAM_SIZE_6 if args.ram == 6 else DRAM_SIZE_8,
-                     owned_memory_size=args.owned_memory_size)
+                     owned_memory_size=args.owned_memory_size, include_ufs=args.include_ufs)
     except ValueError as error:
         parser.error(str(error))
     args.output.parent.mkdir(parents=True, exist_ok=True)

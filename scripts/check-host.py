@@ -16,6 +16,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT = ROOT.parents[1]
 
 
 def run(command):
@@ -42,6 +43,17 @@ def main():
     if shutil.which('ld.lld'):
         host += ['-fuse-ld=lld']
     run([sys.executable, '-m', 'unittest', 'discover', '-s', ROOT / 'tests', '-v'])
+    resource_report = out / 'polaris-resources.json'
+    resource_input = ROOT / 'research/polaris-dtb-resources.json'
+    if not resource_input.is_file():
+        resource_input = PROJECT / 'research/polaris-dtb-resources.json'
+    suites = ['adt', 'timer', 'loader-window']
+    if resource_input.is_file():
+        run([sys.executable, ROOT / 'scripts/probe-polaris-resources.py',
+             resource_input, '--output', resource_report])
+        suites.insert(1, 'polaris-resources')
+    else:
+        print('SKIP: polaris DTB resource JSON is not present in this checkout')
     timer = out / 'timer-test'
     run([clangxx, '-std=c++17', *host, '-I', ROOT / 'drivers/ArmCpu', ROOT / 'tests/timer.cpp', '-o', timer])
     run([timer])
@@ -51,11 +63,12 @@ def main():
          ROOT / 'tests/window-range.c', '-o', window])
     run([window])
     report = {
-        'suites': ['adt', 'timer', 'loader-window'],
+        'suites': suites,
         'adt_tool_sha256': hashlib.sha256(
             (ROOT / 'scripts/make-polaris-adt.py').read_bytes()).hexdigest(),
         'native_code_executed': False,
         'hardware_mmio_performed': False,
+        'resource_report': str(resource_report) if resource_report.is_file() else None,
     }
     (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print('PASS: polaris host checks; no device access or MMIO performed')

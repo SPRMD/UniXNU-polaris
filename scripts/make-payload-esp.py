@@ -44,6 +44,8 @@ def main():
     parser.add_argument('--cpus', type=int, default=1,
                         help='CPUs described by the ADT and requested by the command line (1..8)')
     parser.add_argument('--owned-memory-size', type=lambda v: int(v, 0), default=0x40000000)
+    parser.add_argument('--include-ufs', action='store_true',
+                        help='include the optional SDM845 UFS node in the ADT; does not enable a probe')
     parser.add_argument('--no-probe', action='store_true',
                         help='skip the boot-progress/panic probes on the ESP kernel copy')
     parser.add_argument('--probe-extra', default='',
@@ -82,7 +84,8 @@ def main():
     prefix = load_module('cpu_prefix', ROOT / 'scripts/check-cpu-prefix.py')
     adt = adt_tool.build(cpu_count=args.cpus,
                          dram_size=adt_tool.DRAM_SIZE_6 if args.ram == 6 else adt_tool.DRAM_SIZE_8,
-                         owned_memory_size=args.owned_memory_size)
+                         owned_memory_size=args.owned_memory_size,
+                         include_ufs=args.include_ufs)
     try:
         prefix.validate(adt, ' '.join(kernel_args))
     except ValueError as error:
@@ -130,6 +133,7 @@ def main():
         'kernel_sha256': report['kernel_sha256'],
         'kernel_bytes': len(data), 'cpus': args.cpus, 'ram_gib': args.ram,
         'owned_memory_size': args.owned_memory_size,
+        'include_ufs': args.include_ufs,
         'kernel_args': kernel_args, 'cpu_prefix_checked': True,
         'sources': report.get('sources', {}),
     }, indent=2) + '\n', encoding='utf-8')

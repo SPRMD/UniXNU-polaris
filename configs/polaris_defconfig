@@ -9,7 +9,10 @@ CONFIG_XNU_NATIVE_PAN=y
 CONFIG_XNU_CRYPTO_BOOTSTRAP="source"
 # CONFIG_XNU_ARMVIRT_PLATFORM is not set
 # CONFIG_XNU_SHENG_PMGR is not set
-# CONFIG_XNU_NATIVE_UFS is not set
+# Link the SDM845 UFS probe, but keep all controller access behind the
+# explicit native-ufs-probe boot argument. The default payload supplies no
+# such argument, so this does not touch UFS during the platform milestone.
+CONFIG_XNU_NATIVE_UFS=y
 # CONFIG_XNU_NATIVE_ADRENO is not set
 # CONFIG_XNU_NATIVE_LEGACY_DISPLAY is not set
 

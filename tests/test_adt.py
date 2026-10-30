@@ -82,6 +82,17 @@ class AdtTests(unittest.TestCase):
         tree = self.tree(dram_size=polaris.DRAM_SIZE_8)
         self.assertEqual(struct.unpack('<Q', tree['/chosen']['dram-size'])[0], 0xfcc00000)
 
+    def test_ufs_node_is_explicit_opt_in(self):
+        default = self.tree()
+        self.assertNotIn('/arm-io/ufshc@1d84000', default)
+        storage = self.tree(include_ufs=True)
+        self.assertEqual(storage['/arm-io/ufshc@1d84000']['compatible'],
+                         b'qcom,sdm845-ufshc\0qcom,ufshc\0')
+        self.assertEqual(struct.unpack('<2Q', storage['/arm-io/ufshc@1d84000']['reg']),
+                         (0x01d84000 - polaris.ARMIO_BASE, 0x2500))
+        self.assertEqual(struct.unpack('<3I', storage['/arm-io/ufshc@1d84000']['interrupts']),
+                         (0, 265, 0))
+
     def test_cpu_prefix_keeps_silver_gold_boundary_at_core_four(self):
         tree = self.tree(cpu_count=8)
         for core in range(8):

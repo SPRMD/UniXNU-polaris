@@ -38,7 +38,13 @@ This repository moves the port onto UniXNU's build driver and boot chain:
 ### Implemented and verified
 
 - **Host**: polaris platform ADT generator, binary-ABI tests, fail-closed CPU
-  prefix check (migrated from the old chain), clang test suites. CI green.
+  prefix check (migrated from the old chain), sanitized MIUI fact extraction,
+  and a stock-DTB resource contract probe. CI green for the Python/ADT gates.
+- **Storage bring-up**: the SDM845 `ShengUfs` read-only probe from the local
+  Polaris/UniXNU-judyln port is now present and linked behind
+  `CONFIG_XNU_NATIVE_UFS`. It is default-off at runtime and remains
+  unqualified until the exact Darwin 23 compiler record and a disposable
+  temporary boot validate it.
 - **EFI/QEMU**: UniXNU EFI apps and the DarwinBoot override build and pass ten
   QEMU cases (menu, hand-off, ARM64 entry with Darwin 23 boot_args, allocation
   window, refusals). CI green.
@@ -81,8 +87,9 @@ user-approved; boot/modem/persist partitions untouched. Details in
 
 Standard UniXNU device repository: `board.toml`, `configs/polaris_defconfig`,
 `drivers/ArmCpu` (timer PPI from the ADT + the heartbeat probe),
-`drivers/DarwinBoot` (upper-bank allocation window), `scripts/` (ADT, ESP
-assembly, platform kernel build, probes), `tests/`, CI workflows for host/EFI,
+`drivers/DarwinBoot` (upper-bank allocation window), `drivers/ShengUfs`
+ (SDM845 read-only UFS probe, default-off), `scripts/` (ADT, resource probe,
+ESP assembly, platform kernel build, probes), `tests/`, CI workflows for host/EFI,
 kernel+QEMU and ESP images. Pinned upstream revisions in
 [upstream.json](upstream.json).
 

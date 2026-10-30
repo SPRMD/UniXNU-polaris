@@ -15,12 +15,20 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu'])
+    parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs'])
     args = parser.parse_args()
-    out = ROOT / 'build' / {'ArmCpu': 'armcpu', 'ArmDTPlatform': 'armdt-platform'}[args.component]
+    output_names = {
+        'ArmCpu': ('armcpu', 'ArmCpu', 'ArmCpu'),
+        'ArmDTPlatform': ('armdt-platform', 'ArmDTPlatform', 'ArmDTPlatform'),
+        # The component manifest links the archive as libShengUfs.a while the
+        # runtime class and source file retain the historical NativeUfs name.
+        'ShengUfs': ('sheng-ufs', 'NativeUfs', 'ShengUfs'),
+    }
+    out_name, source_name, archive_name = output_names[args.component]
+    out = ROOT / 'build' / out_name
     recipe = ROOT / 'build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/iokit/DEVELOPMENT/IOPlatformExpert.cpo.json'
     record = json.loads(recipe.read_text().strip().rstrip(','))
-    source = ROOT / 'drivers' / args.component / (args.component + '.cpp')
+    source = ROOT / 'drivers' / args.component / (source_name + '.cpp')
     destination = out / (args.component + '.o')
     out.mkdir(parents=True, exist_ok=True)
     command = []
@@ -41,7 +49,8 @@ def main():
     command.extend(['-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter',
                     '-Wno-c99-designator', '-Wno-reorder-init-list',
                     '-Wno-deprecated-enum-enum-conversion',
-                    '-I', str(ROOT / '.cache/xnu-work/osfmk')])
+                    '-I', str(ROOT / '.cache/xnu-work/osfmk'),
+                    '-I', str(source.parent)])
     (out / 'compile-command.json').write_text(json.dumps(command, indent=2) + '\n')
     result = subprocess.run(command, cwd=record['directory'], capture_output=True, text=True)
     (out / 'compile.log').write_text(result.stdout + result.stderr)
@@ -59,9 +68,16 @@ def main():
         offset += length
     if deployment != (2, 0x110000):
         raise SystemExit(f'Expected iOS 17 deployment, got {deployment}')
-    archive = out / ('lib' + args.component + '.a')
+    archive = out / ('lib' + archive_name + '.a')
     archive.unlink(missing_ok=True)
     subprocess.run(['xcrun', 'ar', 'rcs', archive, destination], check=True)
+    if args.component == 'ShengUfs':
+        # Some older UniXNU scripts look for the legacy native-ufs path. Keep
+        # it as a byte-for-byte copy while the kernel link uses sheng-ufs.
+        compat = ROOT / 'build/native-ufs'
+        compat.mkdir(parents=True, exist_ok=True)
+        compat_archive = compat / 'libNativeUfs.a'
+        compat_archive.write_bytes(archive.read_bytes())
     print(f'{args.component}: ARM64/iOS 17 archive built')
 
 
