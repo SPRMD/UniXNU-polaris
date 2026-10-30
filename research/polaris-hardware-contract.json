@@ -26,12 +26,12 @@
   },
   "subsystems": {
     "power_keys": {
-      "status": "candidate",
+      "status": "runtime-experimental",
       "enabled": false,
       "hardware": "Qualcomm PMIC GPIO/key input",
-      "darwin_driver": null,
+      "darwin_driver": "PolarisPmicRuntime",
       "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
-      "blocker": "No Darwin 23 GPIO/PMIC input service has passed a temporary Polaris boot."
+      "blocker": "Read-only PM8998 PON/GPIO6 polling is implemented behind polariskeys=1, but no temporary Darwin 23 boot or qualified IOHID sink has passed."
     },
     "display": {
       "status": "candidate",
@@ -50,12 +50,12 @@
       "blocker": "The old XNU 8796 shim path cannot be copied into Darwin 23 without a new HID service."
     },
     "battery": {
-      "status": "candidate",
+      "status": "runtime-experimental",
       "enabled": false,
       "hardware": "PMI8998 fuel gauge / power supply",
-      "darwin_driver": null,
+      "darwin_driver": "PolarisPmicRuntime",
       "evidence": ["../polaris_ios16_driver_research/reports/LOCKSCREEN_POWER_ANALYSIS_CN.md"],
-      "blocker": "Battery reads must be board-gated and report unknown on failure; fixed iOS 16 values are invalid."
+      "blocker": "Revision-gated read-only fuel-gauge sampling is implemented behind polarisbattery=1, but charger state, userland publication and temporary Darwin 23 validation remain open."
     },
     "gpu": {
       "status": "candidate",

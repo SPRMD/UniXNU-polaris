@@ -124,6 +124,13 @@ resource probe, ESP assembly, platform kernel build, probes), `tests/`, CI
 workflows for host/EFI, kernel+QEMU and ESP images. Pinned upstream revisions
 are in [upstream.json](upstream.json).
 
+`drivers/PolarisPmicRuntime` is an additional experimental, read-only PMIC
+observer. `polariskeys=1` enables debounced PM8998 PON/GPIO6 polling and
+`polarisbattery=1` enables the revision-gated PMI8998 fuel-gauge source. Both
+are disabled in the default command line; without a qualified IOHID sink and a
+temporary Darwin boot report they remain bring-up services rather than a
+working iOS input or battery stack.
+
 The transport contract service supplies bounded Darwin-buildable protocol cores
 for WCN399x H4/WLFW, PN54x NCI, and camera CCI. It remains disabled by default
 and does not claim Wi-Fi, Bluetooth, NFC, or camera functionality until a real

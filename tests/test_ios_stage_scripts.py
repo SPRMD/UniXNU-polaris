@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -17,9 +18,36 @@ def load(name, path):
 
 
 PACKAGE = load("make_polaris_package_ios", ROOT / "scripts" / "make-polaris-package.py")
+STAGE = load("build_polaris_ios_stage", ROOT / "scripts" / "build-ios-stage.py")
 
 
 class IOSStageScriptTests(unittest.TestCase):
+    def test_raw_apfs_uses_object_header_and_checks_container_extent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "root.img"
+            raw = bytearray(8192)
+            struct.pack_into("<4sIQ", raw, 32, b"NXSB", 4096, 2)
+            path.write_bytes(raw)
+            self.assertEqual(STAGE.require_raw_apfs(path), {
+                "block_size": 4096, "block_count": 2, "container_bytes": 8192,
+            })
+            path.write_bytes(raw[:4096])
+            with self.assertRaisesRegex(SystemExit, "truncated"):
+                STAGE.require_raw_apfs(path)
+
+    def test_misplaced_magic_and_invalid_geometry_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "root.img"
+            path.write_bytes(b"NXSB" + bytes(8192))
+            with self.assertRaisesRegex(SystemExit, "byte 32"):
+                STAGE.require_raw_apfs(path)
+            for block_size, count in ((0, 2), (6144, 2), (4096, 0), (131072, 1)):
+                raw = bytearray(8192)
+                struct.pack_into("<4sIQ", raw, 32, b"NXSB", block_size, count)
+                path.write_bytes(raw)
+                with self.assertRaisesRegex(SystemExit, "geometry"):
+                    STAGE.require_raw_apfs(path)
+
     def test_ios_stage_entrypoints_are_host_only_and_guarded(self):
         source = (ROOT / "scripts" / "build-ios-stage.py").read_text(encoding="utf-8")
         self.assertIn("flashable", source)

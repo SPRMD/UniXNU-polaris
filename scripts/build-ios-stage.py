@@ -15,6 +15,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import struct
 import subprocess
 import sys
 
@@ -34,14 +35,25 @@ def digest(path: Path) -> str:
     return h.hexdigest()
 
 
-def require_raw_apfs(path: Path) -> None:
+def require_raw_apfs(path: Path) -> dict[str, int]:
     with path.open("rb") as stream:
-        magic = stream.read(4)
-    if magic != b"NXSB":
+        header = stream.read(48)
+    # nx_superblock_t starts with the 32-byte obj_phys_t, including its
+    # checksum. NXSB is at byte 32, not at the beginning of the disk image.
+    if len(header) != 48 or header[32:36] != b"NXSB":
         raise SystemExit(
-            f"{path}: expected a raw APFS image beginning with NXSB; "
+            f"{path}: expected a raw APFS container with NXSB at byte 32; "
             "decode a UDIF/LZFSE wrapper before assembling SHNGROOT"
         )
+    block_size, block_count = struct.unpack_from("<IQ", header, 36)
+    if (block_size < 4096 or block_size > 65536 or
+            block_size & (block_size - 1) or block_count == 0):
+        raise SystemExit(f"{path}: invalid APFS container geometry")
+    container_bytes = block_size * block_count
+    if container_bytes > path.stat().st_size:
+        raise SystemExit(f"{path}: APFS container is truncated")
+    return {"block_size": block_size, "block_count": block_count,
+            "container_bytes": container_bytes}
 
 
 def main() -> int:

@@ -425,7 +425,7 @@ class PolarisBatteryRuntime : public IOPMPowerSource {
     snapshot.revision = revision;
     uint8_t soc[2] = {}, voltage[2] = {}, current[2] = {}, temp[2] = {};
     uint8_t charger = 0;
-    if (!spmiRead(0x240, 0x09, soc, 2) ||
+    if (!spmiRead(0x240, 0x09, soc, 2) || soc[0] != soc[1] ||
         !readStable(0x241, 0xa0, voltage) ||
         !readStable(0x241, 0xa2, current) ||
         !readStable(0x241, 0x50, temp) ||
