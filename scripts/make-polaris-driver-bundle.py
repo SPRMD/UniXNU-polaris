@@ -33,6 +33,7 @@ DRIVER_DIRS = (
     "PolarisTransportContracts",
     "PolarisRuntime",
     "PolarisPmicRuntime",
+    "PolarisHidInput",
 )
 
 FIRMWARE_NAMES = {

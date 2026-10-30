@@ -18,7 +18,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONTRACT = ROOT / "research" / "polaris-hardware-contract.json"
-ALLOWED_STATUS = {"disabled", "candidate", "verified"}
+ALLOWED_STATUS = {"disabled", "candidate", "runtime-experimental", "verified"}
 REQUIRED = {
     "power_keys", "display", "touch", "battery", "gpu", "wifi", "bluetooth",
     "nfc", "camera", "fingerprint",

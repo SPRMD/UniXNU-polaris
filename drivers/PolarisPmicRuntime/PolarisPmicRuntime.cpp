@@ -252,27 +252,78 @@ class PolarisKeysRuntime : public IOService {
   bool pon_ = false;
   bool gpio_ = false;
   uint32_t lastMask_ = 0;
-  uint32_t candidateMask_ = 0;
-  unsigned candidateCount_ = 0;
+  bool candidate_[3] = {};
+  bool candidateValid_[3] = {};
+  bool live_[3] = {};
+  bool down_[3] = {};
+
+  static constexpr uint32_t keyBit(unsigned index)
+  {
+    return index < 3 ? (1U << (index + 1U)) : 0;
+  }
+
+  void publishStableMask()
+  {
+    uint32_t mask = 0;
+    for (unsigned i = 0; i < 3; ++i) {
+      if (down_[i]) mask |= keyBit(i);
+    }
+    if (mask != lastMask_) {
+      lastMask_ = mask;
+      publishKeys(this, mask);
+    }
+  }
+
+  void disableKey(unsigned index)
+  {
+    if (index >= 3) return;
+    candidateValid_[index] = false;
+    live_[index] = false;
+    down_[index] = false;
+    publishStableMask();
+  }
+
+  void updateKey(unsigned index, bool pressed)
+  {
+    if (index >= 3) return;
+    // Require two identical samples and observe an initial released state
+    // before trusting a transition. This prevents a held key during boot from
+    // being reported as a synthetic press and mirrors the old Polaris chain's
+    // debounce contract.
+    if (!candidateValid_[index] || candidate_[index] != pressed) {
+      candidate_[index] = pressed;
+      candidateValid_[index] = true;
+      return;
+    }
+    if (!live_[index]) {
+      if (!pressed) live_[index] = true;
+      return;
+    }
+    if (down_[index] == pressed) return;
+    down_[index] = pressed;
+    publishStableMask();
+  }
 
   void poll()
   {
     uint8_t pon = 0, gpio = 0;
-    if (pon_ && !readByte(0x008, 0x10, &pon)) pon_ = false;
-    if (gpio_ && !readByte(0x0c5, 0x10, &gpio)) gpio_ = false;
-    uint32_t mask = 0;
-    if (pon_ && (pon & 0x01U)) mask |= 1U << 1; // consumer power
-    if (gpio_ && !(gpio & 0x01U)) mask |= 1U << 2; // volume up
-    if (pon_ && (pon & 0x02U)) mask |= 1U << 3; // volume down
-    if (mask == candidateMask_) {
-      if (candidateCount_ < 2) ++candidateCount_;
-    } else {
-      candidateMask_ = mask;
-      candidateCount_ = 1;
+    if (pon_) {
+      if (readByte(0x008, 0x10, &pon)) {
+        updateKey(0, (pon & 0x01U) != 0); // consumer power
+        updateKey(2, (pon & 0x02U) != 0); // volume down
+      } else {
+        pon_ = false;
+        disableKey(0);
+        disableKey(2);
+      }
     }
-    if (candidateCount_ >= 2 && candidateMask_ != lastMask_) {
-      lastMask_ = candidateMask_;
-      publishKeys(this, lastMask_);
+    if (gpio_) {
+      if (readByte(0x0c5, 0x10, &gpio)) {
+        updateKey(1, (gpio & 0x01U) == 0); // volume up, active-low
+      } else {
+        gpio_ = false;
+        disableKey(1);
+      }
     }
     if (!pon_ && !gpio_) running_ = false;
   }
@@ -424,12 +475,13 @@ class PolarisBatteryRuntime : public IOPMPowerSource {
     polaris_pmic_runtime_battery_revision = revid[0];
     snapshot.revision = revision;
     uint8_t soc[2] = {}, voltage[2] = {}, current[2] = {}, temp[2] = {};
-    uint8_t charger = 0;
-    if (!spmiRead(0x240, 0x09, soc, 2) || soc[0] != soc[1] ||
+    uint8_t socSubtype = 0, infoSubtype = 0;
+    if (!readByte(0x240, 0x05, &socSubtype) || socSubtype != 0x10 ||
+        !readByte(0x241, 0x05, &infoSubtype) || infoSubtype != 0x11 ||
+        !spmiRead(0x240, 0x09, soc, 2) || soc[0] != soc[1] ||
         !readStable(0x241, 0xa0, voltage) ||
         !readStable(0x241, 0xa2, current) ||
-        !readStable(0x241, 0x50, temp) ||
-        !readByte(0x240, 0x05, &charger)) {
+        !readStable(0x241, 0x50, temp)) {
       publishUnknown();
       return;
     }
@@ -444,9 +496,11 @@ class PolarisBatteryRuntime : public IOPMPowerSource {
       publishUnknown();
       return;
     }
-    const unsigned capacity = (3400U * sample.percent + 50U) / 100U;
     setBatteryInstalled(true);
-    setCurrentCapacity(capacity);
+    // IOPMPowerSource defines these fields in mAh. Keep the percentage as a
+    // separate property for clients that want the display value.
+    const unsigned capacityMah = (3400U * sample.percent + 50U) / 100U;
+    setCurrentCapacity(capacityMah);
     setMaxCapacity(3400);
     setExternalConnected(false);
     setExternalChargeCapable(false);
@@ -462,6 +516,11 @@ class PolarisBatteryRuntime : public IOPMPowerSource {
     putBool("PolarisBatteryCurrentValid", true);
     putBool("PolarisBatteryChargerStatusValid", false);
     putNumber("PolarisBatteryPercent", sample.percent);
+    putNumber("DesignCapacity", 3400);
+    putNumber("NominalChargeCapacity", 3400);
+    putNumber("AppleRawCurrentCapacity",
+              (3400U * sample.percent + 50U) / 100U);
+    putNumber("AppleRawMaxCapacity", 3400);
     putNumber("Temperature", static_cast<uint64_t>(sample.temperatureDeciCelsius * 10));
     ++polaris_pmic_runtime_battery_valid;
     updateStatus();

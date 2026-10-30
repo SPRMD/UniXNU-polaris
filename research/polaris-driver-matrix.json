@@ -35,7 +35,7 @@
       "status": "runtime-experimental",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "GPIO33/GPIO34 RMI4 runtime transport adapted from the retired chain; no independent Darwin 23 temporary-boot log or HID sink"
+      "evidence": "GPIO33/GPIO34 RMI4 runtime plus the gated PolarisHidInput bridge against the pinned iPadOS 17.7.11 IOHID ABI; no independent Darwin 23 temporary-boot log or input-event trace"
     },
     "gpu_adreno630": {
       "status": "not-implemented",

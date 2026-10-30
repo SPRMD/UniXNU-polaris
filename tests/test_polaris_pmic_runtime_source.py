@@ -16,6 +16,21 @@ class PolarisPmicRuntimeSourceTests(unittest.TestCase):
         self.assertIn('gPoisoned[apid] = true', source)
         self.assertNotIn('setProperty("HardwareWritesEnabled", kOSBooleanTrue', source)
 
+    def test_fuel_gauge_requires_matching_subtypes(self):
+        source = (ROOT / "drivers/PolarisPmicRuntime/PolarisPmicRuntime.cpp").read_text()
+        self.assertIn("socSubtype != 0x10", source)
+        self.assertIn("infoSubtype != 0x11", source)
+        self.assertIn("soc[0] != soc[1]", source)
+
+    def test_keys_require_initial_release_and_fail_closed_each_lane(self):
+        source = (ROOT / "drivers/PolarisPmicRuntime/PolarisPmicRuntime.cpp").read_text()
+        self.assertIn("candidateValid_[3]", source)
+        self.assertIn("live_[3]", source)
+        self.assertIn("if (!pressed) live_[index] = true", source)
+        self.assertIn("disableKey(0)", source)
+        self.assertIn("disableKey(1)", source)
+        self.assertIn("disableKey(2)", source)
+
     def test_build_and_runtime_wiring(self):
         driver_builder = (ROOT / "scripts/build-arm-driver.py").read_text()
         board = (ROOT / "board.toml").read_text()

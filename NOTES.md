@@ -333,3 +333,18 @@ Darwin.
 The CCI contract now includes a bounded IMX363 ID probe descriptor (7-bit
 address `0x34`, register `0x0016`, expected ID `0x0363`, 400 kHz) derived from
 that evidence.  It remains protocol-only and does not open the camera gate.
+
+## 2026-10-31: gated Polaris HID bridge
+
+Added `drivers/PolarisHidInput`, a board-owned bridge that feeds the existing
+Synaptics RMI4 contact seqlock and PMIC key sink into the original
+`IOHIDDevice` ABI recorded from the pinned iPadOS 17.7.11 build `21H461`.
+`polaris-touch-hid=1` selects a combined consumer/keyboard plus digitizer
+resource; `polaris-touch-hid=2` selects touch-only. The bridge checks the live
+IOHIDDevice class size (208 bytes) before registering and is built only for the
+explicit `polaris_ipados17_defconfig` stage.
+
+The normal source-kernel profile remains independent of the private ABI. No
+Darwin macOS build or temporary Polaris boot has validated the bridge, so the
+hardware contract remains `hardware_tested=false` and package output remains
+`flashable=false`.

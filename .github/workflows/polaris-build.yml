@@ -201,6 +201,7 @@ jobs:
             out/native/polaris/build/polaris-hardware-services/
             out/native/polaris/build/polaris-pmic-input/
             out/native/polaris/build/polaris-pmic-runtime/
+            out/native/polaris/build/polaris-hid-input/
             out/native/polaris/build/polaris-synaptics-touch/
             out/native/polaris/build/polaris-touch-runtime/
             out/native/polaris/build/polaris-transport-contracts/
@@ -310,7 +311,7 @@ jobs:
 
       - name: Validate kernel and assemble ESP directory
         run: |
-          KERNEL=$(find out/kernel -type f -name kernel.macho -print -quit)
+          KERNEL=$(find out/kernel -type f -name kernel-prelinked.macho -print -quit)
           test -n "$KERNEL"
           cp "$KERNEL" out/kernel.macho
           cp "${KERNEL%.macho}.json" out/kernel.json
@@ -383,7 +384,8 @@ jobs:
       - name: Install iOS-stage tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y mtools util-linux python3
+          sudo apt-get install -y mtools util-linux python3 python3-pip
+          python3 -m pip install --user --break-system-packages liblzfse
 
       - name: Normalize build artifacts
         run: |

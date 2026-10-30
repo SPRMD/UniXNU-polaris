@@ -14,7 +14,10 @@ import struct
 import sys
 import zlib
 
-import liblzfse
+try:
+    import liblzfse
+except ImportError:  # Only required when a blkx run actually uses LZFSE.
+    liblzfse = None
 
 ZERO = 0x00000000
 RAW = 0x00000001
@@ -53,6 +56,10 @@ def decode(run_type, chunk):
     if run_type == BZ2:
         return bz2.decompress(chunk)
     if run_type == LZFSE:
+        if liblzfse is None:
+            raise SystemExit(
+                "LZFSE-compressed UDIF requires the Python liblzfse module"
+            )
         return liblzfse.decompress(chunk)
     if run_type == ADC:
         return adc_decompress(chunk)

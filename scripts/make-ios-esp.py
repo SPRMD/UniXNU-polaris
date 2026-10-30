@@ -56,6 +56,18 @@ def main():
         if path is not None and not path.is_file():
             raise SystemExit(f'missing input: {path}')
 
+    report_path = args.kernel.with_suffix('.json')
+    if not report_path.is_file():
+        raise SystemExit(f'missing prelinked kernel report: {report_path}')
+    try:
+        report = json.loads(report_path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError) as error:
+        raise SystemExit(f'invalid prelinked kernel report: {report_path}: {error}')
+    if report.get('kernel_sha256') != hashlib.sha256(args.kernel.read_bytes()).hexdigest():
+        raise SystemExit('prelinked kernel does not match its kernel.json report')
+    if report.get('original_components_prelinked') is not True:
+        raise SystemExit('iOS-stage ESP requires kernel-prelinked.macho with original components')
+
     out = args.out.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     tree = args.tree.resolve() if args.tree else None

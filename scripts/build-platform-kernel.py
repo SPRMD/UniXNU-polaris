@@ -119,6 +119,15 @@ def main():
             run(['python3', ctx.tree / 'scripts/prepare-storage-headers.py'], cwd=ctx.tree,
                 env=env, log_file=ctx.logs / 'storage-headers.log')
     kernel.build_archives(ctx, env)
+    # The IOHIDDevice private ABI bridge is tied to the pinned iPadOS 17.7.11
+    # kernelcache. Build it only for the explicit iPadOS-stage profile; the
+    # ordinary Darwin source-kernel profile must remain independent of that
+    # absolute ABI table.
+    hid_enabled = bool(ctx.config.get('XNU_POLARIS_HID_INPUT', False))
+    if hid_enabled:
+        run(['python3', ROOT / 'scripts/build-polaris-hid-input.py',
+             '--build-root', str(ctx.tree)],
+            cwd=ctx.tree, env=env, log_file=ctx.logs / 'polaris-hid-input.log')
     if ctx.config.get('XNU_NATIVE_UFS', False):
         run(['python3', ctx.tree / 'scripts/build-storage-base.py'], cwd=ctx.tree,
             env=env, log_file=ctx.logs / 'storage-base.log')
@@ -144,6 +153,8 @@ def main():
         ctx.tree / 'build/polaris-a630-probe/libPolarisA630Probe.a',
         ctx.tree / 'build/polaris-runtime/libPolarisRuntime.a',
     ]
+    if hid_enabled:
+        probe_archives.append(ctx.tree / 'build/polaris-hid-input/libPolarisHidInput.a')
     extra_archives = [path for path in probe_archives if path.is_file()]
     if extra_archives:
         existing = env.get('XNU_EXTRA_LD_ARCHIVES', '').strip()
@@ -164,6 +175,7 @@ def main():
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source, destination)
     prelinked = None
+    prelinked_destination = None
     # The board keeps one prelink recipe for the iPadOS-stage profiles, but the
     # ordinary platform profile must remain a plain source kernel. Select the
     # expensive prelink pass through the defconfig's crypto bootstrap mode.
@@ -173,17 +185,43 @@ def main():
         prelinked = kernel.prelink(ctx)
         print(f'PASS: prelinked kernel {prelinked} sha256 '
               f'{hashlib.sha256(prelinked.read_bytes()).hexdigest()}', flush=True)
+        # Keep the source-kernel artifact and the prelinked userland kernel as
+        # separate, self-describing files. A boolean in kernel.json is not
+        # enough: downstream stage assembly must not silently package the
+        # plain source image and lose IOHIDFamily/Apple userland roots.
+        prelinked_destination = ctx.work / 'kernel/kernel-prelinked.macho'
+        shutil.copyfile(prelinked, prelinked_destination)
+        prelinked_data = prelinked_destination.read_bytes()
+        prelinked_report = {
+            'kernel_sha256': hashlib.sha256(prelinked_data).hexdigest(),
+            'kernel_bytes': len(prelinked_data),
+            'source_kernel_sha256': hashlib.sha256(data).hexdigest(),
+            'prelinked_from': str(prelinked),
+            'unixnu_revision': revision,
+            'bootstrap_link_failed': bootstrap_failed,
+            'final_configured_link_passed': True,
+            'original_components_prelinked': True,
+            'hardware_booted': False,
+            'userland_booted': False,
+            'sources': {name: module.commit for (_, name), module in modules.items() if module.commit},
+        }
+        prelinked_destination.with_suffix('.json').write_text(
+            json.dumps(prelinked_report, indent=2) + '\n')
     final_data = destination.read_bytes()
     report = {'kernel_sha256': hashlib.sha256(final_data).hexdigest(),
               'kernel_bytes': len(final_data),
               'source_kernel_sha256': hashlib.sha256(data).hexdigest(),
               'unixnu_revision': revision, 'bootstrap_link_failed': bootstrap_failed,
               'final_configured_link_passed': True,
-              'original_components_prelinked': prelinked is not None,
+              'original_components_prelinked': False,
               'hardware_booted': False, 'userland_booted': False,
               'sources': {name: module.commit for (_, name), module in modules.items() if module.commit}}
     destination.with_suffix('.json').write_text(json.dumps(report, indent=2) + '\n')
-    print(f'PASS: source-kernel platform artifact {destination}; no physical boot claimed')
+    if prelinked_destination is not None:
+        print(f'PASS: source-kernel platform artifact {destination}', flush=True)
+        print(f'PASS: prelinked userland artifact {prelinked_destination}; no physical boot claimed')
+    else:
+        print(f'PASS: source-kernel platform artifact {destination}; no physical boot claimed')
 
 
 if __name__ == '__main__':

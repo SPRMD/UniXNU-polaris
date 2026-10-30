@@ -119,6 +119,8 @@ Standard UniXNU device repository: `board.toml`, `configs/polaris_defconfig`,
 `drivers/PolarisGeniI2c` (host-testable GENI FIFO state machine),
 `drivers/PolarisA630Probe` (board-gated, read-only Adreno 630/GMU/SMMU
 resource contract),
+`drivers/PolarisHidInput` (iPadOS 17.7.11 ABI-gated touch/button bridge,
+iPadOS-stage only),
 `drivers/ShengUfs` (SDM845 read-only UFS probe, default-off), `scripts/` (ADT,
 resource probe, ESP assembly, platform kernel build, probes), `tests/`, CI
 workflows for host/EFI, kernel+QEMU and ESP images. Pinned upstream revisions
@@ -135,6 +137,13 @@ The transport contract service supplies bounded Darwin-buildable protocol cores
 for WCN399x H4/WLFW, PN54x NCI, and camera CCI. It remains disabled by default
 and does not claim Wi-Fi, Bluetooth, NFC, or camera functionality until a real
 Polaris transport and temporary-boot test exist.
+
+The optional `PolarisHidInput` bridge is selected only by
+`polaris_ipados17_defconfig`; it checks the live `IOHIDDevice` class size before
+connecting the existing Polaris touch and PMIC sinks. `polaris-touch-hid=1`
+requests the combined HID resource and `polaris-touch-hid=2` requests touch-only.
+The bridge has no Darwin macOS build or temporary-boot validation yet, so it
+does not change the `hardware_tested=false` or `flashable=false` gates.
 
 ### Next stages
 

@@ -47,7 +47,7 @@
       "hardware": "Synaptics RMI4 touch controller over I2C (old chain: S3330; WOA/EDK2 path: S3708)",
       "darwin_driver": null,
       "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
-      "blocker": "The old XNU 8796 shim path cannot be copied into Darwin 23 without a new HID service."
+      "blocker": "A gated PolarisHidInput bridge now connects the RMI4 seqlock to the pinned iPadOS 17.7.11 IOHID ABI, but the macOS prelink build, temporary Darwin boot and real input-event log are still open."
     },
     "battery": {
       "status": "runtime-experimental",

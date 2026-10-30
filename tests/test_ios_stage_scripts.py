@@ -35,6 +35,17 @@ class IOSStageScriptTests(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, "truncated"):
                 STAGE.require_raw_apfs(path)
 
+    def test_normalize_raw_apfs_keeps_a_valid_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "os.dmg"
+            raw = bytearray(8192)
+            struct.pack_into("<4sIQ", raw, 32, b"NXSB", 4096, 2)
+            path.write_bytes(raw)
+            normalized, geometry = STAGE.normalize_apfs_input(path, root / "work")
+            self.assertEqual(normalized, path)
+            self.assertEqual(geometry["container_bytes"], 8192)
+
     def test_misplaced_magic_and_invalid_geometry_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "root.img"
@@ -55,6 +66,11 @@ class IOSStageScriptTests(unittest.TestCase):
         self.assertIn("make-trust-bundle.py", source)
         self.assertIn("make-ios-esp.py", source)
         self.assertIn("make-userdata-linux.py", source)
+
+    def test_udif_extractor_treats_liblzfse_as_lazy_dependency(self):
+        source = (ROOT / "scripts" / "udif-extract.py").read_text(encoding="utf-8")
+        self.assertIn("except ImportError", source)
+        self.assertIn("requires the Python liblzfse module", source)
 
     def test_package_carries_optional_darwin_root(self):
         with tempfile.TemporaryDirectory() as directory:

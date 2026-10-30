@@ -31,6 +31,9 @@ class PlatformKernelBuildTests(unittest.TestCase):
         self.assertIn("final_data = destination.read_bytes()", source)
         self.assertIn("source_kernel_sha256", source)
         self.assertIn("ctx.config.get('XNU_CRYPTO_BOOTSTRAP') == 'prelinked'", source)
+        self.assertIn("kernel-prelinked.macho", source)
+        self.assertIn("'original_components_prelinked': False", source)
+        self.assertIn("'original_components_prelinked': True", source)
 
 
 if __name__ == "__main__":

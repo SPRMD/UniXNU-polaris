@@ -75,6 +75,11 @@ public:
     setProperty("polaris-transport-contract-version", 1U, 32);
     setProperty("polaris-transport-qca-h4", true);
     setProperty("polaris-transport-wlfw-qmi", true);
+    setProperty("polaris-transport-wireless-chip", "WCN3998; DT aliases WCN3990");
+    setProperty("polaris-transport-wifi-firmware-candidates",
+                "wlanmdsp.mbn,bdwlan.bin");
+    setProperty("polaris-transport-bluetooth-firmware-candidates",
+                "crbtfwXX.tlv,crnvXX.bin");
     setProperty("polaris-transport-nci-1x", true);
     setProperty("polaris-transport-camera-cci", true);
     setProperty("polaris-transport-pmic-spmi-read-only", true);
@@ -83,6 +88,8 @@ public:
     setProperty("polaris-transport-hardware-io", false);
     setProperty("polaris-transport-firmware-loaded", false);
     setProperty("polaris-transport-dma-created", false);
+    setProperty("polaris-transport-wireless-runtime-gate",
+                "polaris-wireless-runtime=1");
     setProperty("polaris-transport-darwin-driver-ready", false);
     setProperty("polaris-transport-runtime-gate", "polaris-transport-probe=1");
     setName("PolarisTransportContracts");

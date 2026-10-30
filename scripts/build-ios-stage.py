@@ -56,6 +56,30 @@ def require_raw_apfs(path: Path) -> dict[str, int]:
             "container_bytes": container_bytes}
 
 
+def normalize_apfs_input(path: Path, workdir: Path) -> tuple[Path, dict[str, int]]:
+    """Return a raw APFS image, extracting a UDIF wrapper when necessary.
+
+    Apple IPSW OS/SystemOS members are commonly UDIF/LZFSE containers.  The
+    userdata assembler needs the APFS container itself, so keep the original
+    input immutable and place the decoded image under the stage work tree.
+    """
+    try:
+        return path, require_raw_apfs(path)
+    except SystemExit:
+        try:
+            with path.open("rb") as stream:
+                stream.seek(-512, 2)
+                is_udif = stream.read(4) == b"koly"
+        except (OSError, ValueError):
+            is_udif = False
+        if not is_udif:
+            raise
+        workdir.mkdir(parents=True, exist_ok=True)
+        raw = workdir / (path.name + ".raw.img")
+        run("udif-extract.py", [str(path), str(raw)])
+        return raw, require_raw_apfs(raw)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--kernel", type=Path, required=True,
@@ -83,13 +107,14 @@ def main() -> int:
     missing = [str(path) for path in paths if not path.exists()]
     if missing:
         parser.error("missing input(s): " + ", ".join(missing))
-    require_raw_apfs(args.os)
-    require_raw_apfs(args.system_os)
-
     out = args.out.resolve()
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
+
+    os_image, os_geometry = normalize_apfs_input(args.os, out / "raw-inputs")
+    system_os_image, system_os_geometry = normalize_apfs_input(
+        args.system_os, out / "raw-inputs")
 
     trust = out / "trust.bundle"
     run("make-trust-bundle.py", ["--static", str(args.static_trust),
@@ -102,7 +127,7 @@ def main() -> int:
                              "--out", str(esp_image), "--tree", str(esp_tree)])
 
     darwin_root = out / "darwin-root.img"
-    run("make-userdata-linux.py", ["--os", str(args.os), "--system-os", str(args.system_os),
+    run("make-userdata-linux.py", ["--os", str(os_image), "--system-os", str(system_os_image),
                                     "--partition", "darwin", "--out", str(darwin_root)])
 
     manifest = {
@@ -123,6 +148,11 @@ def main() -> int:
                           "sha256": digest(esp_image)},
             "trust_bundle": {"path": trust.name, "bytes": trust.stat().st_size,
                              "sha256": digest(trust)},
+            "os": {"source": str(args.os), "raw_path": str(os_image),
+                   "sha256": digest(os_image), "geometry": os_geometry},
+            "system_os": {"source": str(args.system_os), "raw_path": str(system_os_image),
+                          "sha256": digest(system_os_image),
+                          "geometry": system_os_geometry},
             "darwin_root": {"path": darwin_root.name, "bytes": darwin_root.stat().st_size,
                             "sha256": digest(darwin_root)},
         },

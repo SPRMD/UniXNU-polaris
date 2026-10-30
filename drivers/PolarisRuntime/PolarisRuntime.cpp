@@ -25,6 +25,10 @@ extern "C" void polaris_transport_contracts_static_init(void)
     __asm__("__GLOBAL__sub_I_PolarisTransportContracts.cpp");
 extern "C" void polaris_a630_probe_static_init(void)
     __asm__("__GLOBAL__sub_I_PolarisA630Probe.cpp");
+// The iPadOS-stage HID bridge is built only when XNU_POLARIS_HID_INPUT is
+// selected. Keep this weak so the ordinary source-kernel profile does not
+// acquire an unresolved dependency on the private IOHID ABI.
+extern "C" void polaris_hid_touch_start(void) __attribute__((weak_import));
 
 extern "C" {
 volatile uint32_t polaris_runtime_started = 0;
@@ -140,6 +144,7 @@ extern "C" void polaris_runtime_start(IOService *platform)
   optional = 0;
   if (PE_parse_boot_argn("polarisbattery", &optional, sizeof(optional)) && optional == 1)
     (void)startService("PolarisBatteryRuntime", provider);
+  if (&polaris_hid_touch_start) polaris_hid_touch_start();
   if (provider != platformService) provider->release();
   IOLog("PolarisRuntime: started=%u failed=%u\n",
         polaris_runtime_services_started, polaris_runtime_services_failed);

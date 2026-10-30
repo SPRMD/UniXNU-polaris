@@ -18,6 +18,10 @@ class PolarisTransportContractTests(unittest.TestCase):
         self.assertIn('setProperty("polaris-transport-hardware-io", false)', source)
         self.assertIn('setProperty("polaris-transport-darwin-driver-ready", false)', source)
         self.assertIn('setProperty("polaris-transport-pmic-spmi-read-only", true)', source)
+        self.assertIn('setProperty("polaris-transport-wireless-chip"', source)
+        self.assertIn('setProperty("polaris-transport-wifi-firmware-candidates"', source)
+        self.assertIn('setProperty("polaris-transport-bluetooth-firmware-candidates"', source)
+        self.assertIn('polaris-wireless-runtime=1', source)
         for forbidden in ("IODeviceMemory", "IOMemoryDescriptor", "registerInterrupt",
                           "write32", "write8", "IOWorkLoop", "loadFirmware"):
             self.assertNotIn(forbidden, source)
