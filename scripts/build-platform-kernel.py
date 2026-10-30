@@ -101,6 +101,20 @@ def main():
             print('\n'.join(errors[:20]), file=sys.stderr)
         raise SystemExit('Bootstrap did not produce required XNU records: ' + ', '.join(missing))
     kernel.build_archives(ctx, env)
+    # These two Polaris services are intentionally opt-in at runtime, but the
+    # source-kernel archive must still be force-loaded so its IOKit classes are
+    # present in the linked image.  The generic UniXNU link script has no
+    # board-specific slots for them; pass them through its documented
+    # XNU_EXTRA_LD_ARCHIVES hook after the archive recipes have run.
+    probe_archives = [
+        ctx.tree / 'build/polaris-board-probe/libPolarisBoardProbe.a',
+        ctx.tree / 'build/polaris-hardware-services/libPolarisHardwareServices.a',
+    ]
+    extra_archives = [path for path in probe_archives if path.is_file()]
+    if extra_archives:
+        existing = env.get('XNU_EXTRA_LD_ARCHIVES', '').strip()
+        forced = ' '.join(f'-Wl,-force_load,{path}' for path in extra_archives)
+        env['XNU_EXTRA_LD_ARCHIVES'] = ' '.join(part for part in (existing, forced) if part)
     # Never reuse an object compiled with the bootstrap feature selection.
     # Keep the compile records and generated headers for the archive recipes.
     for path in obj.rglob('*'):
