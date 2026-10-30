@@ -3,11 +3,10 @@
 
 Same on-disk contract as the base driver's userdata step (scripts/unixnu/
 userdata.py): a 4096-byte SHNGROOT manifest, 1 MiB-aligned windows with the
-raw bytes of the IPSW OS and SystemOS disk images (here produced by dmg2img),
-and the manifest SHA-256 trailer. Nothing is flashed; the report prints the
-fastboot command.
+raw bytes of the IPSW OS and SystemOS disk images, and the manifest SHA-256
+trailer. Nothing is flashed; the report prints the selected partition command.
 
-  make-userdata-linux.py --os OS.img --system-os SystemOS.img --out userdata-root.img
+  make-userdata-linux.py --os OS.img --system-os SystemOS.img --out darwin-root.img --partition darwin
 """
 import argparse
 import hashlib
@@ -42,6 +41,8 @@ def main():
     parser.add_argument('--os', type=Path, required=True, help='raw OS disk image from dmg2img')
     parser.add_argument('--system-os', type=Path, required=True, help='raw SystemOS disk image from dmg2img')
     parser.add_argument('--out', type=Path, default=Path('userdata-root.img'))
+    parser.add_argument('--partition', default='userdata',
+                        help='GPT partition holding SHNGROOT (iOS stage uses darwin)')
     args = parser.parse_args()
 
     sources = [('OS', args.os.resolve()), ('SystemOS', args.system_os.resolve())]
@@ -81,7 +82,8 @@ def main():
     report = {'image_bytes': total, 'image_sha256': image_sha.hexdigest(),
               'manifest_sha256': hashlib.sha256(bytes(header)).hexdigest(),
               'windows': [{'name': n, 'offset': o, 'size': s, 'sha256': d.hex()} for n, o, s, d in entries],
-              'flash_command': f'fastboot flash userdata {args.out}',
+              'partition': args.partition,
+              'flash_command': f'fastboot flash {args.partition} {args.out}',
               'hardware_tested': False, 'assembled_on': 'linux/dmg2img'}
     args.out.with_suffix('.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f'done: {args.out}')

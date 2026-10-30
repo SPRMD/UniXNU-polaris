@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleIdentifier</key><string>org.unixnu.polaris.PolarisTransportContracts</string>
+  <key>CFBundleName</key><string>PolarisTransportContracts</string>
+  <key>CFBundleExecutable</key><string>PolarisTransportContracts</string>
+  <key>CFBundlePackageType</key><string>KEXT</string>
+  <key>CFBundleVersion</key><string>0.1.0</string>
+  <key>OSBundleRequired</key><string>Root</string>
+  <key>IOKitPersonalities</key><dict>
+    <key>Polaris transport protocol contract</key><dict>
+      <key>IOClass</key><string>PolarisTransportContracts</string>
+      <key>IOProviderClass</key><string>IOPlatformDevice</string>
+      <key>IOProbeScore</key><integer>20</integer>
+    </dict>
+  </dict>
+</dict></plist>

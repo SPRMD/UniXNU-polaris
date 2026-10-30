@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs', 'PolarisBoardProbe', 'PolarisHardwareServices', 'NativeMobileDisplay'])
+    parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs', 'PolarisBoardProbe', 'PolarisHardwareServices', 'PolarisPmicInput', 'PolarisPmicRuntime', 'PolarisSynapticsTouch', 'PolarisTransportContracts', 'PolarisA630Probe', 'PolarisRuntime', 'NativeMobileDisplay'])
     args = parser.parse_args()
     output_names = {
         'ArmCpu': ('armcpu', 'ArmCpu', 'ArmCpu'),
@@ -25,6 +25,12 @@ def main():
         'ShengUfs': ('sheng-ufs', 'NativeUfs', 'ShengUfs'),
         'PolarisBoardProbe': ('polaris-board-probe', 'PolarisBoardProbe', 'PolarisBoardProbe'),
         'PolarisHardwareServices': ('polaris-hardware-services', 'PolarisHardwareServices', 'PolarisHardwareServices'),
+        'PolarisPmicInput': ('polaris-pmic-input', 'PolarisPmicInput', 'PolarisPmicInput'),
+        'PolarisPmicRuntime': ('polaris-pmic-runtime', 'PolarisPmicRuntime', 'PolarisPmicRuntime'),
+        'PolarisSynapticsTouch': ('polaris-synaptics-touch', 'PolarisSynapticsTouch', 'PolarisSynapticsTouch'),
+        'PolarisTransportContracts': ('polaris-transport-contracts', 'PolarisTransportContracts', 'PolarisTransportContracts'),
+        'PolarisA630Probe': ('polaris-a630-probe', 'PolarisA630Probe', 'PolarisA630Probe'),
+        'PolarisRuntime': ('polaris-runtime', 'PolarisRuntime', 'PolarisRuntime'),
         # The Darwin 23 link script consumes the late display archive. The
         # Polaris stage only uses the read-only GOP metadata adapter; it does
         # not claim panel, backlight, Adreno, or composition support.

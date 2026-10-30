@@ -16,6 +16,15 @@ archives = [
   "build-arm-driver.py ArmDTPlatform",
   "build-arm-driver.py PolarisBoardProbe",
   "build-arm-driver.py PolarisHardwareServices",
+  "build-arm-driver.py PolarisPmicInput",
+  "build-arm-driver.py PolarisPmicRuntime",
+  "build-arm-driver.py PolarisSynapticsTouch",
+  # Legacy 0090 GPIO33/34/S3330 transport; force-linked for explicit
+  # polaris-touch-runtime=1 diagnostics only, disabled by default.
+  "build-polaris-touch-runtime.py",
+  "build-arm-driver.py PolarisTransportContracts",
+  "build-arm-driver.py PolarisA630Probe",
+  "build-arm-driver.py PolarisRuntime",
   "build-arm-driver.py ArmCpu",
   "build-arm-driver.py ShengUfs",
   "build-arm-driver.py NativeMobileDisplay",
@@ -32,7 +41,14 @@ title = "polaris: UniXNU platform bring-up"
 # the 8 GiB value 0xfcc00000 is selected with an explicit board override.
 dram_size = "0x7cc00000"
 panic_screen = false
-kernel_args = ["-v", "serial=0", "debug=0x14e", "kt_fixed_zones=120", "cpus=1", "armcpu-self-ipi=1"]
+# The services below are read-only resource/protocol probes.  They publish
+# board facts during a temporary boot but do not map device registers, claim
+# interrupts, load firmware, create DMA, or emit HID/network/camera events.
+# Keep the real hardware backends separately gated until a phone run proves
+# their transport and recovery paths.
+kernel_args = ["-v", "serial=0", "debug=0x14e", "kt_fixed_zones=120", "cpus=1", "armcpu-self-ipi=1",
+  "polaris-board-probe=1", "polaris-hw-probe=1", "polaris-pmic-input=1",
+  "polaris-runtime=1", "polaris-rmi4-touch=1", "polaris-transport-probe=1", "polaris-a630-probe=1"]
 
 [payload.adt]
 tool = "scripts/make-polaris-adt.py"

@@ -32,7 +32,7 @@ workflow pass, then dispatch the kernel workflow.
 | `tools/polaris_cpu_topology.py` + `mkpayload --check-polaris-cpus` | migrated as `scripts/check-cpu-prefix.py` (same fail-closed semantics: exactly one `cpus=N`, no `cpumask`, contiguous MPIDR prefix, per-core cluster/state check, count cannot exceed described CPUs). ADT state values follow UniXNU (`running`/`waiting`) instead of the old `stopped` |
 | ABL framebuffer console (`sweet-fbcon`, splash at 0x9d400000, 1080x2160) | not carried; UniXNU kernel console goes through the loader/firmware path. Restore as a diagnostic only after a polaris UEFI port exists |
 | shim UFS handoff (`sweet-ufs` @ 0x1d84000) | not carried; storage bring-up restarts from UniXNU's NativeUfs when that stage is reached |
-| Touch GPIO33/34 bit-bang I²C + GPIO99 reset (0086-0090) | not carried; must be redesigned as a board-gated driver (or NativeHidInput integration) against Darwin 23. The old evidence (S3330 at 0x20, F01/F12 PDT, bounded F12 frame reads, one/two-finger confirmation) stays valid as hardware knowledge |
+| Touch GPIO33/34 bit-bang I²C + GPIO99 reset (0086-0090) | not carried; must be redesigned as a board-gated driver (or NativeHidInput integration) against Darwin 23. The old chain reported S3330 at 0x20, while the WOA/EDK2 path identifies an RMI4/S3708 device; F01/F12 and bounded frame reads remain protocol evidence, not a Darwin 23 driver claim |
 | GPU firmware metadata diagnostics (0091-0093, A630v2) | not carried; the A618 legacy HFI kit approach in UniXNU-sweet shows the shape of a future A630 kit. No GPU work is claimed |
 | Payload size bound (ABL ramdisk-to-DTB gap 14,589,952 B) | obsolete: the UEFI boot chain has no ABL DTB gap; payload sizing becomes `board.toml [payload] size_mib` |
 
@@ -144,6 +144,23 @@ Temporary boots and any partition writes need explicit prior approval;
 preserve bootloader, recovery, modem, persist and backups. Compilation
 success is never presented as hardware execution.
 
+## 2026-10-31: bounded protocol cores for the next hardware stages
+
+Added `drivers/PolarisTransportContracts`, a Darwin-buildable, board-gated
+service plus transport-independent protocol headers for the Polaris WCN399x
+H4/WLFW path, PN54x NCI control exchange, and Qualcomm camera CCI reads. These
+cores are based on the local Polaris XNU/WOA research records and the
+UniXNU-sheng protocol references. Host tests cover framing, bounds and failure
+states. The service only publishes that the cores are linked when
+`polaris-transport-probe=1` is supplied; it performs no MMIO, UART, I2C, CCI,
+SPMI, GPIO, DMA, firmware, network, NFC or camera operation and keeps
+`darwin-driver-ready=false`.
+
+This is a dependency layer for later board-owned transports, not a claim that
+Wi-Fi, Bluetooth, NFC or camera work on the phone. The IOHID ABI notes from the
+UniXNU HID reference also remain carrier-specific; no guessed `IOHIDDevice`
+vtable is linked into Polaris.
+
 ## Hardware bring-up day 2 (2026-10-24 afternoon): the kernel runs to its designed end
 
 User-approved session; every boot was a temporary `fastboot boot`, the only
@@ -229,3 +246,90 @@ the scheduler evidence above supersedes it.
 - `.github/workflows/disasm.yml`: on-demand kernel disassembly for probes.
 - `board.toml`: `serial=0` (no debug UART on this phone; the old `serial=3`
   placeholder was never the death cause but is corrected anyway).
+
+## 2026-10-31: host-side Synaptics RMI4 protocol reference
+
+Added `drivers/PolarisTouch/synaptics_rmi4_protocol.py` and its unit tests as a
+pure protocol layer. It decodes six-byte RMI4 PDT entries, walks bounded page
+snapshots downward from `0xE9`, locates F12, and parses the eight-byte
+single-contact sample used by the checked-in `edk2-msm` reference. The parser
+has no I2C, GPIO, IRQ, MMIO, DMA, firmware, or IOKit side effects; a zero
+status is represented as a release frame and active coordinates may be
+range-checked.
+
+The host test command was run with the bundled Python runtime:
+
+```powershell
+& "$env:USERPROFILE\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" `
+  -m unittest tests.test_synaptics_rmi4_protocol -v
+```
+
+Result: **7 tests passed**. No Darwin 23 compiler or temporary Polaris boot was
+run in this step. The hardware contract and package gates therefore remain
+unchanged: touch is still `research-only`/disabled and generated packages are
+not flashable by default. The WOA/EDK2 RMI4/S3708 label and the retired chain's
+S3330 label are retained as unresolved identity evidence rather than merged
+into a claim of verified silicon.
+
+## 2026-10-31: Darwin contract-only touch stage and host GENI core
+
+Added the board-gated `drivers/PolarisSynapticsTouch` Darwin 23 source component.
+It is linked into the platform archive list but only publishes a read-only
+resource contract when `polaris-rmi4-touch=1|2` is explicitly supplied and the
+DT identifies `xiaomi,polaris` plus `qcom,sdm845`. It performs no I2C, GPIO,
+IRQ, MMIO, DMA, firmware, or IOHID operation and reports
+`darwin-driver-ready=false`. The RMI4 identity remains unresolved between the
+retired chain's S3330 evidence and the local WOA/EDK2 S3708 path.
+
+Added `drivers/PolarisGeniI2c` as a board-independent, host-testable Qualcomm
+GENI I2C FIFO state machine. It is transport input only: no Polaris MMIO,
+clock, GPIO, interrupt, or device access is wired into this repository.
+
+The CI host workflow now compiles the RMI4 and transport C++ host tests plus
+`tests/polaris_geni_i2c_host.c`. On this Windows host, the bundled Python test suite
+ran with **54 tests: 53 passed, 1 skipped** (the GENI C test is skipped because no C
+compiler is installed), `py_compile` passed, and
+`scripts/check-polaris-driver-contract.py` passed with **verified=0/10**.
+No Darwin 23 compiler, temporary boot, fastboot operation, or hardware access
+was performed for this work; touch remains research-only/disabled and package
+output remains non-flashable.
+
+## 2026-10-31: metadata-only WOA evidence import
+
+`scripts/import-polaris-woa-evidence.py` now produces
+`research/polaris-woa-evidence.json` from the local WOA-Drivers checkout and
+the Polaris vendor-evidence directory. The manifest records subsystem names,
+source paths, revisions, file names and classifications, but never copies or
+reads the contents of Windows `.sys`/`.dll` files or vendor firmware. Every
+entry is marked `darwin_reusable=false`, `copied=false`, and the manifest is
+explicitly `flashable=false`. The GitHub Actions host job checks out
+WOA-Drivers only to generate the same metadata artifact; it does not upload
+the driver binaries.
+
+## 2026-10-31: local Polaris driver input bundle
+
+Added `scripts/make-polaris-driver-bundle.py`. It hashes the checked-in Darwin
+source components and can hash user-supplied MIUI/WOA firmware candidates. The
+default path is metadata-only; `--copy-vendor` must be supplied explicitly and
+only copies local input files into an ignored output directory. The manifest
+always remains `flashable=false`, `hardware_tested=false`, and marks firmware
+as `darwin_driver=false`. CI creates the metadata bundle as a host artifact
+without copying proprietary inputs.
+
+## 2026-10-31: WOA Polaris checklist evidence
+
+The WOA evidence importer now records the local `woa-polaris` status checklist
+as a SHA-256 plus parsed Windows-only feature flags.  This makes the board
+bring-up evidence reviewable without treating Windows `.sys`/`.dll` files or
+firmware as Darwin drivers.  The mapping and porting boundary are documented
+in `docs/POLARIS-WOA-EVIDENCE.md`; the flashability gate remains closed.
+
+The local EDK2 reference also contains Polaris-specific Synaptics RMI4 and
+IMX363 camera bring-up code.  `docs/POLARIS-EDK2-PORTING-EVIDENCE.md` records
+its bounded touch reset/PDT/F12 sequence and camera probe/power resources as
+porting evidence.  The UEFI implementations themselves are not linked into
+Darwin.
+
+The CCI contract now includes a bounded IMX363 ID probe descriptor (7-bit
+address `0x34`, register `0x0016`, expected ID `0x0363`, 400 kHz) derived from
+that evidence.  It remains protocol-only and does not open the camera gate.

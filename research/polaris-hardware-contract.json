@@ -44,7 +44,7 @@
     "touch": {
       "status": "candidate",
       "enabled": false,
-      "hardware": "Synaptics S3330 over I2C",
+      "hardware": "Synaptics RMI4 touch controller over I2C (old chain: S3330; WOA/EDK2 path: S3708)",
       "darwin_driver": null,
       "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
       "blocker": "The old XNU 8796 shim path cannot be copied into Darwin 23 without a new HID service."

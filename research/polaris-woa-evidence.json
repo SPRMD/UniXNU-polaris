@@ -1,0 +1,1487 @@
+{
+  "board": "xiaomi,polaris",
+  "darwin_porting_rule": "Use names and protocol/resource facts as evidence. Implement a board-owned Darwin transport and validate on Polaris before enabling it.",
+  "generated_at": "2026-10-30T21:55:15.593337+00:00",
+  "policy": {
+    "android_or_windows_binaries_are_darwin_drivers": false,
+    "copy_vendor_binaries": false,
+    "flashable": false,
+    "metadata_only": true
+  },
+  "schema": 1,
+  "soc": "Qualcomm SDM845",
+  "sources": {
+    "vendor_evidence": {
+      "file_count": 20,
+      "path": "proprietary/polaris-vendor-evidence",
+      "present": true
+    },
+    "woa_drivers": {
+      "path": "../../external/WOA-Drivers",
+      "present": true,
+      "revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "woa_polaris_docs": {
+      "path": "research/external/woa-polaris",
+      "present": true,
+      "revision": "b32b5fb9a9952b499c4c1d5c38f39a7733244040",
+      "status_features": {
+        "accelerometer": {
+          "label": "Accelerometer",
+          "working_on_windows": true
+        },
+        "audio": {
+          "label": "Audio",
+          "working_on_windows": false
+        },
+        "battery_status": {
+          "label": "Battery status",
+          "working_on_windows": true
+        },
+        "bluetooth": {
+          "label": "Bluetooth",
+          "working_on_windows": true
+        },
+        "brightness": {
+          "label": "Brightness",
+          "working_on_windows": true
+        },
+        "camera": {
+          "label": "Camera",
+          "working_on_windows": false
+        },
+        "charging_usb": {
+          "label": "Charging (USB)",
+          "working_on_windows": true
+        },
+        "charging_wireless": {
+          "label": "Charging (Wireless)",
+          "working_on_windows": true
+        },
+        "display": {
+          "label": "Display",
+          "working_on_windows": true
+        },
+        "fingerprint": {
+          "label": "Fingerprint",
+          "working_on_windows": false
+        },
+        "flashlight": {
+          "label": "Flashlight",
+          "working_on_windows": false
+        },
+        "gps": {
+          "label": "GPS",
+          "working_on_windows": true
+        },
+        "gpu": {
+          "label": "GPU",
+          "working_on_windows": true
+        },
+        "gyroscope": {
+          "label": "Gyroscope",
+          "working_on_windows": true
+        },
+        "light_sensor": {
+          "label": "Light sensor",
+          "working_on_windows": true
+        },
+        "lte": {
+          "label": "LTE",
+          "working_on_windows": true
+        },
+        "nfc": {
+          "label": "NFC",
+          "working_on_windows": true
+        },
+        "proximity": {
+          "label": "Proximity",
+          "working_on_windows": true
+        },
+        "sms": {
+          "label": "SMS",
+          "working_on_windows": false
+        },
+        "touchscreen": {
+          "label": "Touchscreen",
+          "working_on_windows": true
+        },
+        "ufs": {
+          "label": "UFS",
+          "working_on_windows": true
+        },
+        "usb": {
+          "label": "USB",
+          "working_on_windows": true
+        },
+        "wi_fi": {
+          "label": "Wi-Fi",
+          "working_on_windows": true
+        }
+      },
+      "status_file": "guide/status.md",
+      "status_sha256": "b35e1199ba96d88890fc9ddce8bf509831b1bf02907486979a7585a87faa57a7"
+    }
+  },
+  "subsystems": {
+    "battery": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "reference-only",
+      "files": [
+        {
+          "bytes": 6384,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcbattmngr850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/FG/BattMgr/qcbattmngr850.cat"
+        },
+        {
+          "bytes": 6114,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcbattmngr850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/FG/BattMgr/qcbattmngr850.inf_"
+        },
+        {
+          "bytes": 171520,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcbattmngr850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/FG/BattMgr/qcbattmngr850.sys"
+        }
+      ],
+      "firmware_candidates": [],
+      "hardware": "PMI8998 / SDM845 fuel gauge",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "bluetooth": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "reference-only",
+      "files": [
+        {
+          "bytes": 56180,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crbtfw20.tlv",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crbtfw20.tlv"
+        },
+        {
+          "bytes": 158652,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crbtfw21.tlv",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crbtfw21.tlv"
+        },
+        {
+          "bytes": 3936,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crnv20.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crnv20.bin"
+        },
+        {
+          "bytes": 3936,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crnv20_chain2.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crnv20_chain2.bin"
+        },
+        {
+          "bytes": 4552,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crnv21.b3c",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crnv21.b3c"
+        },
+        {
+          "bytes": 4516,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crnv21.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crnv21.bin"
+        },
+        {
+          "bytes": 4524,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crnv21_chain2.b3c",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crnv21_chain2.b3c"
+        },
+        {
+          "bytes": 4524,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "crnv21_chain2.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/crnv21_chain2.bin"
+        },
+        {
+          "bytes": 9660,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcbtfmuart850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/qcbtfmuart850.cat"
+        },
+        {
+          "bytes": 8684,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcbtfmuart850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/qcbtfmuart850.inf_"
+        },
+        {
+          "bytes": 326864,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcbtfmuart850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Bluetooth/UART/qcbtfmuart850.sys"
+        }
+      ],
+      "firmware_candidates": [
+        "crbtfw20.tlv",
+        "crnv20.bin",
+        "crnv21.bin"
+      ],
+      "hardware": "Qualcomm WCN3998 Bluetooth over UART",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "camera": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "reference-only",
+      "files": [
+        {
+          "bytes": 179664,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "com.qti.sensormodule.imx363.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/Camera/RearSensor/com.qti.sensormodule.imx363.bin"
+        },
+        {
+          "bytes": 12176433,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "com.qti.tuned.default.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/Camera/RearSensor/com.qti.tuned.default.bin"
+        },
+        {
+          "bytes": 5956822,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "com.qti.tuned.semco_imx363.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/Camera/RearSensor/com.qti.tuned.semco_imx363.bin"
+        },
+        {
+          "bytes": 13285,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamrearsensor850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/Camera/RearSensor/qccamrearsensor850.cat"
+        },
+        {
+          "bytes": 7486,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamrearsensor850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/Camera/RearSensor/qccamrearsensor850.inf_"
+        },
+        {
+          "bytes": 96760,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamrearsensor850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/Camera/RearSensor/qccamrearsensor850.sys"
+        },
+        {
+          "bytes": 435552,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamavs850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/AVStream/qccamavs850.sys"
+        },
+        {
+          "bytes": 10183,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamavscls850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/AVStream/qccamavscls850.cat"
+        },
+        {
+          "bytes": 123310,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamavscls850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/AVStream/qccamavscls850.inf_"
+        },
+        {
+          "bytes": 42896,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "titan17x_usecases.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/AVStream/titan17x_usecases.bin"
+        },
+        {
+          "bytes": 12176433,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "com.qti.tuned.default.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CamP/com.qti.tuned.default.bin"
+        },
+        {
+          "bytes": 11201,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamplatform850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CamP/qccamplatform850.cat"
+        },
+        {
+          "bytes": 5236,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamplatform850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CamP/qccamplatform850.inf_"
+        },
+        {
+          "bytes": 115888,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamplatform850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CamP/qccamplatform850.sys"
+        },
+        {
+          "bytes": 10717,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccammipicsi850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CSI/qccammipicsi850.cat"
+        },
+        {
+          "bytes": 4372,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccammipicsi850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CSI/qccammipicsi850.inf_"
+        },
+        {
+          "bytes": 70944,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccammipicsi850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/CSI/qccammipicsi850.sys"
+        },
+        {
+          "bytes": 9793,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamflash850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/Flash/qccamflash850.cat"
+        },
+        {
+          "bytes": 3614,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamflash850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/Flash/qccamflash850.inf_"
+        },
+        {
+          "bytes": 74056,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamflash850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/Flash/qccamflash850.sys"
+        },
+        {
+          "bytes": 3272184,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "CAMERA_ICP_AAAAAA.elf",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/ISP/CAMERA_ICP_AAAAAA.elf"
+        },
+        {
+          "bytes": 11145,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamisp850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/ISP/qccamisp850.cat"
+        },
+        {
+          "bytes": 3770,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamisp850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/ISP/qccamisp850.inf_"
+        },
+        {
+          "bytes": 229976,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamisp850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/ISP/qccamisp850.sys"
+        },
+        {
+          "bytes": 12089,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamjpege850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/JPEGE/qccamjpege850.cat"
+        },
+        {
+          "bytes": 9068,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamjpege850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/JPEGE/qccamjpege850.inf_"
+        },
+        {
+          "bytes": 185616,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qccamjpege850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/JPEGE/qccamjpege850.sys"
+        },
+        {
+          "bytes": 4147624,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "QcDeviceMFT850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/JPEGE/QcDeviceMFT850.dll"
+        },
+        {
+          "bytes": 330680,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "QcWICEncoder850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/JPEGE/QcWICEncoder850.dll"
+        },
+        {
+          "bytes": 270784,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "QcWICEncoderARM850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/Camera/JPEGE/QcWICEncoderARM850.dll"
+        }
+      ],
+      "firmware_candidates": [
+        "com.qti.sensormodule.imx363.bin",
+        "CAMERA_ICP_AAAAAA.elf"
+      ],
+      "hardware": "Sony IMX363 rear sensor; Qualcomm SDM845 camera stack",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "gpio": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "reference-only",
+      "files": [
+        {
+          "bytes": 9663,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcgpio.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/GPIO/qcgpio.cat"
+        },
+        {
+          "bytes": 46704,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcgpio.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/GPIO/qcgpio.sys"
+        },
+        {
+          "bytes": 6484,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcgpio850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Platform/GPIO/qcgpio850.inf_"
+        }
+      ],
+      "firmware_candidates": [],
+      "hardware": "Qualcomm SDM845 GPIO controller",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "gpu": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "reference-only",
+      "files": [
+        {
+          "bytes": 1891304,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx11arm32um850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx11arm32um850.dll"
+        },
+        {
+          "bytes": 6621528,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx11arm64xum850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx11arm64xum850.dll"
+        },
+        {
+          "bytes": 3648720,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx11chpeum850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx11chpeum850.dll"
+        },
+        {
+          "bytes": 2443968,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx11x86um850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx11x86um850.dll"
+        },
+        {
+          "bytes": 5605464,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx12arm32um850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx12arm32um850.dll"
+        },
+        {
+          "bytes": 14686152,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx12arm64xum850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx12arm64xum850.dll"
+        },
+        {
+          "bytes": 7548280,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx12chpeum850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx12chpeum850.dll"
+        },
+        {
+          "bytes": 6596632,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx12x86um850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx12x86um850.dll"
+        },
+        {
+          "bytes": 1053493,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx850.cat"
+        },
+        {
+          "bytes": 70308,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdx850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdx850.inf_"
+        },
+        {
+          "bytes": 8484968,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxarm32compiler850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxarm32compiler850.DLL"
+        },
+        {
+          "bytes": 24445424,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxarm64xcompiler850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxarm64xcompiler850.DLL"
+        },
+        {
+          "bytes": 14281944,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxchpecompiler850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxchpecompiler850.dll"
+        },
+        {
+          "bytes": 2960688,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxkm850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxkm850.sys"
+        },
+        {
+          "bytes": 14256,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxkmsuc850.mbn",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxkmsuc850.mbn"
+        },
+        {
+          "bytes": 949720,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxsdarm32.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxsdarm32.dll"
+        },
+        {
+          "bytes": 5326640,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxsdarm64x.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxsdarm64x.dll"
+        },
+        {
+          "bytes": 3134704,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxsdchpe.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxsdchpe.dll"
+        },
+        {
+          "bytes": 1337616,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxsdx86.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxsdx86.dll"
+        },
+        {
+          "bytes": 10512720,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcdxx86compiler850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcdxx86compiler850.DLL"
+        },
+        {
+          "bytes": 56224,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qchdcpumd850.dll",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qchdcpumd850.dll"
+        },
+        {
+          "bytes": 1014552,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencarm64xmfth264850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencarm64xmfth264850.DLL"
+        },
+        {
+          "bytes": 1014552,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencarm64xmfthevc850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencarm64xmfthevc850.DLL"
+        },
+        {
+          "bytes": 191264,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencarm64xum850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencarm64xum850.DLL"
+        },
+        {
+          "bytes": 395704,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencmfth264850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencmfth264850.DLL"
+        },
+        {
+          "bytes": 395704,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencmfthevc850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencmfthevc850.DLL"
+        },
+        {
+          "bytes": 74288,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencum850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencum850.DLL"
+        },
+        {
+          "bytes": 441120,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencx86mfth264850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencx86mfth264850.DLL"
+        },
+        {
+          "bytes": 441120,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencx86mfthevc850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencx86mfthevc850.DLL"
+        },
+        {
+          "bytes": 85808,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvidencx86um850.DLL",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvidencx86um850.DLL"
+        },
+        {
+          "bytes": 898156,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcvss850.mbn",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/GPU/qcvss850.mbn"
+        }
+      ],
+      "firmware_candidates": [
+        "a630_gmu.bin",
+        "a630_sqe.fw",
+        "a630_zap.mdt"
+      ],
+      "hardware": "Qualcomm Adreno 630 / SDM845",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "nfc": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "cross-device reference-only",
+      "files": [
+        {
+          "bytes": 6339,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "nxpnfcclientdriver.cat",
+          "path": "external/WOA-Drivers/components/AnySoC/NFC/nxpnfcclientdriver.cat"
+        },
+        {
+          "bytes": 187912,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "NxpNfcClientDriver.dll",
+          "path": "external/WOA-Drivers/components/AnySoC/NFC/NxpNfcClientDriver.dll"
+        },
+        {
+          "bytes": 6322,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "NxpNfcClientDriver.inf_",
+          "path": "external/WOA-Drivers/components/AnySoC/NFC/NxpNfcClientDriver.inf_"
+        }
+      ],
+      "firmware_candidates": [],
+      "hardware": "NXP PN553-class NFC (cross-device WOA reference)",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "touch": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "protocol/reference-only",
+      "files": [
+        {
+          "bytes": 2535,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "synapticstouch.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/SynapticsTouch/synapticstouch.cat"
+        },
+        {
+          "bytes": 5144,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "SynapticsTouch.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/SynapticsTouch/SynapticsTouch.inf_"
+        },
+        {
+          "bytes": 77184,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "SynapticsTouch.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Xiaomi/Polaris/SynapticsTouch/SynapticsTouch.sys"
+        }
+      ],
+      "firmware_candidates": [
+        "SynapticsTouch.sys"
+      ],
+      "hardware": "Synaptics RMI4/S3708 (WOA) and legacy S3330 evidence",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    },
+    "wifi": {
+      "available": true,
+      "copied": false,
+      "darwin_driver": false,
+      "darwin_status": "reference-only",
+      "files": [
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.102",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.102"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.104",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.104"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.105",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.105"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.106",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.106"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.107",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.107"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.108",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.108"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.109",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.109"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b04",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b04"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b07",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b07"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b09",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b09"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b0a",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b0a"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b0b",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b0b"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b0d",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b0d"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b0e",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b0e"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b0f",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b0f"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b14",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b14"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b15",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b15"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b30",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b30"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b31",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b31"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b32",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b32"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b33",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b33"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b34",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b34"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b35",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b35"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b36",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b36"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b37",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b37"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b38",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b38"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b3d",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b3d"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.b3f",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.b3f"
+        },
+        {
+          "bytes": 19152,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.bin",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.bin"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.cxo",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.cxo"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.qor",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.qor"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.t0a",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.t0a"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.t0b",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.t0b"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.t1a",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.t1a"
+        },
+        {
+          "bytes": 19152,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "bdwlan.t1b",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/bdwlan.t1b"
+        },
+        {
+          "bytes": 521711,
+          "classification": "unclassified-input",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "Data.msc",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/Data.msc"
+        },
+        {
+          "bytes": 13470,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcwlan850.cat",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/qcwlan850.cat"
+        },
+        {
+          "bytes": 22884,
+          "classification": "configuration-or-reference",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcwlan850.inf_",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/qcwlan850.inf_"
+        },
+        {
+          "bytes": 2481952,
+          "classification": "vendor-binary-or-firmware",
+          "copied": false,
+          "darwin_reusable": false,
+          "name": "qcwlan850.sys",
+          "path": "external/WOA-Drivers/components/SDM845/Device/Generic/WLAN/qcwlan850.sys"
+        }
+      ],
+      "firmware_candidates": [
+        "bdwlan.bin",
+        "bdwlan.*",
+        "WCNSS_qcom_cfg.ini"
+      ],
+      "hardware": "Qualcomm WCN3998 runtime / WCN3990 DT naming",
+      "source": "edk2-porting/WOA-Drivers",
+      "source_revision": "524346372da2091e905164841317f35c35947a82"
+    }
+  },
+  "vendor_evidence_files": [
+    {
+      "bytes": 21800,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__device_features__polaris.xml",
+      "path": "proprietary/polaris-vendor-evidence/etc__device_features__polaris.xml"
+    },
+    {
+      "bytes": 5876,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__dsi_ebbg_fhd_ft8716_video_display_mi.xml",
+      "path": "proprietary/polaris-vendor-evidence/etc__dsi_ebbg_fhd_ft8716_video_display_mi.xml"
+    },
+    {
+      "bytes": 5898,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__dsi_jdi_fhd_nt35596s_video_display_mi.xml",
+      "path": "proprietary/polaris-vendor-evidence/etc__dsi_jdi_fhd_nt35596s_video_display_mi.xml"
+    },
+    {
+      "bytes": 606260,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__hbtp__hbtpcfg.dat",
+      "path": "proprietary/polaris-vendor-evidence/etc__hbtp__hbtpcfg.dat"
+    },
+    {
+      "bytes": 10728,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__hbtp__loader.cfg",
+      "path": "proprietary/polaris-vendor-evidence/etc__hbtp__loader.cfg"
+    },
+    {
+      "bytes": 40960,
+      "classification": "vendor-binary-or-firmware",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__hbtp__qtc800h.bin",
+      "path": "proprietary/polaris-vendor-evidence/etc__hbtp__qtc800h.bin"
+    },
+    {
+      "bytes": 20480,
+      "classification": "vendor-binary-or-firmware",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__hbtp__qtc800s_dsp.bin",
+      "path": "proprietary/polaris-vendor-evidence/etc__hbtp__qtc800s_dsp.bin"
+    },
+    {
+      "bytes": 11125,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__init.panel_info.sh",
+      "path": "proprietary/polaris-vendor-evidence/etc__init.panel_info.sh"
+    },
+    {
+      "bytes": 210,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__init__android.hardware.bluetooth@1.0-service-qti.rc",
+      "path": "proprietary/polaris-vendor-evidence/etc__init__android.hardware.bluetooth@1.0-service-qti.rc"
+    },
+    {
+      "bytes": 38214,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__init__hw__init.qcom.rc",
+      "path": "proprietary/polaris-vendor-evidence/etc__init__hw__init.qcom.rc"
+    },
+    {
+      "bytes": 19308,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__init__hw__init.target.rc",
+      "path": "proprietary/polaris-vendor-evidence/etc__init__hw__init.target.rc"
+    },
+    {
+      "bytes": 120,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__init__init.qti.fm.rc",
+      "path": "proprietary/polaris-vendor-evidence/etc__init__init.qti.fm.rc"
+    },
+    {
+      "bytes": 1687,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__init__vendor.nxp.hardware.nfc@1.1-service.rc",
+      "path": "proprietary/polaris-vendor-evidence/etc__init__vendor.nxp.hardware.nfc@1.1-service.rc"
+    },
+    {
+      "bytes": 14158,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__libnfc-mtp_default.conf",
+      "path": "proprietary/polaris-vendor-evidence/etc__libnfc-mtp_default.conf"
+    },
+    {
+      "bytes": 15909,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__libnfc-nci.conf",
+      "path": "proprietary/polaris-vendor-evidence/etc__libnfc-nci.conf"
+    },
+    {
+      "bytes": 21475,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__libnfc-nxp.conf",
+      "path": "proprietary/polaris-vendor-evidence/etc__libnfc-nxp.conf"
+    },
+    {
+      "bytes": 38057,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__vintf__manifest.xml",
+      "path": "proprietary/polaris-vendor-evidence/etc__vintf__manifest.xml"
+    },
+    {
+      "bytes": 15963,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__wifi__WCNSS_qcom_cfg.ini",
+      "path": "proprietary/polaris-vendor-evidence/etc__wifi__WCNSS_qcom_cfg.ini"
+    },
+    {
+      "bytes": 106,
+      "classification": "unclassified-input",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "etc__wifi__wpa_supplicant_overlay.conf",
+      "path": "proprietary/polaris-vendor-evidence/etc__wifi__wpa_supplicant_overlay.conf"
+    },
+    {
+      "bytes": 2118,
+      "classification": "configuration-or-reference",
+      "copied": false,
+      "darwin_reusable": false,
+      "name": "MANIFEST.txt",
+      "path": "proprietary/polaris-vendor-evidence/MANIFEST.txt"
+    }
+  ],
+  "woa_polaris_status": {
+    "darwin_driver": false,
+    "features": {
+      "accelerometer": {
+        "label": "Accelerometer",
+        "working_on_windows": true
+      },
+      "audio": {
+        "label": "Audio",
+        "working_on_windows": false
+      },
+      "battery_status": {
+        "label": "Battery status",
+        "working_on_windows": true
+      },
+      "bluetooth": {
+        "label": "Bluetooth",
+        "working_on_windows": true
+      },
+      "brightness": {
+        "label": "Brightness",
+        "working_on_windows": true
+      },
+      "camera": {
+        "label": "Camera",
+        "working_on_windows": false
+      },
+      "charging_usb": {
+        "label": "Charging (USB)",
+        "working_on_windows": true
+      },
+      "charging_wireless": {
+        "label": "Charging (Wireless)",
+        "working_on_windows": true
+      },
+      "display": {
+        "label": "Display",
+        "working_on_windows": true
+      },
+      "fingerprint": {
+        "label": "Fingerprint",
+        "working_on_windows": false
+      },
+      "flashlight": {
+        "label": "Flashlight",
+        "working_on_windows": false
+      },
+      "gps": {
+        "label": "GPS",
+        "working_on_windows": true
+      },
+      "gpu": {
+        "label": "GPU",
+        "working_on_windows": true
+      },
+      "gyroscope": {
+        "label": "Gyroscope",
+        "working_on_windows": true
+      },
+      "light_sensor": {
+        "label": "Light sensor",
+        "working_on_windows": true
+      },
+      "lte": {
+        "label": "LTE",
+        "working_on_windows": true
+      },
+      "nfc": {
+        "label": "NFC",
+        "working_on_windows": true
+      },
+      "proximity": {
+        "label": "Proximity",
+        "working_on_windows": true
+      },
+      "sms": {
+        "label": "SMS",
+        "working_on_windows": false
+      },
+      "touchscreen": {
+        "label": "Touchscreen",
+        "working_on_windows": true
+      },
+      "ufs": {
+        "label": "UFS",
+        "working_on_windows": true
+      },
+      "usb": {
+        "label": "USB",
+        "working_on_windows": true
+      },
+      "wi_fi": {
+        "label": "Wi-Fi",
+        "working_on_windows": true
+      }
+    },
+    "note": "Windows-on-ARM checklist evidence only; it does not qualify a Darwin driver or a flashable package.",
+    "sha256": "b35e1199ba96d88890fc9ddce8bf509831b1bf02907486979a7585a87faa57a7",
+    "source": "woa-polaris/guide/status.md"
+  }
+}

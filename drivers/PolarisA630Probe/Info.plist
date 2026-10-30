@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleIdentifier</key><string>org.unixnu.polaris.PolarisA630Probe</string>
+  <key>CFBundleName</key><string>PolarisA630Probe</string>
+  <key>CFBundleExecutable</key><string>PolarisA630Probe</string>
+  <key>CFBundlePackageType</key><string>KEXT</string>
+  <key>CFBundleVersion</key><string>0.1.0</string>
+  <key>OSBundleRequired</key><string>Root</string>
+  <key>IOKitPersonalities</key><dict>
+    <key>Polaris Adreno 630 resource probe</key><dict>
+      <key>IOClass</key><string>PolarisA630Probe</string>
+      <key>IOProviderClass</key><string>IOPlatformDevice</string>
+      <key>IONameMatch</key><string>arm-io</string>
+      <key>IOProbeScore</key><integer>25</integer>
+    </dict>
+  </dict>
+</dict></plist>

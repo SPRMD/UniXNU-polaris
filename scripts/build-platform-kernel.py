@@ -52,6 +52,19 @@ def main():
     shutil.copyfile(config, ctx.config_path)
     modules = feeds.resolve(ctx)
     references = set(cli.REFERENCES['kernel'])
+    # The iPadOS-stage Polaris profile enables the local SDM845 UFS archive.
+    # UniXNU's pinned reference list predates IOStorageFamily, so register the
+    # exact public Apple source explicitly when the storage feature is selected.
+    # The source is used only to provide the base storage ABI; it does not
+    # imply that a phone root mount has been validated.
+    if ctx.config.get('XNU_NATIVE_UFS', False):
+        references.add('IOStorageFamily')
+        modules[('refer', 'IOStorageFamily')] = feeds.Module(
+            'refer', 'IOStorageFamily', None, 'git', {
+                'git': 'https://github.com/apple-oss-distributions/IOStorageFamily.git',
+                'ref': 'main',
+                'commit': 'e45fbe30a7879e0b16e26dddb78538f1b00e0bff',
+            })
     feeds.fetch(ctx, modules, only=references)
     tree.assemble(ctx, modules)
     # UniXNU resolves patch sets as whole directories. Materialize the pinned
@@ -100,7 +113,21 @@ def main():
                       if 'error:' in line or 'No rule to make target' in line]
             print('\n'.join(errors[:20]), file=sys.stderr)
         raise SystemExit('Bootstrap did not produce required XNU records: ' + ', '.join(missing))
+    if ctx.config.get('XNU_NATIVE_UFS', False):
+        storage_headers = ctx.tree / 'build/storage-abi/include/IOKit/storage'
+        if (ctx.tree / 'refer/IOStorageFamily').is_dir() and not storage_headers.is_dir():
+            run(['python3', ctx.tree / 'scripts/prepare-storage-headers.py'], cwd=ctx.tree,
+                env=env, log_file=ctx.logs / 'storage-headers.log')
     kernel.build_archives(ctx, env)
+    if ctx.config.get('XNU_NATIVE_UFS', False):
+        run(['python3', ctx.tree / 'scripts/build-storage-base.py'], cwd=ctx.tree,
+            env=env, log_file=ctx.logs / 'storage-base.log')
+        storage_base = ctx.tree / 'build/storage-base/libIOBlockStorageDevice.a'
+        if not storage_base.is_file():
+            raise SystemExit(f'NativeUfs storage base archive missing: {storage_base}')
+        existing = env.get('XNU_EXTRA_LD_ARCHIVES', '').strip()
+        env['XNU_EXTRA_LD_ARCHIVES'] = ' '.join(part for part in (existing,
+            f'-Wl,-force_load,{storage_base}') if part)
     # These two Polaris services are intentionally opt-in at runtime, but the
     # source-kernel archive must still be force-loaded so its IOKit classes are
     # present in the linked image.  The generic UniXNU link script has no
@@ -109,6 +136,13 @@ def main():
     probe_archives = [
         ctx.tree / 'build/polaris-board-probe/libPolarisBoardProbe.a',
         ctx.tree / 'build/polaris-hardware-services/libPolarisHardwareServices.a',
+        ctx.tree / 'build/polaris-pmic-input/libPolarisPmicInput.a',
+        ctx.tree / 'build/polaris-pmic-runtime/libPolarisPmicRuntime.a',
+        ctx.tree / 'build/polaris-synaptics-touch/libPolarisSynapticsTouch.a',
+        ctx.tree / 'build/polaris-touch-runtime/libPolarisTouchRuntime.a',
+        ctx.tree / 'build/polaris-transport-contracts/libPolarisTransportContracts.a',
+        ctx.tree / 'build/polaris-a630-probe/libPolarisA630Probe.a',
+        ctx.tree / 'build/polaris-runtime/libPolarisRuntime.a',
     ]
     extra_archives = [path for path in probe_archives if path.is_file()]
     if extra_archives:
@@ -130,12 +164,19 @@ def main():
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source, destination)
     prelinked = None
-    if ctx.board.get('kernel', {}).get('prelink'):
+    # The board keeps one prelink recipe for the iPadOS-stage profiles, but the
+    # ordinary platform profile must remain a plain source kernel. Select the
+    # expensive prelink pass through the defconfig's crypto bootstrap mode.
+    if (ctx.board.get('kernel', {}).get('prelink') and
+            ctx.config.get('XNU_CRYPTO_BOOTSTRAP') == 'prelinked'):
         print('Prelink pass: composing with the original iPadOS 17 kernelcache', flush=True)
         prelinked = kernel.prelink(ctx)
         print(f'PASS: prelinked kernel {prelinked} sha256 '
               f'{hashlib.sha256(prelinked.read_bytes()).hexdigest()}', flush=True)
-    report = {'kernel_sha256': hashlib.sha256(data).hexdigest(), 'kernel_bytes': len(data),
+    final_data = destination.read_bytes()
+    report = {'kernel_sha256': hashlib.sha256(final_data).hexdigest(),
+              'kernel_bytes': len(final_data),
+              'source_kernel_sha256': hashlib.sha256(data).hexdigest(),
               'unixnu_revision': revision, 'bootstrap_link_failed': bootstrap_failed,
               'final_configured_link_passed': True,
               'original_components_prelinked': prelinked is not None,

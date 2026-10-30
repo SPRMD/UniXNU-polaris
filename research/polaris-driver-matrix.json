@@ -32,10 +32,10 @@
       "evidence": "DarwinBoot consumes UEFI GOP; no polaris Darwin 23 display driver"
     },
     "touch": {
-      "status": "research-only",
+      "status": "runtime-experimental",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "Synaptics S3330/I2C evidence belongs to the retired XNU 8796 chain"
+      "evidence": "GPIO33/GPIO34 RMI4 runtime transport adapted from the retired chain; no independent Darwin 23 temporary-boot log or HID sink"
     },
     "gpu_adreno630": {
       "status": "not-implemented",
@@ -68,16 +68,16 @@
       "evidence": "NCI transport and secure-element integration are not implemented"
     },
     "buttons": {
-      "status": "firmware-only",
+      "status": "runtime-experimental",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "edk2-msm ButtonsDxe is external to this UniXNU tree"
+      "evidence": "PolarisPmicRuntime read-only PM8998 PON/GPIO6 polling; HID sink and temporary Darwin validation remain open"
     },
     "battery": {
-      "status": "not-implemented",
+      "status": "runtime-experimental",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "PMIC/fuel-gauge power source publication is not implemented"
+      "evidence": "PolarisPmicRuntime read-only PMI8998 revision-gated fuel-gauge source; charger state and temporary Darwin validation remain open"
     },
     "fingerprint": {
       "status": "disabled",

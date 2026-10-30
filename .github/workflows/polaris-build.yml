@@ -14,6 +14,7 @@ on:
         options:
           - polaris_defconfig
           - polaris_prelink_defconfig
+          - polaris_ipados17_defconfig
           - polaris_display_defconfig
 
 permissions:
@@ -40,6 +41,35 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3 clang lld llvm unifdef ninja-build cmake
 
+      - name: Checkout WOA metadata source
+        uses: actions/checkout@v4
+        with:
+          repository: edk2-porting/WOA-Drivers
+          path: out/WOA-Drivers
+          fetch-depth: 1
+          lfs: false
+
+      - name: Checkout Polaris WOA status source
+        uses: actions/checkout@v4
+        with:
+          repository: n00b69/woa-polaris
+          path: out/woa-polaris
+          fetch-depth: 1
+          lfs: false
+
+      - name: Generate metadata-only WOA evidence
+        run: |
+          python3 scripts/import-polaris-woa-evidence.py \
+            --woa-root out/WOA-Drivers \
+            --woa-polaris-root out/woa-polaris \
+            --output out/host-tests/polaris-woa-evidence.json
+
+      - name: Assemble source and firmware provenance bundle
+        run: |
+          python3 scripts/make-polaris-driver-bundle.py \
+            --out out/host-tests/polaris-driver-bundle \
+            --vendor-root out/WOA-Drivers
+
       - name: Run repository checks
         run: |
           python3 -m unittest discover -s tests -v
@@ -47,6 +77,23 @@ jobs:
           python3 scripts/check-polaris-driver-contract.py \
             research/polaris-hardware-contract.json \
             --output out/host-tests/polaris-driver-contract.json
+          clang++ -std=c++17 -Wall -Wextra -Werror \
+            tests/synaptics_rmi4_protocol_test.cpp \
+            -o out/host-tests/synaptics_rmi4_protocol_test
+          out/host-tests/synaptics_rmi4_protocol_test
+          clang++ -std=c++17 -Wall -Wextra -Werror \
+            tests/polaris_transport_protocols_test.cpp \
+            -o out/host-tests/polaris_transport_protocols_test
+          out/host-tests/polaris_transport_protocols_test
+          clang++ -std=c++17 -Wall -Wextra -Werror \
+            tests/polaris_pmic_input_test.cpp \
+            -o out/host-tests/polaris_pmic_input_test
+          out/host-tests/polaris_pmic_input_test
+          clang -std=c11 -Wall -Wextra -Werror \
+            tests/polaris_geni_i2c_host.c \
+            drivers/PolarisGeniI2c/PolarisGeniI2c.c \
+            -o out/host-tests/polaris_geni_i2c_host
+          out/host-tests/polaris_geni_i2c_host
           python3 scripts/make-polaris-adt.py --output out/polaris.adt
           python3 scripts/make-polaris-adt.py --output out/polaris-full.adt --ram 8 --cpu-regs 0,0x100,0x200,0x300,0x400,0x500,0x600,0x700
           python3 scripts/check-cpu-prefix.py out/polaris.adt --cmdline "-v serial=3 cpus=1"
@@ -127,6 +174,14 @@ jobs:
       - name: Build source kernel and Polaris drivers
         run: python3 scripts/build-platform-kernel.py --base out/upstream -j 4 --defconfig "$DEFCONFIG"
 
+      - name: Fetch iPadOS stage inputs
+        if: env.DEFCONFIG == 'polaris_ipados17_defconfig'
+        run: |
+          python3 scripts/fetch-ios-stage-inputs.py \
+            --base out/upstream \
+            --out out/native \
+            KernelCache OS Cryptex1,SystemOS StaticTrustCache Cryptex1,SystemTrustCache
+
       - name: Preserve build diagnostics
         if: always()
         run: |
@@ -144,7 +199,15 @@ jobs:
             out/native/polaris/logs/
             out/native/polaris/build/polaris-board-probe/
             out/native/polaris/build/polaris-hardware-services/
+            out/native/polaris/build/polaris-pmic-input/
+            out/native/polaris/build/polaris-pmic-runtime/
+            out/native/polaris/build/polaris-synaptics-touch/
+            out/native/polaris/build/polaris-touch-runtime/
+            out/native/polaris/build/polaris-transport-contracts/
+            out/native/polaris/build/polaris-a630-probe/
+            out/native/polaris/build/polaris-runtime/
             out/native/polaris/tree/build/gop-framebuffer/
+            out/native/ipsw/
             out/native-buildtree.tgz
 
   firmware:
@@ -218,6 +281,7 @@ jobs:
 
   package:
     name: QEMU check and platform artifacts
+    if: ${{ inputs.defconfig != 'polaris_prelink_defconfig' && inputs.defconfig != 'polaris_ipados17_defconfig' }}
     needs: [host, efi, kernel, firmware]
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -246,10 +310,15 @@ jobs:
 
       - name: Validate kernel and assemble ESP directory
         run: |
-          test -f out/kernel/kernel.macho
-          test -f out/kernel/kernel.json
-          python3 scripts/check-platform-kernel.py --kernel out/kernel/kernel.macho --efi out/efi
-          python3 scripts/make-payload-esp.py --kernel out/kernel/kernel.macho --efi out/efi --out out/polaris-esp --cpus 1
+          KERNEL=$(find out/kernel -type f -name kernel.macho -print -quit)
+          test -n "$KERNEL"
+          cp "$KERNEL" out/kernel.macho
+          cp "${KERNEL%.macho}.json" out/kernel.json
+          EFI=$(find out/efi -type f -path '*/efi/Build/Out/AARCH64-DEBUG/UniXNU.efi' -print -quit)
+          test -n "$EFI"
+          EFI_ROOT=${EFI%/efi/Build/Out/AARCH64-DEBUG/UniXNU.efi}
+          python3 scripts/check-platform-kernel.py --kernel out/kernel.macho --efi "$EFI_ROOT"
+          python3 scripts/make-payload-esp.py --kernel out/kernel.macho --efi "$EFI_ROOT" --out out/polaris-esp --cpus 1
 
       - name: Build non-flashable FAT32 platform artifact
         run: |
@@ -257,15 +326,15 @@ jobs:
           mformat -i esp.img -v POLARISESP ::
           mcopy -s -i esp.img out/polaris-esp/EFI ::/
           mdir -i esp.img ::/EFI/UniXNU/Payloads/ | tee listing.txt
-          cp out/kernel/kernel.macho out/polaris-esp/kernel.macho
-          cp out/kernel/kernel.json out/polaris-esp/kernel.json
+          cp out/kernel.macho out/polaris-esp/kernel.macho
+          cp out/kernel.json out/polaris-esp/kernel.json
 
       - name: Assemble guarded one-click package
         run: |
           python3 scripts/make-polaris-package.py \
             --esp out/polaris-esp \
             --esp-image esp.img \
-            --kernel out/kernel/kernel.macho \
+            --kernel out/kernel.macho \
             --firmware out/firmware \
             --out out/polaris-one-click
           test "$(python3 -c 'import json; print(json.load(open("out/polaris-one-click/manifest.json"))["flashable"])')" = "False"
@@ -286,3 +355,79 @@ jobs:
         with:
           name: polaris-one-click-package
           path: out/polaris-one-click/
+
+  ios-stage:
+    name: Experimental iPadOS 17 stage
+    if: ${{ inputs.defconfig == 'polaris_ipados17_defconfig' }}
+    needs: [host, efi, kernel, firmware]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: platform-kernel-results
+          path: out/kernel
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: efi-results
+          path: out/efi
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: polaris-firmware
+          path: out/firmware
+
+      - name: Install iOS-stage tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mtools util-linux python3
+
+      - name: Normalize build artifacts
+        run: |
+          KERNEL=$(find out/kernel -type f -name kernel.macho -print -quit)
+          test -n "$KERNEL"
+          mkdir -p out/ios-inputs
+          cp "$KERNEL" out/ios-inputs/kernel.macho
+          cp "${KERNEL%.macho}.json" out/ios-inputs/kernel.json
+          EFI=$(find out/efi -type f -path '*/efi/Build/Out/AARCH64-DEBUG/UniXNU.efi' -print -quit)
+          test -n "$EFI"
+          EFI_ROOT=${EFI%/efi/Build/Out/AARCH64-DEBUG/UniXNU.efi}
+          printf '%s\n' "$EFI_ROOT" > out/ios-inputs/efi-root.txt
+          find out/kernel -type f \( -name '044-76040-038.dmg' -o -name '044-76034-038.dmg' \) -exec cp {} out/ios-inputs/ \;
+          find out/kernel -type f -name '*.dmg.trustcache' -exec cp {} out/ios-inputs/ \;
+          test -f out/ios-inputs/044-76040-038.dmg
+          test -f out/ios-inputs/044-76034-038.dmg
+          test -f out/ios-inputs/044-76040-038.dmg.trustcache
+          test -f out/ios-inputs/044-76034-038.dmg.trustcache
+
+      - name: Generate Polaris iPad identity ADT
+        run: |
+          python3 scripts/make-polaris-adt.py \
+            --output out/ios-inputs/polaris-ios.adt \
+            --ram 6 --ipad-identity --include-ufs
+
+      - name: Assemble guarded iPadOS stage package
+        run: |
+          EFI_ROOT=$(cat out/ios-inputs/efi-root.txt)
+          python3 scripts/build-ios-stage.py \
+            --kernel out/ios-inputs/kernel.macho \
+            --adt out/ios-inputs/polaris-ios.adt \
+            --efi "$EFI_ROOT" \
+            --static-trust out/ios-inputs/044-76040-038.dmg.trustcache \
+            --system-trust out/ios-inputs/044-76034-038.dmg.trustcache \
+            --os out/ios-inputs/044-76040-038.dmg \
+            --system-os out/ios-inputs/044-76034-038.dmg \
+            --out out/ios-stage \
+            --package out/polaris-ios-one-click
+          test "$(python3 -c 'import json; print(json.load(open("out/polaris-ios-one-click/manifest.json"))["flashable"])')" = "False"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: polaris-ios-stage
+          path: |
+            out/ios-stage/
+            out/polaris-ios-one-click/

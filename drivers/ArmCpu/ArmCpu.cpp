@@ -19,6 +19,9 @@ extern "C" kern_return_t kernel_thread_start (void (*) (void *, wait_result_t), 
 extern "C" void thread_deallocate (thread_t);
 extern "C" thread_t current_thread (void);
 extern "C" kern_return_t thread_terminate (thread_t);
+// The board runtime is force-linked only for the Polaris platform profile.
+// Keep this weak so ArmCpu remains usable in the upstream configurations.
+extern "C" void polaris_runtime_start (IOService *) __attribute__((weak_import));
 
 extern "C" {
 volatile uint32_t armcpu_registered = 0;
@@ -466,6 +469,9 @@ bool ArmCpu::start (IOService *provider)
   gController = controller;
   initCPU (true);
   registerService ();
+  if (polaris_runtime_start != nullptr) {
+    polaris_runtime_start (IOService::getPlatform ());
+  }
   __atomic_store_n (&gBootRegistered, 1U, __ATOMIC_RELEASE);
   drainPending ();
   return true;

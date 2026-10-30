@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleIdentifier</key><string>org.unixnu.polaris.PolarisSynapticsTouch</string>
+  <key>CFBundleName</key><string>PolarisSynapticsTouch</string>
+  <key>CFBundleExecutable</key><string>PolarisSynapticsTouch</string>
+  <key>CFBundlePackageType</key><string>KEXT</string>
+  <key>CFBundleVersion</key><string>0.1.0</string>
+  <key>OSBundleRequired</key><string>Root</string>
+  <key>IOKitPersonalities</key><dict>
+    <key>Polaris Synaptics RMI4 touch contract</key><dict>
+      <key>IOClass</key><string>PolarisSynapticsTouch</string>
+      <key>IOProviderClass</key><string>IOPlatformDevice</string>
+      <key>IOProbeScore</key><integer>30</integer>
+    </dict>
+    <key>Polaris Synaptics RMI4 runtime launcher</key><dict>
+      <key>IOClass</key><string>PolarisSynapticsTouch</string>
+      <key>IOProviderClass</key><string>IOPlatformDevice</string>
+      <key>IONameMatch</key><string>arm-io</string>
+      <key>IOProbeScore</key><integer>31</integer>
+    </dict>
+  </dict>
+</dict></plist>

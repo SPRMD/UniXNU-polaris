@@ -39,7 +39,11 @@ This repository moves the port onto UniXNU's build driver and boot chain:
 
 - **Host**: polaris platform ADT generator, binary-ABI tests, fail-closed CPU
   prefix check (migrated from the old chain), sanitized MIUI fact extraction,
-  and a stock-DTB resource contract probe. CI green for the Python/ADT gates.
+  and a stock-DTB resource contract probe. CI green for the Python/ADT gates. The `drivers/PolarisTouch` and `drivers/PolarisProtocols` directories are host-side protocol references; `PolarisSynapticsTouch`, `PolarisTransportContracts` and `PolarisA630Probe` are board-gated Darwin contract-only services and do not claim hardware I/O or readiness.
+- **Local driver inputs**: `scripts/make-polaris-driver-bundle.py` hashes every
+  checked-in Polaris source component and can record matching firmware from a
+  user-supplied MIUI/WOA tree. The default is metadata-only; `--copy-vendor` is
+  an explicit local-only choice and still leaves the bundle non-flashable.
 - **Storage bring-up**: the SDM845 `ShengUfs` read-only probe from the local
   Polaris/UniXNU-judyln port is now present and linked behind
   `CONFIG_XNU_NATIVE_UFS`. It is default-off at runtime and remains
@@ -94,22 +98,43 @@ prelinked userland kernel, qualified userdata root, complete Darwin hardware
 drivers or independent temporary-boot report exists yet. This is a build
 artifact and evidence package, not a claim that the phone can run iOS.
 
+The optional `polaris_ipados17_defconfig` workflow path now assembles an
+experimental iPadOS 17 stage from locally or remotely fetched IPSW members.
+`scripts/build-ios-stage.py` creates the trust bundle, iOS ESP and separate
+`darwin-root.img`, and the guarded package can carry that root image. The
+stage is still evidence-only: the SDM845 UFS root handoff, Apple userland and
+all peripheral backends require a real temporary-boot report before the
+installer can ever be enabled.
+
 ### Repository layout
 
 Standard UniXNU device repository: `board.toml`, `configs/polaris_defconfig`,
 `drivers/ArmCpu` (timer PPI from the ADT + the heartbeat probe),
 `drivers/DarwinBoot` (upper-bank allocation window), `drivers/PolarisBoardProbe`
  (opt-in read-only DT resource inventory), `drivers/PolarisHardwareServices`
- (opt-in read-only keys/display/touch/power/wireless/camera resource inventory), `drivers/ShengUfs`
- (SDM845 read-only UFS probe, default-off), `scripts/` (ADT, resource probe,
-ESP assembly, platform kernel build, probes), `tests/`, CI workflows for host/EFI,
-kernel+QEMU and ESP images. Pinned upstream revisions in
-[upstream.json](upstream.json).
+ (opt-in read-only keys/display/touch/power/wireless/camera resource inventory),
+`drivers/PolarisSynapticsTouch` and `drivers/PolarisTransportContracts`
+ (board-gated Darwin contract-only services), `drivers/PolarisTouch` and
+`drivers/PolarisProtocols` (host-side bounded protocol references),
+`drivers/PolarisGeniI2c` (host-testable GENI FIFO state machine),
+`drivers/PolarisA630Probe` (board-gated, read-only Adreno 630/GMU/SMMU
+resource contract),
+`drivers/ShengUfs` (SDM845 read-only UFS probe, default-off), `scripts/` (ADT,
+resource probe, ESP assembly, platform kernel build, probes), `tests/`, CI
+workflows for host/EFI, kernel+QEMU and ESP images. Pinned upstream revisions
+are in [upstream.json](upstream.json).
+
+The transport contract service supplies bounded Darwin-buildable protocol cores
+for WCN399x H4/WLFW, PN54x NCI, and camera CCI. It remains disabled by default
+and does not claim Wi-Fi, Bluetooth, NFC, or camera functionality until a real
+Polaris transport and temporary-boot test exist.
 
 ### Next stages
 
 A root for the kernel (ramdisk/mockfs first, UFS later), then the prelink and
-Apple-identity decision, then touch/display as Darwin 23 drivers. The full
+Apple-identity decision, then a Darwin 23 touch/display driver. The current
+touch work stops at a host-side RMI4/PDT/F12 reference and leaves touch disabled
+until compilation and a temporary Polaris boot provide evidence. The full
 history of both chains is in [docs/HISTORY.md](docs/HISTORY.md).
 
 ## 简体中文

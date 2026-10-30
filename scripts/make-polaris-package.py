@@ -154,6 +154,21 @@ def write_guarded_flash_ps1(path: Path) -> None:
                 }
             }
             if (-not $firmwarePath) { Write-Error 'Manifest has no boot firmware image.'; exit 9 }
+            $darwinPath = $null
+            if ($manifest.inputs.darwin_root.path) {
+                $candidate = Join-Path $root $manifest.inputs.darwin_root.path
+                if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                    $darwinPath = $candidate
+                }
+            }
+            if ($manifest.inputs.darwin_root.present -and -not $darwinPath) {
+                Write-Error 'Manifest declares a darwin root image but it is missing.'; exit 10
+            }
+            if ($darwinPath) {
+                Write-Host 'Flashing the qualified darwin root image...'
+                & fastboot.exe flash darwin $darwinPath
+                if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            }
             Write-Host 'Flashing the qualified userdata image...'
             & fastboot.exe flash userdata $userdataPath
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -169,7 +184,9 @@ def write_guarded_flash_ps1(path: Path) -> None:
 def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
                   *, firmware: Path | None = None,
                   userdata: Path | None = None,
-                  device_validation: Path | None = None) -> dict[str, Any]:
+                  darwin_root: Path | None = None,
+                  device_validation: Path | None = None,
+                  driver_bundle: Path | None = None) -> dict[str, Any]:
     esp = esp.resolve()
     esp_image = esp_image.resolve()
     kernel = kernel.resolve()
@@ -185,7 +202,9 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
     kfacts = kernel_facts(kernel)
     firmware = firmware.resolve() if firmware else None
     userdata = userdata.resolve() if userdata else None
+    darwin_root = darwin_root.resolve() if darwin_root else None
     device_validation = device_validation.resolve() if device_validation else None
+    driver_bundle = driver_bundle.resolve() if driver_bundle else None
 
     blockers: list[str] = []
     if not kfacts["report_valid"]:
@@ -210,6 +229,8 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
             blockers.append("firmware provenance does not attest a hardware-tested polaris image")
     if userdata is None or not userdata.is_file():
         blockers.append("no qualified SHNGROOT userdata image was supplied")
+    if darwin_root is not None and not darwin_root.is_file():
+        blockers.append("the supplied darwin root image is missing")
     if not contract_report["all_required_subsystems_verified"]:
         missing = sorted(set(contract_report["required_for_flash"]) - set(contract_report["verified"]))
         blockers.append("required hardware drivers are not verified: " + ", ".join(missing))
@@ -252,8 +273,19 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
         copy_tree(firmware, firmware_target)
     if userdata and userdata.is_file():
         shutil.copy2(userdata, output / userdata.name)
+    if darwin_root and darwin_root.is_file():
+        shutil.copy2(darwin_root, output / darwin_root.name)
     shutil.copy2(ROOT / "research" / "polaris-hardware-contract.json", output / "polaris-hardware-contract.json")
     shutil.copy2(ROOT / "research" / "polaris-driver-matrix.json", output / "polaris-driver-matrix.json")
+    woa_evidence = ROOT / "research" / "polaris-woa-evidence.json"
+    if woa_evidence.is_file():
+        shutil.copy2(woa_evidence, output / "polaris-woa-evidence.json")
+    default_driver_bundle = ROOT / "research" / "polaris-driver-bundle.json"
+    selected_driver_bundle = driver_bundle if driver_bundle is not None else default_driver_bundle
+    if selected_driver_bundle.is_file():
+        shutil.copy2(selected_driver_bundle, output / "polaris-driver-bundle.json")
+    elif selected_driver_bundle.is_dir():
+        copy_tree(selected_driver_bundle, output / "driver-bundle")
 
     manifest: dict[str, Any] = {
         "schema": 1,
@@ -270,15 +302,27 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
             "kernel": file_fact(output / "kernel.macho", package_root=output),
             "firmware": file_fact(firmware_target, package_root=output) if firmware_target else {"present": False},
             "userdata": file_fact(output / userdata.name, package_root=output) if userdata and userdata.is_file() else {"present": False},
+            "darwin_root": file_fact(output / darwin_root.name, package_root=output) if darwin_root and darwin_root.is_file() else {"present": False},
         },
         "kernel": kfacts,
         "driver_contract": contract_report,
+        "woa_evidence": file_fact(output / "polaris-woa-evidence.json", package_root=output)
+        if woa_evidence.is_file() else {"present": False},
+        "driver_bundle": (
+            file_fact(output / "polaris-driver-bundle.json", package_root=output)
+            if selected_driver_bundle.is_file() else
+            file_fact(output / "driver-bundle", package_root=output)
+            if selected_driver_bundle.is_dir() else {"present": False}
+        ),
         "device_validation": validation_report,
         "firmware_provenance": firmware_provenance,
         "blockers": blockers,
         "installer": {
             "generated": True,
-            "commands": ["fastboot flash userdata <userdata>", "fastboot boot <firmware>"] if flashable else [],
+            "commands": ([
+                *(["fastboot flash darwin <darwin-root>"] if darwin_root and darwin_root.is_file() else []),
+                "fastboot flash userdata <userdata>", "fastboot boot <firmware>"
+            ] if flashable else []),
             "guard": "manifest.flashable must be true and exactly one polaris fastboot device must be present",
         },
     }
@@ -308,11 +352,17 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--firmware", type=Path)
     parser.add_argument("--userdata", type=Path)
+    parser.add_argument("--darwin-root", type=Path,
+                        help="optional iPadOS SHNGROOT image for the darwin partition")
     parser.add_argument("--device-validation", type=Path)
+    parser.add_argument("--driver-bundle", type=Path,
+                        help="optional local driver bundle manifest or directory")
     args = parser.parse_args()
     manifest = build_package(args.esp, args.esp_image, args.kernel, args.out,
                              firmware=args.firmware, userdata=args.userdata,
-                             device_validation=args.device_validation)
+                             darwin_root=args.darwin_root,
+                             device_validation=args.device_validation,
+                             driver_bundle=args.driver_bundle)
     print(f"wrote guarded Polaris package: {args.out.resolve()}")
     print(f"flashable={manifest['flashable']}")
     for blocker in manifest["blockers"]:
