@@ -4,3 +4,6 @@
 /local.toml
 __pycache__/
 *.pyc
+# External research checkouts are inputs only and must never be vendored into
+# the device fork (they may contain large binary firmware or unrelated trees).
+/research/external/

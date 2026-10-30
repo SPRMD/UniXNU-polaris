@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "board": "xiaomi,polaris",
+  "soc": "SDM845",
+  "variant": {
+    "ram_gib": 6,
+    "storage_gib": 128,
+    "display": "JDI NT35596S",
+    "resolution": [1080, 2160]
+  },
+  "policy": {
+    "default_driver_mode": "disabled-until-verified",
+    "android_binaries_are_darwin_drivers": false,
+    "mmio_from_candidate_dtb_is_safe_to_enable": false,
+    "required_for_flash": [
+      "power_keys",
+      "display",
+      "touch",
+      "battery",
+      "gpu",
+      "wifi",
+      "bluetooth",
+      "nfc",
+      "camera"
+    ]
+  },
+  "subsystems": {
+    "power_keys": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "Qualcomm PMIC GPIO/key input",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
+      "blocker": "No Darwin 23 GPIO/PMIC input service has passed a temporary Polaris boot."
+    },
+    "display": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "JDI NT35596S / Qualcomm MDSS",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/MIX2S_6_128_HARDWARE_CN.md"],
+      "blocker": "A GOP display proves firmware output only; it does not prove a Darwin display provider."
+    },
+    "touch": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "Synaptics S3330 over I2C",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
+      "blocker": "The old XNU 8796 shim path cannot be copied into Darwin 23 without a new HID service."
+    },
+    "battery": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "PMI8998 fuel gauge / power supply",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/LOCKSCREEN_POWER_ANALYSIS_CN.md"],
+      "blocker": "Battery reads must be board-gated and report unknown on failure; fixed iOS 16 values are invalid."
+    },
+    "gpu": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "Adreno 630",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
+      "blocker": "UniXNU Adreno740 is for a different GPU family and is not enabled on Polaris."
+    },
+    "wifi": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "Qualcomm WCN3998",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/WIRELESS_FDT_AUDIT.json"],
+      "blocker": "The candidate DT resources do not establish a Darwin WCN3998 transport or firmware contract."
+    },
+    "bluetooth": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "WCN3998 UART",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/WIRELESS_FDT_AUDIT.json"],
+      "blocker": "Android Bluetooth HAL libraries cannot be loaded as Darwin kernel or userland drivers."
+    },
+    "nfc": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "PN54X/NCI, candidate I2C address 0x28",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/NFC_FDT_AUDIT.json"],
+      "blocker": "The I2C address and GPIOs are candidates only; no runtime transaction has been verified."
+    },
+    "camera": {
+      "status": "candidate",
+      "enabled": false,
+      "hardware": "IMX363 / OV5675 / S5K3M3 candidates",
+      "darwin_driver": null,
+      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
+      "blocker": "Android CAMX libraries and tuning blobs are not a Darwin camera stack."
+    },
+    "fingerprint": {
+      "status": "disabled",
+      "enabled": false,
+      "hardware": "Not included in this milestone",
+      "darwin_driver": null,
+      "evidence": [],
+      "blocker": "Explicitly deferred by the porting plan."
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "board": "xiaomi,polaris",
+  "soc": "Qualcomm SDM845",
+  "sources": [
+    {
+      "name": "LineageOS android_kernel_xiaomi_sdm845",
+      "commit": "aa8adfe9bf212c6e93238a86980b4024da4f819a",
+      "path": "research/external/kernel-sdm845",
+      "license": "GPL-2.0-only"
+    },
+    {
+      "name": "edk2-porting WOA-Drivers",
+      "commit": "524346372da2091e905164841317f35c35947a82",
+      "path": "research/external/woa2",
+      "license": "see upstream repository"
+    }
+  ],
+  "facts": {
+    "touch_synaptics_s3330": {
+      "dts": "arch/arm64/boot/dts/qcom/polaris-p0.dtsi",
+      "bus": "qupv3_se14_i2c",
+      "compatible": "synaptics,dsx-i2c-force",
+      "address": "0x20",
+      "irq_gpio": 125,
+      "reset_gpio": 99,
+      "chip_id": "S3330",
+      "tp_id": "0x31",
+      "firmware": "synaptics_jdi_3330_d5x.fw"
+    },
+    "touch_ft5x46_fallback": {
+      "dts": "arch/arm64/boot/dts/qcom/polaris-p0.dtsi",
+      "bus": "qupv3_se14_i2c",
+      "compatible": "focaltech,ft5x46",
+      "address": "0x38",
+      "x_max": 1080,
+      "y_max": 2160
+    },
+    "nfc": {
+      "dts": "arch/arm64/boot/dts/qcom/polaris-p0.dtsi",
+      "bus": "qupv3_se3_i2c",
+      "compatible": "qcom,nq-nci",
+      "address": "0x28",
+      "irq_gpio": 63,
+      "clock_source": "BBCLK3"
+    },
+    "bluetooth": {
+      "dts": "arch/arm64/boot/dts/qcom/polaris-p0.dtsi",
+      "compatible": "qca,wcn3990",
+      "transport": "UART"
+    },
+    "display": {
+      "dts": "arch/arm64/boot/dts/qcom/polaris-p0.dtsi",
+      "primary_panel": "dsi_jdi_fhd_nt35596s_video",
+      "alternate_panel": "dsi_ebbg_fhd_ft8716_video",
+      "resolution": [1080, 2160]
+    },
+    "camera": {
+      "sensor": "Sony IMX363",
+      "dependencies": ["CCI", "CSIPHY", "CSID", "PMIC regulators", "OIS/EEPROM"]
+    },
+    "keys": {
+      "driver": "gpio_keys",
+      "known_key": "volume_up"
+    },
+    "battery": {
+      "pmic": "PMI8998",
+      "fuel_gauge": true,
+      "nominal_capacity_mah": 3400
+    },
+    "gpu": {
+      "model": "Qualcomm Adreno 630",
+      "soc": "SDM845"
+    },
+    "wireless": {
+      "model": "Qualcomm WCN3998",
+      "wifi_and_bluetooth_share_firmware_family": true
+    }
+  },
+  "porting_rule": "These facts identify hardware resources only. Linux drivers, Android HALs and Windows .sys files are not Darwin drivers and must not be embedded as such."
+}

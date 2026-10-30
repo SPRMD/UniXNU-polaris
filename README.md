@@ -83,11 +83,24 @@ user-approved; boot/modem/persist partitions untouched. Details in
 [NOTES.md](NOTES.md); firmware background in
 [research/uefi-firmware-plan.md](research/uefi-firmware-plan.md).
 
+### Guarded package output
+
+CI also runs `scripts/make-polaris-package.py`. It bundles the ESP tree,
+kernel report, firmware provenance, driver contract and SHA-256 manifest into
+`polaris-one-click/`, and emits `flash.cmd`/`flash.ps1`. The installer checks
+the manifest, the connected product and the single-device rule before any
+write. The current contract deliberately produces `flashable=false`: no
+prelinked userland kernel, qualified userdata root, complete Darwin hardware
+drivers or independent temporary-boot report exists yet. This is a build
+artifact and evidence package, not a claim that the phone can run iOS.
+
 ### Repository layout
 
 Standard UniXNU device repository: `board.toml`, `configs/polaris_defconfig`,
 `drivers/ArmCpu` (timer PPI from the ADT + the heartbeat probe),
-`drivers/DarwinBoot` (upper-bank allocation window), `drivers/ShengUfs`
+`drivers/DarwinBoot` (upper-bank allocation window), `drivers/PolarisBoardProbe`
+ (opt-in read-only DT resource inventory), `drivers/PolarisHardwareServices`
+ (opt-in read-only keys/display/touch/power/wireless/camera resource inventory), `drivers/ShengUfs`
  (SDM845 read-only UFS probe, default-off), `scripts/` (ADT, resource probe,
 ESP assembly, platform kernel build, probes), `tests/`, CI workflows for host/EFI,
 kernel+QEMU and ESP images. Pinned upstream revisions in

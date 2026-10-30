@@ -131,6 +131,9 @@ an early silent stop.
    kernelcache like sheng, or keep a source-only kernel), then userdata,
    trust-cache policy, and only then re-plan touch/display/GPU as board-gated
    Darwin 23 drivers.
+   The opt-in `PolarisBoardProbe` can inventory DT resource nodes with
+   `polaris-board-probe=1`; it never maps MMIO or enables a subsystem and is
+   diagnostic evidence only.
 5. SMP: try `cpus=5` on an approved temporary boot once a UEFI chain exists
    (A75 cluster never observed under XNU; old chain's plan applies unchanged).
 

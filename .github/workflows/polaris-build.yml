@@ -14,6 +14,7 @@ on:
         options:
           - polaris_defconfig
           - polaris_prelink_defconfig
+          - polaris_display_defconfig
 
 permissions:
   contents: read
@@ -43,6 +44,9 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -v
           python3 scripts/check-host.py
+          python3 scripts/check-polaris-driver-contract.py \
+            research/polaris-hardware-contract.json \
+            --output out/host-tests/polaris-driver-contract.json
           python3 scripts/make-polaris-adt.py --output out/polaris.adt
           python3 scripts/make-polaris-adt.py --output out/polaris-full.adt --ram 8 --cpu-regs 0,0x100,0x200,0x300,0x400,0x500,0x600,0x700
           python3 scripts/check-cpu-prefix.py out/polaris.adt --cmdline "-v serial=3 cpus=1"
@@ -138,11 +142,83 @@ jobs:
           path: |
             out/native/polaris/kernel/
             out/native/polaris/logs/
+            out/native/polaris/build/polaris-board-probe/
+            out/native/polaris/build/polaris-hardware-services/
+            out/native/polaris/tree/build/gop-framebuffer/
             out/native-buildtree.tgz
+
+  firmware:
+    name: Polaris UEFI firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      EDK2_MSM_COMMIT: e1952621f419f8db60ed28271264e1b5184c571d
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: edk2-porting/edk2-msm
+          ref: e1952621f419f8db60ed28271264e1b5184c571d
+          path: out/edk2-msm
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Install firmware build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential uuid-dev iasl nasm clang llvm \
+            gcc-aarch64-linux-gnu device-tree-compiler \
+            python3 python3-pil gettext libfreetype6-dev
+
+      - name: Build Polaris firmware
+        working-directory: out/edk2-msm
+        run: |
+          ./build.sh --device polaris --skip-rootfs-gen \
+            --outputdir "$GITHUB_WORKSPACE/out/edk2-output"
+
+      - name: Write firmware provenance
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('out/edk2-output')
+          files = sorted(p for p in root.rglob('*') if p.is_file())
+          if not files:
+              raise SystemExit('firmware build produced no files')
+          payload = []
+          for p in files:
+              payload.append({
+                  'path': str(p.relative_to(root)).replace('\\', '/'),
+                  'bytes': p.stat().st_size,
+                  'sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
+              })
+          report = {
+              'board': 'xiaomi,polaris',
+              'repository': 'edk2-porting/edk2-msm',
+              'commit': os.environ['EDK2_MSM_COMMIT'],
+              'hardware_tested': False,
+              'files': payload,
+          }
+          (root / 'firmware-provenance.json').write_text(json.dumps(report, indent=2) + '\\n')
+          PY
+
+      - name: Validate Polaris private-firmware contract
+        run: |
+          python3 scripts/check-polaris-firmware.py \
+            --contract research/polaris-firmware-contract.json \
+            --output out/edk2-output/polaris-firmware-contract.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: polaris-firmware
+          path: out/edk2-output/
 
   package:
     name: QEMU check and platform artifacts
-    needs: [host, efi, kernel]
+    needs: [host, efi, kernel, firmware]
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -157,6 +233,11 @@ jobs:
         with:
           name: efi-results
           path: out/efi
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: polaris-firmware
+          path: out/firmware
 
       - name: Install packaging and QEMU tools
         run: |
@@ -179,6 +260,16 @@ jobs:
           cp out/kernel/kernel.macho out/polaris-esp/kernel.macho
           cp out/kernel/kernel.json out/polaris-esp/kernel.json
 
+      - name: Assemble guarded one-click package
+        run: |
+          python3 scripts/make-polaris-package.py \
+            --esp out/polaris-esp \
+            --esp-image esp.img \
+            --kernel out/kernel/kernel.macho \
+            --firmware out/firmware \
+            --out out/polaris-one-click
+          test "$(python3 -c 'import json; print(json.load(open("out/polaris-one-click/manifest.json"))["flashable"])')" = "False"
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -188,3 +279,10 @@ jobs:
             listing.txt
             out/polaris-esp/
             out/platform-check/
+            out/firmware/
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: polaris-one-click-package
+          path: out/polaris-one-click/

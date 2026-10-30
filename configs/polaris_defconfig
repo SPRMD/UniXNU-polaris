@@ -1,5 +1,6 @@
 # Source-kernel platform bring-up for polaris (SDM845), before any original
 # Apple component prelink. Same feature selection as the sweet platform stage.
+CONFIG_XNU_BUILD_ARCHIVES=y
 CONFIG_XNU_SOURCE_CORECRYPTO14=y
 CONFIG_XNU_SOURCE_PTHREAD=y
 CONFIG_XNU_ARM_DT_PLATFORM=y

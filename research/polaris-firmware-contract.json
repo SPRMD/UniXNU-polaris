@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "board": "xiaomi,polaris",
+  "soc": "SDM845",
+  "policy": {
+    "binary_blobs_tracked": false,
+    "android_vendor_blobs_are_darwin_drivers": false,
+    "default_load_mode": "metadata-only",
+    "require_sha256_before_use": true,
+    "hardware_validation_required": true
+  },
+  "families": [
+    {
+      "id": "adreno630",
+      "subsystem": "gpu",
+      "hardware": "Qualcomm Adreno 630 / SDM845",
+      "status": "candidate",
+      "darwin_compatible": false,
+      "source": "local proprietary/sdm845-a630-firmware input; not tracked in this repository",
+      "notes": "These hashes identify research inputs only. They do not prove a Darwin GMU, SMMU, CP or Metal implementation."
+    },
+    {
+      "id": "wcn3998",
+      "subsystem": "wifi-bluetooth",
+      "hardware": "Qualcomm WCN3998/WCN3990 family",
+      "status": "candidate",
+      "darwin_compatible": false,
+      "source": "MIUI vendor firmware extracted by the owner from the stock Polaris package",
+      "notes": "The exact WLAN/BT image names and transport sequence are build-dependent and remain unqualified."
+    },
+    {
+      "id": "camera-sensors",
+      "subsystem": "camera",
+      "hardware": "IMX363, OV5675 and S5K3M3 candidates",
+      "status": "candidate",
+      "darwin_compatible": false,
+      "source": "stock MIUI camera firmware/tuning data",
+      "notes": "Android CAMX blobs and tuning files cannot be loaded as Darwin camera drivers."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "a630_gmu",
+      "family": "adreno630",
+      "file": "a630_gmu.bin",
+      "bytes": 32768,
+      "sha256": "b07f90299ff2ae33948fcfd6ed67f53fbd287b5bf85ff2d43db11d4d32c1621f",
+      "status": "candidate",
+      "darwin_compatible": false
+    },
+    {
+      "id": "a630_sqe",
+      "family": "adreno630",
+      "file": "a630_sqe.fw",
+      "bytes": 31980,
+      "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+      "status": "candidate",
+      "darwin_compatible": false
+    },
+    {
+      "id": "a630_zap",
+      "family": "adreno630",
+      "file": "a630_zap.mdt",
+      "bytes": null,
+      "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+      "status": "candidate",
+      "darwin_compatible": false
+    }
+  ]
+}

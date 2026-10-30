@@ -1,0 +1,89 @@
+{
+  "board": "polaris",
+  "soc": "Qualcomm SDM845",
+  "gpu": "Qualcomm Adreno 630",
+  "wireless": "Qualcomm WCN3998",
+  "fingerprint": "disabled",
+  "resource_inventory": {
+    "status": "probe-only",
+    "enabled_by_default": false,
+    "component": "PolarisHardwareServices",
+    "scope": "Darwin 23 IORegistry resource enumeration; no MMIO, firmware, DMA or transport",
+    "userland_ready": false,
+    "evidence": "WOA/edk2-msm DT resource names cross-checked against the Polaris board tree"
+  },
+  "drivers": {
+    "cpu_timer_gic": {
+      "status": "platform-verified",
+      "enabled_by_default": true,
+      "userland_ready": false,
+      "evidence": "Darwin 23 source-kernel platform milestone and QEMU/native timer checks"
+    },
+    "ufs": {
+      "status": "probe-only",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "ShengUfs SDM845 read-only takeover code; no disposable iOS root boot"
+    },
+    "framebuffer": {
+      "status": "firmware-handoff-only",
+      "enabled_by_default": true,
+      "userland_ready": false,
+      "evidence": "DarwinBoot consumes UEFI GOP; no polaris Darwin 23 display driver"
+    },
+    "touch": {
+      "status": "research-only",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "Synaptics S3330/I2C evidence belongs to the retired XNU 8796 chain"
+    },
+    "gpu_adreno630": {
+      "status": "not-implemented",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "The upstream Adreno740 component is incompatible with SDM845/A630"
+    },
+    "wifi_wcn3998": {
+      "status": "not-implemented",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "WCN3998 power, WLFW and transport sequence is not wired into UniXNU"
+    },
+    "bluetooth_wcn3998": {
+      "status": "not-implemented",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "WCN3998 UART/firmware transport is not wired into UniXNU"
+    },
+    "camera": {
+      "status": "not-implemented",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "CCI/CSIPHY/CSID/PMIC and sensor bring-up are not implemented"
+    },
+    "nfc": {
+      "status": "not-implemented",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "NCI transport and secure-element integration are not implemented"
+    },
+    "buttons": {
+      "status": "firmware-only",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "edk2-msm ButtonsDxe is external to this UniXNU tree"
+    },
+    "battery": {
+      "status": "not-implemented",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "PMIC/fuel-gauge power source publication is not implemented"
+    },
+    "fingerprint": {
+      "status": "disabled",
+      "enabled_by_default": false,
+      "userland_ready": false,
+      "evidence": "Explicitly excluded from this milestone"
+    }
+  }
+}

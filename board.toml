@@ -14,8 +14,11 @@ archives = [
   "build-corecrypto-14.py",
   "build-corecrypto-14.py --namespace",
   "build-arm-driver.py ArmDTPlatform",
+  "build-arm-driver.py PolarisBoardProbe",
+  "build-arm-driver.py PolarisHardwareServices",
   "build-arm-driver.py ArmCpu",
   "build-arm-driver.py ShengUfs",
+  "build-arm-driver.py NativeMobileDisplay",
   "build-libpthread-kernel.py",
   "build-mockfs-fixture.py",
 ]
