@@ -1,7 +1,5 @@
 name: host and EFI checks
 on:
-  push:
-    paths: ['.github/workflows/checks.yml', 'scripts/**', 'drivers/**', 'kernel-overrides/**', 'tests/**', 'board.toml', 'configs/**', 'upstream.json']
   pull_request:
     paths: ['.github/workflows/checks.yml', 'scripts/**', 'drivers/**', 'kernel-overrides/**', 'tests/**', 'board.toml', 'configs/**', 'upstream.json']
   workflow_dispatch:

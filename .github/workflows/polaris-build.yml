@@ -1,6 +1,9 @@
 name: Polaris UniXNU platform build
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       defconfig:
