@@ -18,6 +18,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: polaris-platform-build-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PYTHONUNBUFFERED: "1"
   DEFCONFIG: ${{ inputs.defconfig || 'polaris_defconfig' }}
