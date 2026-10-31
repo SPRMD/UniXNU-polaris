@@ -425,9 +425,23 @@ jobs:
     if: ${{ inputs.defconfig == 'polaris_ipados17_defconfig' }}
     needs: [host, efi, kernel, firmware]
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # The stage downloads both IPSW disk images, extracts ~9 GiB of raw windows
+    # and writes an ~8.6 GiB darwin-root image plus its package copy. A stock
+    # runner only has ~14 GiB free, so the job reclaims space first and keeps a
+    # longer budget than the platform package job.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+
+      - name: Free runner disk space
+        run: |
+          # Remove toolchains this stage never uses. Keep /opt/hostedtoolcache
+          # itself: it holds node and the python action runtime.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost \
+                      /usr/share/swift /opt/microsoft
+          sudo apt-get clean
+          df -h /
 
       - uses: actions/download-artifact@v4
         with:
@@ -460,7 +474,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y mtools util-linux python3 python3-pip
-          python3 -m pip install --user --break-system-packages liblzfse
+          # PyPI has no 'liblzfse' project (HTTP 404); the maintained binding is
+          # 'lzfse', which ships a cp312 manylinux x86_64 wheel and exposes the
+          # same decompress() the udif extractor imports.
+          python3 -m pip install --user --break-system-packages lzfse
+          python3 -c 'import lzfse; print("lzfse", lzfse.__file__)'
 
       - name: Normalize build artifacts
         run: |
@@ -476,8 +494,11 @@ jobs:
           test -n "$EFI"
           EFI_ROOT=${EFI%/efi/Build/Out/AARCH64-DEBUG/UniXNU.efi}
           printf '%s\n' "$EFI_ROOT" > out/ios-inputs/efi-root.txt
-          find out/kernel -type f \( -name '044-76040-038.dmg' -o -name '044-76034-038.dmg' \) -exec cp {} out/ios-inputs/ \;
-          find out/kernel -type f -name '*.dmg.trustcache' -exec cp {} out/ios-inputs/ \;
+          # Hardlink rather than copy: the two disk images are ~7.9 GiB and a
+          # copy doubles the stage's peak disk usage on a hosted runner.
+          find out/kernel -type f \
+            \( -name '044-76040-038.dmg' -o -name '044-76034-038.dmg' -o -name '*.dmg.trustcache' \) \
+            -exec ln -f {} out/ios-inputs/ \;
           test -f out/ios-inputs/044-76040-038.dmg
           test -f out/ios-inputs/044-76034-038.dmg
           test -f out/ios-inputs/044-76040-038.dmg.trustcache
@@ -520,7 +541,15 @@ jobs:
         if: always()
         with:
           name: polaris-ios-stage
+          # Keep the record and the guarded package, not the 9 GiB of raw IPSW
+          # windows: the whole artifact stays under the per-artifact limit and
+          # darwin-root.img is already shipped inside the package.
           path: |
             out/ios-inputs/ipsw-inputs.json
-            out/ios-stage/
+            out/ios-inputs/ios-input-hashes.json
+            out/ios-stage/esp.img
+            out/ios-stage/esp/
+            out/ios-stage/trust.bundle/
+            out/ios-stage/darwin-root.json
+            out/ios-stage/ios-stage-manifest.json
             out/polaris-ios-one-click/
