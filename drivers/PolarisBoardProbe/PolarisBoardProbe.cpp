@@ -9,6 +9,7 @@
 #include <libkern/c++/OSData.h>
 #include <libkern/c++/OSIterator.h>
 #include <pexpert/pexpert.h>
+#include <string.h>
 
 extern "C" {
 volatile uint32_t polaris_board_probe_active = 0;
