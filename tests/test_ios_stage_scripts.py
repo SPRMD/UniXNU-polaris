@@ -99,13 +99,51 @@ class IOSStageScriptTests(unittest.TestCase):
             probe_target = Path(patched[0][2])
             self.assertNotEqual(probe_target, kernel)
             self.assertEqual(probe_target.name, 'kernel.macho')
+            # A prelinked kernel has no source corecrypto HMAC field, so the
+            # sealer must not run and must not be handed the artifact either.
             sealed = [call.args[0] for call in run.call_args_list
                       if call.args and call.args[0] and 'seal-source-crypto-kernel.py' in str(call.args[0][1])]
-            self.assertTrue(sealed, 'the FIPS seal was never re-run')
-            self.assertEqual(Path(sealed[0][2]), probe_target)
+            self.assertFalse(sealed, 'a prelinked kernel has nothing to reseal')
             report = json.loads(out.with_suffix('.json').read_text())
             self.assertEqual(report['probe'], 'panic')
             self.assertEqual(report['input_kernel_sha256'], PACKAGE.sha256(kernel))
+
+    def test_source_corecrypto_kernel_is_resealed_after_patching(self):
+        # The stage runs the prelinked bootstrap today, but the sealer must stay
+        # wired for a config that carries the source HMAC field: patching __text
+        # invalidates it, and shipping an unsealed kernel would fail the POST.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            kernel = root / 'kernel.macho'
+            kernel.write_bytes(b'prelinked' + b'_source_corecrypto14_bootstrap\x00')
+            kernel.with_suffix('.json').write_text(json.dumps({
+                'kernel_sha256': PACKAGE.sha256(kernel),
+                'original_components_prelinked': True,
+                'final_configured_link_passed': True,
+            }))
+            adt, trust = root / 'input.adt', root / 'trust.bundle'
+            adt.write_bytes(b'adt')
+            trust.write_bytes(b'trust')
+            for relative in ('efi/Build/Out/AARCH64-DEBUG/UniXNU.efi',
+                             'loader/build/DarwinBoot/DEBUG_GCC/AARCH64/DarwinBoot.efi'):
+                path = root / relative
+                path.parent.mkdir(parents=True)
+                path.write_bytes(b'efi')
+            out, tree = root / 'esp.img', root / 'tree'
+            out.write_bytes(b'fat-placeholder')
+            argv = ['make-ios-esp.py', '--kernel', str(kernel), '--adt', str(adt),
+                    '--trust', str(trust), '--efi', str(root), '--out', str(out),
+                    '--tree', str(tree), '--ipados-stage', '--probe', 'panic']
+            with patch('sys.argv', argv), patch.object(ESP.subprocess, 'run') as run:
+                run.return_value.stdout = 'FAT listing'
+                ESP.main()
+            sealed = [call.args[0] for call in run.call_args_list
+                      if call.args and call.args[0] and 'seal-source-crypto-kernel.py' in str(call.args[0][1])]
+            self.assertTrue(sealed, 'a source corecrypto kernel must be resealed')
+            probe_target = [call.args[0][2] for call in run.call_args_list
+                            if call.args and call.args[0] and 'patch-xnu-entry-probe.py' in str(call.args[0][1])][0]
+            self.assertEqual(Path(sealed[0][2]), Path(probe_target))
+            self.assertNotEqual(Path(sealed[0][2]), kernel)
 
     def test_no_probe_flag_keeps_the_artifact_kernel(self):
         with tempfile.TemporaryDirectory() as directory:

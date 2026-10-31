@@ -110,11 +110,18 @@ def main():
         staged = Path(tempfile.mkdtemp(prefix='ios-esp-probe-')) / 'kernel.macho'
         shutil.copyfile(kernel_path, staged)
         subprocess.run([sys.executable, str(probe), str(staged), *extra], check=True)
-        # Rewriting __text invalidates the sealed FIPS POST integrity HMAC that
-        # the base build wrote into __fips_hmacs. Re-seal the patched copy so
-        # corecrypto measures the image that is actually running.
-        subprocess.run([sys.executable, str(ROOT / 'scripts/seal-source-crypto-kernel.py'),
-                        str(staged)], check=True)
+        # A source corecrypto build carries a 32-byte POST HMAC field that the
+        # rewritten __text invalidates, so it has to be resealed over the patched
+        # copy. This stage runs the prelinked bootstrap instead
+        # (CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"): there is no such field and no
+        # source provider to reseal, and the sealer refuses the image rather than
+        # invent one. Skip only when the field is genuinely absent, so a future
+        # config that does carry it still gets sealed.
+        if b'_source_corecrypto14_bootstrap\x00' in staged.read_bytes():
+            subprocess.run([sys.executable, str(ROOT / 'scripts/seal-source-crypto-kernel.py'),
+                            str(staged)], check=True)
+        else:
+            print('no source corecrypto bootstrap in this kernel: nothing to reseal')
         kernel_path = staged
         print('probed kernel copy:', staged)
     files['EFI/UniXNU/Payloads/kernel.macho'] = kernel_path
