@@ -14,6 +14,19 @@
 
 namespace {
 
+/* XNU's kernel <string.h> does not declare strstr, so the substring search is
+ * written out here instead of relying on a libc symbol the kernel lacks. */
+static bool containsText(const char *haystack, const char *needle)
+{
+  if (haystack == nullptr || needle == nullptr) return false;
+  const size_t needleLength = strlen(needle);
+  if (needleLength == 0) return true;
+  for (const char *start = haystack; *start != '\0'; ++start) {
+    if (memcmp(start, needle, needleLength) == 0) return true;
+  }
+  return false;
+}
+
 static bool compatibleContains(IORegistryEntry *entry, const char *wanted)
 {
   if (entry == nullptr || wanted == nullptr) return false;
@@ -49,7 +62,7 @@ static bool isDsiDisplayCandidate(IORegistryEntry *entry)
 {
   if (entry == nullptr) return false;
   const char *name = entry->getName();
-  if (name != nullptr && strstr(name, "dsi-display") != nullptr) return true;
+  if (name != nullptr && containsText(name, "dsi-display")) return true;
   return compatibleContains(entry, "qcom,dsi-display");
 }
 

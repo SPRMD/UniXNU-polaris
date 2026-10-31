@@ -410,8 +410,8 @@
       },
       {
         "path": "drivers/PolarisDisplayContract/PolarisDisplayContract.cpp",
-        "bytes": 7178,
-        "sha256": "604a429ccb1cc60678a52e2c12142e8fbbd9e44bb3815b0a892a2483437963cd"
+        "bytes": 7694,
+        "sha256": "f308244a2c9472d6a4a84a7ead3199eb96a1476f89b5925da0384149faf641bd"
       },
       {
         "path": "drivers/PolarisDisplayContract/PolarisDisplayPanelProtocol.h",
