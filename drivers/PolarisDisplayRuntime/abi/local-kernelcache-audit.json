@@ -1,0 +1,4527 @@
+{
+  "adapter_ready": false,
+  "audit_completed": true,
+  "auditor_sha256": "1a50f412383cfa8c295530c828cc4827c6d7844b4f491022ac75e3338f86f7d3",
+  "classes": [
+    {
+      "constructor_sites": [
+        {
+          "address": "0xfffffff0067866a4",
+          "call": "0xfffffff0067a2818",
+          "instance_bytes": 6304,
+          "instruction_sha256": "25ee3acaac7982e7d99d38144b118e1ab110b33847a7f371638060aad6545e8f",
+          "name_address": "0xfffffff0055fbc47",
+          "resolved_call": "0xfffffff00774b848",
+          "superclass_metaclass": "0xfffffff007b31400",
+          "symbols": [
+            "__ZN11OSMetaClassC2EPKcPKS_j"
+          ],
+          "verified_metaclass_call": true
+        }
+      ],
+      "name": "IOMobileFramebufferLegacy",
+      "string_addresses": [
+        "0xfffffff0055fbc47"
+      ]
+    },
+    {
+      "constructor_sites": [],
+      "name": "IOMobileFramebuffer",
+      "string_addresses": [
+        "0xfffffff0055f7030"
+      ]
+    },
+    {
+      "constructor_sites": [
+        {
+          "address": "0xfffffff00677b5f0",
+          "call": "0xfffffff0067a2818",
+          "instance_bytes": 144,
+          "instruction_sha256": "ebd3274613a8668a579939fa536a8656d145e747ce54af8550e143da7fa073c8",
+          "name_address": "0xfffffff0055f7070",
+          "resolved_call": "0xfffffff00774b848",
+          "superclass_metaclass": "0xfffffff007b313d8",
+          "symbols": [
+            "__ZN11OSMetaClassC2EPKcPKS_j"
+          ],
+          "verified_metaclass_call": true
+        }
+      ],
+      "name": "IOMobileFramebufferService",
+      "string_addresses": [
+        "0xfffffff0055f7070"
+      ]
+    }
+  ],
+  "generated_private_bindings": false,
+  "hardware_tested": false,
+  "kernelcache": {
+    "architecture": "arm64 (not arm64e)",
+    "bytes": 46415872,
+    "exported_addresses": 5967,
+    "path": "C:\\Users\\James\\Documents\\ChatGPT\\ios_on_mix2s\\polaris_unixnu_ios17_port\\inputs\\ipsw\\kernelcache.release.ipad7.arm64.macho",
+    "sha256": "f18b4df865405f2a287b84977d7aca745e056d656d9fc9df1662970ce2969de7",
+    "symbol_entries": 6056,
+    "uuid": "d6f6e0d2-fe60-38a0-9214-556b7faf8951"
+  },
+  "legacy_vtable_candidates": [
+    {
+      "constructor_address_materializations": [
+        "0xfffffff0067865d8"
+      ],
+      "delta_histogram": {
+        "-0x2b0d70": 9,
+        "-0xd3d28": 1,
+        "-0xd3d48": 1,
+        "-0xd458c": 1,
+        "-0xd4bf0": 1,
+        "-0xd4f0c": 1,
+        "-0xd7060": 1,
+        "-0xd740c": 1,
+        "-0xd77c0": 1,
+        "-0xd77d0": 1,
+        "-0xd7a80": 2,
+        "-0xdc6c8": 2,
+        "-0xdda80": 1,
+        "-0xddf10": 1,
+        "-0xde174": 6,
+        "-0xde360": 1,
+        "-0xde378": 1,
+        "-0xdf780": 1,
+        "-0xeb65c": 1,
+        "-0xeb754": 1,
+        "-0xebaf8": 1,
+        "-0xebbd8": 1,
+        "-0xebd48": 1,
+        "-0xebd64": 1,
+        "-0xebd68": 1,
+        "-0xebdb8": 1,
+        "-0xebe84": 1,
+        "-0xebe88": 1,
+        "-0xebfb0": 1,
+        "-0xec018": 1,
+        "-0xec0fc": 1,
+        "-0xec170": 1,
+        "-0xec2e0": 1,
+        "-0xec2e4": 1,
+        "-0xec500": 1,
+        "-0xec528": 1,
+        "-0xec5d0": 1,
+        "-0xec678": 1,
+        "-0xec85c": 1,
+        "-0xecb10": 2,
+        "-0xecba8": 2,
+        "-0xecbd8": 1,
+        "-0xecc24": 2,
+        "-0xecc28": 1,
+        "-0xecc2c": 1,
+        "-0xecc64": 1,
+        "-0xecc90": 1,
+        "-0xecd74": 1,
+        "-0xecd8c": 1,
+        "-0xecdd4": 1,
+        "-0xece5c": 1,
+        "-0xecf6c": 1,
+        "-0xed0d0": 1,
+        "-0xed0e0": 1,
+        "-0xed12c": 1,
+        "-0xed2d4": 2,
+        "-0xed2e4": 1,
+        "-0xed2f0": 1,
+        "-0xed3c4": 1,
+        "-0xed4f4": 1,
+        "-0xed590": 1,
+        "-0xed5b0": 2,
+        "-0xed5cc": 1,
+        "-0xed5f4": 1,
+        "-0xed76c": 2,
+        "-0xed91c": 1,
+        "-0xeda44": 2,
+        "-0xedafc": 1,
+        "-0xedc78": 2,
+        "-0xedfa0": 1,
+        "-0xee08c": 1,
+        "-0xee108": 1,
+        "-0xee120": 1,
+        "-0xee160": 1,
+        "-0xee16c": 4,
+        "-0xee230": 1,
+        "-0xee4c0": 1,
+        "-0xee5d4": 1,
+        "-0xee6b0": 1,
+        "-0xee71c": 2,
+        "-0xee82c": 1,
+        "-0xee8f0": 1,
+        "-0xee97c": 1,
+        "-0xee998": 1,
+        "-0xee9cc": 1,
+        "-0xee9d0": 1,
+        "-0xeea48": 1,
+        "-0xeea68": 1,
+        "-0xeea9c": 1,
+        "-0xeeab0": 1,
+        "-0xeeacc": 1,
+        "-0xeeafc": 1,
+        "-0xeeb1c": 1,
+        "-0xeedd8": 1,
+        "-0xef364": 1,
+        "-0xf03e4": 1,
+        "-0xf053c": 1,
+        "-0xf0910": 1,
+        "-0xf1ca8": 1,
+        "-0xf2230": 1,
+        "-0xf241c": 2,
+        "-0xf24bc": 1,
+        "-0xf2814": 1,
+        "-0xf2848": 3,
+        "-0xf284c": 2,
+        "-0xf35c8": 1,
+        "-0xf4ce4": 1,
+        "-0xf5888": 1,
+        "-0xf5950": 1,
+        "-0xf6e60": 1,
+        "-0xf6ea4": 1,
+        "-0xf6f0c": 1,
+        "-0xf763c": 1,
+        "-0xf76c8": 1,
+        "-0xf77dc": 1,
+        "-0xf7cd0": 1,
+        "-0xf7d04": 2,
+        "-0xf7d24": 1,
+        "-0xf7d50": 1,
+        "-0xf7f2c": 1,
+        "-0xf7fd0": 1,
+        "-0xf837c": 1,
+        "-0xf8430": 4,
+        "-0xf8728": 3,
+        "-0xf8b4c": 1,
+        "-0xfaec8": 1,
+        "-0xfafc8": 1,
+        "0x1000000": 194
+      },
+      "qualification": "candidate: pure-slot fingerprint plus executable entries and constructor references; not method prototypes",
+      "slots": [
+        {
+          "abstract": false,
+          "address": "0xfffffff006786644",
+          "entry_instruction_sha256": "ac9aedd4c36f3ad739c8db3fd9ba3d49001f6b4f4bc770f9e06e79cb5e6e32eb",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005786644",
+          "reference_delta": "0x1000000",
+          "slot": 0,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006786658",
+          "entry_instruction_sha256": "33857f912764297ee1ccfc87005c77520608ccdbbe3edd093357def227d0e29a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005786658",
+          "reference_delta": "0x1000000",
+          "slot": 1,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e018",
+          "entry_instruction_sha256": "f16c1d8ebb303636d14fd2ed9f7373fa679a3e1ad6647730a99b180d1549e1e3",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b60c",
+          "reference_delta": "-0xed5f4",
+          "slot": 2,
+          "symbols": [
+            "__ZNK8OSObject7releaseEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e02c",
+          "entry_instruction_sha256": "9fcab99508c6b98c3d8493ed5c4769335b73e82d2825a1671268d82b895b64ba",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b3f0",
+          "reference_delta": "-0xed3c4",
+          "slot": 3,
+          "symbols": [
+            "__ZNK8OSObject14getRetainCountEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e034",
+          "entry_instruction_sha256": "7dd531bbf86d2279074505b3b7de329e919a9b9eda1c58fa7edf61e3e4b68188",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b5e4",
+          "reference_delta": "-0xed5b0",
+          "slot": 4,
+          "symbols": [
+            "__ZNK8OSObject6retainEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e044",
+          "entry_instruction_sha256": "950270e04f7256e09d071a07973f1b05de2a9b850cea20af4562848283b800f9",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b5d4",
+          "reference_delta": "-0xed590",
+          "slot": 5,
+          "symbols": [
+            "__ZNK8OSObject7releaseEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e054",
+          "entry_instruction_sha256": "cdf6d19ee70ac3b3d4000ed9e0d707705c1a52eb1d7bea2e292e1a97b8d8074e",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b620",
+          "reference_delta": "-0xed5cc",
+          "slot": 6,
+          "symbols": [
+            "__ZNK8OSObject9serializeEP11OSSerialize"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006786664",
+          "entry_instruction_sha256": "cc11753b08025a1dc7aba6f5cb68fbd1ba5a6e88ed15bed10f58bd2bdbfce76d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005786664",
+          "reference_delta": "0x1000000",
+          "slot": 7,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774b56c",
+          "entry_instruction_sha256": "49347326de1e24fb1cfbba38a2d445eaf16247be0d7f3bc5e78027bdb91167b4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007839674",
+          "reference_delta": "-0xee108",
+          "slot": 8,
+          "symbols": [
+            "__ZNK15OSMetaClassBase9isEqualToEPKS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e178",
+          "entry_instruction_sha256": "d1d58c6569df08525fa3dc22cfbb1126cc80bbbd5dc50bfd5b52c7243099caee",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b468",
+          "reference_delta": "-0xed2f0",
+          "slot": 9,
+          "symbols": [
+            "__ZNK8OSObject12taggedRetainEPKv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e1fc",
+          "entry_instruction_sha256": "284f4eab14010925cbd32c1184de3396cc7800e4d4ccd39934e85f41a62028b7",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b4d0",
+          "reference_delta": "-0xed2d4",
+          "slot": 10,
+          "symbols": [
+            "__ZNK8OSObject13taggedReleaseEPKv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e20c",
+          "entry_instruction_sha256": "dd983a3ab8f9e441a474fceb7cc181724e4d1804fdefd57dac9053abea6d8965",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b4e0",
+          "reference_delta": "-0xed2d4",
+          "slot": 11,
+          "symbols": [
+            "__ZNK8OSObject13taggedReleaseEPKvi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff007795ba0",
+          "entry_instruction_sha256": "3e3e089a9baf27454a7096605d2b63199e5db2c5c7f84d49f6185492bce39103",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007881bb8",
+          "reference_delta": "-0xec018",
+          "slot": 12,
+          "symbols": [
+            "__ZN9IOService8DispatchE5IORPC"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00774e2cc",
+          "entry_instruction_sha256": "a5a2cd59cb9de6a2bdcc87ff063ff0230066502c4d7a4b9d4b38fa47341eb56e",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00783b87c",
+          "reference_delta": "-0xed5b0",
+          "slot": 13,
+          "symbols": [
+            "__ZN8OSObject4initEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006787030",
+          "entry_instruction_sha256": "497e38175ff4235080836e7dc45c63913f24f3ec3af32125f24bb06e211a339a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005787030",
+          "reference_delta": "0x1000000",
+          "slot": 14,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077acbcc",
+          "entry_instruction_sha256": "3a32c49e68d9149c960dafe82da9e78a01693e24efb13e9e8082b84b7da4d7d2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b08c",
+          "reference_delta": "-0xee4c0",
+          "slot": 15,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyPropertyEPKcPK15IORegistryPlanej"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077acd48",
+          "entry_instruction_sha256": "3a32c49e68d9149c960dafe82da9e78a01693e24efb13e9e8082b84b7da4d7d2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789af78",
+          "reference_delta": "-0xee230",
+          "slot": 16,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyPropertyEPK8OSStringPK15IORegistryPlanej"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077acec4",
+          "entry_instruction_sha256": "3a32c49e68d9149c960dafe82da9e78a01693e24efb13e9e8082b84b7da4d7d2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789ae64",
+          "reference_delta": "-0xedfa0",
+          "slot": 17,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyPropertyEPK8OSSymbolPK15IORegistryPlanej"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad040",
+          "entry_instruction_sha256": "1bb8bf57276ffe0e4d92647f03e40f4d20c6dc17f7c96de91658842b185b3c31",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d424",
+          "reference_delta": "-0xf03e4",
+          "slot": 18,
+          "symbols": [
+            "__ZNK15IORegistryEntry15copyParentEntryEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad0c0",
+          "entry_instruction_sha256": "fc4034bfc2aec96f54cb2b04c5db04a4c085efd50664af24f26d019c1f08e21d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d5fc",
+          "reference_delta": "-0xf053c",
+          "slot": 19,
+          "symbols": [
+            "__ZNK15IORegistryEntry14copyChildEntryEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad140",
+          "entry_instruction_sha256": "8d18c3489ae12e0282b351cb59763d19779157bcdea91f77b99dc2ff109ec295",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b714",
+          "reference_delta": "-0xee5d4",
+          "slot": 20,
+          "symbols": [
+            "__ZN15IORegistryEntry17runPropertyActionEPFiP8OSObjectPvS2_S2_S2_ES1_S2_S2_S2_S2_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006786e20",
+          "entry_instruction_sha256": "d3dabf011186c5b3998ae02fc39f9ef3c74cc62168031ce025b77dd29e0ee20f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005786e20",
+          "reference_delta": "0x1000000",
+          "slot": 21,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad49c",
+          "entry_instruction_sha256": "f234c4a556e40ac41e4f63c6c631fb1d5cf10c841f19309e5829081f845a591d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789a780",
+          "reference_delta": "-0xed2e4",
+          "slot": 22,
+          "symbols": [
+            "__ZN15IORegistryEntry16setPropertyTableEP12OSDictionary"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad5b8",
+          "entry_instruction_sha256": "9c19770eb16fad1a82edbaa68cc1a7c2f3ff7a5420d20fed31d6a7cf98ffd8e7",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b644",
+          "reference_delta": "-0xee08c",
+          "slot": 23,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPK8OSSymbolP8OSObject"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad798",
+          "entry_instruction_sha256": "f70e24f393045dceddf1187eeef5d990dfb104d41f45a3c8b11c9d46f9fc664a",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b904",
+          "reference_delta": "-0xee16c",
+          "slot": 24,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPK8OSStringP8OSObject"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad7fc",
+          "entry_instruction_sha256": "0170cec8e606d124e2ab595edeb2f77181eef2d5dfdf00b5b29e808bb2be648b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b968",
+          "reference_delta": "-0xee16c",
+          "slot": 25,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPKcP8OSObject"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad860",
+          "entry_instruction_sha256": "6d1524201956e64286f580cfe35e18c5e414cb39dc49c428aec71c764aed8e4b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b9cc",
+          "reference_delta": "-0xee16c",
+          "slot": 26,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPKcS1_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad8e4",
+          "entry_instruction_sha256": "986cbb0f976db216fe5637d4b427439cab60228139b5509b413999db08c81b2f",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789ba50",
+          "reference_delta": "-0xee16c",
+          "slot": 27,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPKcb"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ad970",
+          "entry_instruction_sha256": "de75e4867047231e56ae0919cdb7450963af202f42ea0f657ca0153db915941f",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789bad0",
+          "reference_delta": "-0xee160",
+          "slot": 28,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPKcyj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ada38",
+          "entry_instruction_sha256": "de75e4867047231e56ae0919cdb7450963af202f42ea0f657ca0153db915941f",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789bb58",
+          "reference_delta": "-0xee120",
+          "slot": 29,
+          "symbols": [
+            "__ZN15IORegistryEntry11setPropertyEPKcPvj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077adb00",
+          "entry_instruction_sha256": "f234c4a556e40ac41e4f63c6c631fb1d5cf10c841f19309e5829081f845a591d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b5fc",
+          "reference_delta": "-0xedafc",
+          "slot": 30,
+          "symbols": [
+            "__ZN15IORegistryEntry14removePropertyEPK8OSSymbol"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077adbfc",
+          "entry_instruction_sha256": "c6c6aa52b33dc1cd2e432415b04dc9d909dd4873b50fba337405bf7d7838b7be",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b874",
+          "reference_delta": "-0xedc78",
+          "slot": 31,
+          "symbols": [
+            "__ZN15IORegistryEntry14removePropertyEPK8OSString"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077adc44",
+          "entry_instruction_sha256": "29f6c326317618b8bfb5bed13607806f3fe784e03b5498e4d912c5d02949b46b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b8bc",
+          "reference_delta": "-0xedc78",
+          "slot": 32,
+          "symbols": [
+            "__ZN15IORegistryEntry14removePropertyEPKc"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077adc8c",
+          "entry_instruction_sha256": "f234c4a556e40ac41e4f63c6c631fb1d5cf10c841f19309e5829081f845a591d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b5a8",
+          "reference_delta": "-0xed91c",
+          "slot": 33,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getPropertyEPK8OSSymbol"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077add88",
+          "entry_instruction_sha256": "c4b90562060d06e49f1bd0315ecebeb8086ec5a355e873bae7c3af1d96c2fe4c",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b7cc",
+          "reference_delta": "-0xeda44",
+          "slot": 34,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getPropertyEPK8OSString"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077adddc",
+          "entry_instruction_sha256": "aa8ee9ed35ada34ce6f7395d9d874e9bb0f27da2ff553c7821fcb5e318940460",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789b820",
+          "reference_delta": "-0xeda44",
+          "slot": 35,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getPropertyEPKc"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ade30",
+          "entry_instruction_sha256": "3a32c49e68d9149c960dafe82da9e78a01693e24efb13e9e8082b84b7da4d7d2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789aa54",
+          "reference_delta": "-0xecc24",
+          "slot": 36,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getPropertyEPK8OSSymbolPK15IORegistryPlanej"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077adfac",
+          "entry_instruction_sha256": "3a32c49e68d9149c960dafe82da9e78a01693e24efb13e9e8082b84b7da4d7d2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789ac3c",
+          "reference_delta": "-0xecc90",
+          "slot": 37,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getPropertyEPK8OSStringPK15IORegistryPlanej"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae128",
+          "entry_instruction_sha256": "3a32c49e68d9149c960dafe82da9e78a01693e24efb13e9e8082b84b7da4d7d2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789ad50",
+          "reference_delta": "-0xecc28",
+          "slot": 38,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getPropertyEPKcPK15IORegistryPlanej"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae2a4",
+          "entry_instruction_sha256": "f234c4a556e40ac41e4f63c6c631fb1d5cf10c841f19309e5829081f845a591d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789a91c",
+          "reference_delta": "-0xec678",
+          "slot": 39,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyPropertyEPK8OSSymbol"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae3b4",
+          "entry_instruction_sha256": "f234c4a556e40ac41e4f63c6c631fb1d5cf10c841f19309e5829081f845a591d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789a984",
+          "reference_delta": "-0xec5d0",
+          "slot": 40,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyPropertyEPK8OSString"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae4c4",
+          "entry_instruction_sha256": "f234c4a556e40ac41e4f63c6c631fb1d5cf10c841f19309e5829081f845a591d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789a9ec",
+          "reference_delta": "-0xec528",
+          "slot": 41,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyPropertyEPKc"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae5d4",
+          "entry_instruction_sha256": "c09523358457cd2f91cacc4f9cce91ffeadedc7fbc88511af7dfddb7c1cc4b5e",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789a8b4",
+          "reference_delta": "-0xec2e0",
+          "slot": 42,
+          "symbols": [
+            "__ZNK15IORegistryEntry24dictionaryWithPropertiesEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b48bc",
+          "entry_instruction_sha256": "e4a798fde6a016ef9a2f0a5d949d7a17da6310ea67522ef1ef49a4cc283e17f5",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078abef8",
+          "reference_delta": "-0xf763c",
+          "slot": 43,
+          "symbols": [
+            "__ZNK9IOService19serializePropertiesEP11OSSerialize"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006792404",
+          "entry_instruction_sha256": "5c27fcde6ea8b763ab178784a3d5312e72038d7ea5aa5badca8d1a8a90b4aba4",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005792404",
+          "reference_delta": "0x1000000",
+          "slot": 44,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae85c",
+          "entry_instruction_sha256": "8eb157afdd6c8f98c59b62cf9945c5e8a07880e28802f536a6d6fe8189841dc1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d378",
+          "reference_delta": "-0xeeb1c",
+          "slot": 45,
+          "symbols": [
+            "__ZNK15IORegistryEntry17getParentIteratorEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ae9b8",
+          "entry_instruction_sha256": "ba25d7bb924c4e154e1c271e8fae226b4944fb7853714aa4e77259b101f73535",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d790",
+          "reference_delta": "-0xeedd8",
+          "slot": 46,
+          "symbols": [
+            "__ZNK15IORegistryEntry14applyToParentsEPFvPS_PvES1_PK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aead4",
+          "entry_instruction_sha256": "f0a41b2f39ff8e8d78e0e0673de2b461e4ac43846e9452ce45f24691b7c680ac",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d4a4",
+          "reference_delta": "-0xee9d0",
+          "slot": 47,
+          "symbols": [
+            "__ZNK15IORegistryEntry14getParentEntryEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aeb14",
+          "entry_instruction_sha256": "8eb157afdd6c8f98c59b62cf9945c5e8a07880e28802f536a6d6fe8189841dc1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d4e0",
+          "reference_delta": "-0xee9cc",
+          "slot": 48,
+          "symbols": [
+            "__ZNK15IORegistryEntry16getChildIteratorEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aec70",
+          "entry_instruction_sha256": "ba25d7bb924c4e154e1c271e8fae226b4944fb7853714aa4e77259b101f73535",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d6b8",
+          "reference_delta": "-0xeea48",
+          "slot": 49,
+          "symbols": [
+            "__ZNK15IORegistryEntry15applyToChildrenEPFvPS_PvES1_PK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aed8c",
+          "entry_instruction_sha256": "61e1c669a7a9c02472285f82c66d9ed85efff4c35d9558ca6b7e97d5e9b297ef",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d67c",
+          "reference_delta": "-0xee8f0",
+          "slot": 50,
+          "symbols": [
+            "__ZNK15IORegistryEntry13getChildEntryEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aedcc",
+          "entry_instruction_sha256": "a5e5e1d1c61dd9db38235b54bf3a807031520f8c0556896114d3d28cb83f845b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d868",
+          "reference_delta": "-0xeea9c",
+          "slot": 51,
+          "symbols": [
+            "__ZNK15IORegistryEntry7isChildEPS_PK15IORegistryPlaneb"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aef0c",
+          "entry_instruction_sha256": "a5e5e1d1c61dd9db38235b54bf3a807031520f8c0556896114d3d28cb83f845b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d9d8",
+          "reference_delta": "-0xeeacc",
+          "slot": 52,
+          "symbols": [
+            "__ZNK15IORegistryEntry8isParentEPS_PK15IORegistryPlaneb"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077af04c",
+          "entry_instruction_sha256": "43659fa79a0e595ce3d07a220e878c1a66c153fcd1e0016dbeaa8810c0c32336",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789db48",
+          "reference_delta": "-0xeeafc",
+          "slot": 53,
+          "symbols": [
+            "__ZNK15IORegistryEntry7inPlaneEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077af1a0",
+          "entry_instruction_sha256": "22ccbbefe884882621c87d72abfbd8464e18bcf85afe53e1c7761c249ee9b5e8",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789e504",
+          "reference_delta": "-0xef364",
+          "slot": 54,
+          "symbols": [
+            "__ZNK15IORegistryEntry8getDepthEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077af2c4",
+          "entry_instruction_sha256": "0a90373fe5377b1cbc587778e2dd15893bd537638829c7939b6cccb084346924",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789dc5c",
+          "reference_delta": "-0xee998",
+          "slot": 55,
+          "symbols": [
+            "__ZN15IORegistryEntry14attachToParentEPS_PK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077af5fc",
+          "entry_instruction_sha256": "3f0136cbb27c6e404dcd53f3194b9d91dc3e5cfccb79ddb0977500ceccf50ce1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789e064",
+          "reference_delta": "-0xeea68",
+          "slot": 56,
+          "symbols": [
+            "__ZN15IORegistryEntry16detachFromParentEPS_PK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077af85c",
+          "entry_instruction_sha256": "461aa2a5851bbcacd9df3e4bdc42481e535f49791d192ef0c2f529439f4a5cee",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789df0c",
+          "reference_delta": "-0xee6b0",
+          "slot": 57,
+          "symbols": [
+            "__ZN15IORegistryEntry13attachToChildEPS_PK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077af988",
+          "entry_instruction_sha256": "3f0136cbb27c6e404dcd53f3194b9d91dc3e5cfccb79ddb0977500ceccf50ce1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789e1b4",
+          "reference_delta": "-0xee82c",
+          "slot": 58,
+          "symbols": [
+            "__ZN15IORegistryEntry15detachFromChildEPS_PK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077afbe8",
+          "entry_instruction_sha256": "b4fd92f000fda32f95bef4dd15e902d0ff3079b90e26097bcf32f25c655078cf",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789e304",
+          "reference_delta": "-0xee71c",
+          "slot": 59,
+          "symbols": [
+            "__ZN15IORegistryEntry11detachAboveEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077afc88",
+          "entry_instruction_sha256": "8b8c2969dcf8eddc32365c74dadbf3843a09844ef21a1f60f10ec6ec80e9bdb0",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789e3a4",
+          "reference_delta": "-0xee71c",
+          "slot": 60,
+          "symbols": [
+            "__ZN15IORegistryEntry9detachAllEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077afe64",
+          "entry_instruction_sha256": "d89a9ebb672a08adfa0d8c40c74718463ca3469924e4e5691aebb08bf31365f5",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789bcec",
+          "reference_delta": "-0xebe88",
+          "slot": 61,
+          "symbols": [
+            "__ZNK15IORegistryEntry7getNameEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077aff20",
+          "entry_instruction_sha256": "d9ddf71320b4f5d27975601e2b0e361599f70f42cb158fc7e15027019810fe34",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789bda4",
+          "reference_delta": "-0xebe84",
+          "slot": 62,
+          "symbols": [
+            "__ZNK15IORegistryEntry8copyNameEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077affe8",
+          "entry_instruction_sha256": "dd2bd6d27ba6824884c966360b6fa1ee1d6541058ef76b848728c154ccf8b1c5",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789c2cc",
+          "reference_delta": "-0xec2e4",
+          "slot": 63,
+          "symbols": [
+            "__ZNK15IORegistryEntry12compareNamesEP8OSObjectPP8OSString"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b0144",
+          "entry_instruction_sha256": "4ecc51c0c23892dc1819b7ec961e8207abaa1de86576311f9c32ef9599663372",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789c240",
+          "reference_delta": "-0xec0fc",
+          "slot": 64,
+          "symbols": [
+            "__ZNK15IORegistryEntry11compareNameEP8OSStringPS1_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b01d0",
+          "entry_instruction_sha256": "f5fb113e616615d1fd414ee7171077a3b45202fc0e2fd247dce8ca06d5689cad",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789bf34",
+          "reference_delta": "-0xebd64",
+          "slot": 65,
+          "symbols": [
+            "__ZN15IORegistryEntry7setNameEPK8OSSymbolPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b02a0",
+          "entry_instruction_sha256": "d8d25e6364fee415566d440e75619af1e2de01c0ae5844a17e9528caa0cfaddf",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789c058",
+          "reference_delta": "-0xebdb8",
+          "slot": 66,
+          "symbols": [
+            "__ZN15IORegistryEntry7setNameEPKcPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b030c",
+          "entry_instruction_sha256": "636b0a01b3da44cb9405feb2ea55f41bfca204a963097d60186c4496809c3a70",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789bee4",
+          "reference_delta": "-0xebbd8",
+          "slot": 67,
+          "symbols": [
+            "__ZNK15IORegistryEntry11getLocationEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b035c",
+          "entry_instruction_sha256": "9028822e4b4a10fdb727fbd0e02bcd5caf4564ee5abb66d9a457dcf7290ee49a",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789be54",
+          "reference_delta": "-0xebaf8",
+          "slot": 68,
+          "symbols": [
+            "__ZNK15IORegistryEntry12copyLocationEPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b03e8",
+          "entry_instruction_sha256": "7e5180b233b282c6720e0186cd6344622c6ec19438d08d840bbea9cdd61cc5ad",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789c130",
+          "reference_delta": "-0xebd48",
+          "slot": 69,
+          "symbols": [
+            "__ZN15IORegistryEntry11setLocationEPK8OSSymbolPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b046c",
+          "entry_instruction_sha256": "b6a1f3f6be0902f3d62a0f6482ae2e1393e5bf8cd651da7e13c0dd8516ab8ef0",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789c1d4",
+          "reference_delta": "-0xebd68",
+          "slot": 70,
+          "symbols": [
+            "__ZN15IORegistryEntry11setLocationEPKcPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b04d8",
+          "entry_instruction_sha256": "0a90373fe5377b1cbc587778e2dd15893bd537638829c7939b6cccb084346924",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789c488",
+          "reference_delta": "-0xebfb0",
+          "slot": 71,
+          "symbols": [
+            "__ZNK15IORegistryEntry7getPathEPcPiPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b0a08",
+          "entry_instruction_sha256": "e85554ab348b602231adb91b43567f86bfb75293741c839419f47914567d743c",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789cb78",
+          "reference_delta": "-0xec170",
+          "slot": 72,
+          "symbols": [
+            "__ZNK15IORegistryEntry16getPathComponentEPcPiPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b0b00",
+          "entry_instruction_sha256": "54a4737bca8314d3e3b92109957c7c5804a9a3580804f806935d0eb3b26493d3",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff00789d35c",
+          "reference_delta": "-0xec85c",
+          "slot": 73,
+          "symbols": [
+            "__ZN15IORegistryEntry13childFromPathEPKcPK15IORegistryPlanePcPi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b48c0",
+          "entry_instruction_sha256": "b73c42f9366e35383d384fc9edb1d4312dcb39035d1c037f21b396d98188dbe9",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a1498",
+          "reference_delta": "-0xecbd8",
+          "slot": 74,
+          "symbols": [
+            "__ZN9IOService4initEP15IORegistryEntryPK15IORegistryPlane"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b4974",
+          "entry_instruction_sha256": "c1618cb3bd112260f8b958fa71b7e8d15bc738a3cae3ad8e488cc8b53f66e4c4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a5284",
+          "reference_delta": "-0xf0910",
+          "slot": 75,
+          "symbols": [
+            "__ZN9IOService16requestTerminateEPS_j"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b49dc",
+          "entry_instruction_sha256": "805003b5048d084b3c1e3c844688f9ae14ba3c67d6d2d8682e13f59b5012ef84",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a6df8",
+          "reference_delta": "-0xf241c",
+          "slot": 76,
+          "symbols": [
+            "__ZN9IOService13willTerminateEPS_j"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b4a00",
+          "entry_instruction_sha256": "0454c42aa67f1c9a78518d9dcc02c35cce27040794d4a6e33660482da3ad3c60",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a6e1c",
+          "reference_delta": "-0xf241c",
+          "slot": 77,
+          "symbols": [
+            "__ZN9IOService12didTerminateEPS_jPb"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0dd8",
+          "entry_instruction_sha256": "c583c6b9504926c681cb868f7bfdf0772c344dbbe7084c7e17dfdf113a6e1668",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b85a8",
+          "reference_delta": "-0xd77d0",
+          "slot": 78,
+          "symbols": [
+            "__ZN9IOService15nextIdleTimeoutEyyj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678b0a8",
+          "entry_instruction_sha256": "99efd2ae65d181774be700c21593f009a68c67469bf571d6ce7c10d6b18a1f84",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578b0a8",
+          "reference_delta": "0x1000000",
+          "slot": 79,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b4ad8",
+          "entry_instruction_sha256": "229f203edaaf385ea4362612ca1cf212ce5d346dfa7773c9d9702e138116ea30",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a80a0",
+          "reference_delta": "-0xf35c8",
+          "slot": 80,
+          "symbols": [
+            "__ZN9IOService22copyClientWithCategoryEPK8OSSymbol"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b4bdc",
+          "entry_instruction_sha256": "b757f97f6df618021ebb252ec46c2716c11fd7edf49278d48381960ddfa6d55a",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078afba4",
+          "reference_delta": "-0xfafc8",
+          "slot": 81,
+          "symbols": [
+            "__ZN9IOService15configureReportEP19IOReportChannelListjPvS2_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b4e9c",
+          "entry_instruction_sha256": "b757f97f6df618021ebb252ec46c2716c11fd7edf49278d48381960ddfa6d55a",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078afd64",
+          "reference_delta": "-0xfaec8",
+          "slot": 82,
+          "symbols": [
+            "__ZN9IOService12updateReportEP19IOReportChannelListjPvS2_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b516c",
+          "entry_instruction_sha256": "796f4415c1f10a1e305c71939a26fde514ef1d14ac0adb72d72728e57026e177",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078ad4e8",
+          "reference_delta": "-0xf837c",
+          "slot": 83,
+          "symbols": [
+            "__ZNK9IOService8getStateEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5174",
+          "entry_instruction_sha256": "b593b186377e6ab3e7b9d1291688c03d07231a474c5c1da4a6af36d4fbb286ad",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a2668",
+          "reference_delta": "-0xed4f4",
+          "slot": 84,
+          "symbols": [
+            "__ZN9IOService15registerServiceEj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006787060",
+          "entry_instruction_sha256": "07efba50fda58dd516ce9c3de06721a4de70aaa8f323b4c4dbb92b2bb6420790",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005787060",
+          "reference_delta": "0x1000000",
+          "slot": 85,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067872e8",
+          "entry_instruction_sha256": "205f7f4eeaadce0dc5a98059177fc1bee591c0304cdee46c047a3ba76c02ad09",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057872e8",
+          "reference_delta": "0x1000000",
+          "slot": 86,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678886c",
+          "entry_instruction_sha256": "18f9ef3ab693e92873c698659c738cb9ddfbe76f29540201333f5f2d213c6da8",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578886c",
+          "reference_delta": "0x1000000",
+          "slot": 87,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b53d8",
+          "entry_instruction_sha256": "9cbf768303e60a8facf22212485ea6a559245283128245da0a4ab041db1aead8",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7bec",
+          "reference_delta": "-0xf2814",
+          "slot": 88,
+          "symbols": [
+            "__ZN9IOService4openEPS_jPv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5504",
+          "entry_instruction_sha256": "dda8f58de3f8ee202c31d15af85b9b10a16ecb6713a50bd6e2ce64de77022753",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7d4c",
+          "reference_delta": "-0xf2848",
+          "slot": 89,
+          "symbols": [
+            "__ZN9IOService5closeEPS_j"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5628",
+          "entry_instruction_sha256": "4fe164cfcdb567a49c5ca2b270954153bd3147fd9d136f77374ae3fa86bd6852",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7e70",
+          "reference_delta": "-0xf2848",
+          "slot": 90,
+          "symbols": [
+            "__ZNK9IOService6isOpenEPKS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5684",
+          "entry_instruction_sha256": "b51deeb069dfe05f20f3e9fe40d860bd32a7605a0322a1b532ea10c5f9d2473f",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7ecc",
+          "reference_delta": "-0xf2848",
+          "slot": 91,
+          "symbols": [
+            "__ZN9IOService10handleOpenEPS_jPv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b56f0",
+          "entry_instruction_sha256": "7bfd49dd69463946d79ac49e190bbc526d26080a3d7f221b36972225f7d5d6c9",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7f3c",
+          "reference_delta": "-0xf284c",
+          "slot": 92,
+          "symbols": [
+            "__ZN9IOService11handleCloseEPS_j"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5708",
+          "entry_instruction_sha256": "b0794c66bffa9e57637a5dc8b6ebcb805305f3cfa14b876c020ad9c53095834d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7f54",
+          "reference_delta": "-0xf284c",
+          "slot": 93,
+          "symbols": [
+            "__ZNK9IOService12handleIsOpenEPKS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5728",
+          "entry_instruction_sha256": "39773db26073a6b6a80362d52bff927b1a71c4afa1a20384d580a2b7a0f966a3",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7be4",
+          "reference_delta": "-0xf24bc",
+          "slot": 94,
+          "symbols": [
+            "__ZN9IOService9terminateEj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5730",
+          "entry_instruction_sha256": "1a6d661c0fdb152616e290e8ad78d500f14475702984d66471e332232c2ba93c",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7960",
+          "reference_delta": "-0xf2230",
+          "slot": 95,
+          "symbols": [
+            "__ZN9IOService8finalizeEj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5914",
+          "entry_instruction_sha256": "274d73127c2382fd1773a2410b1f2451ce7e923d2883c6feaf81bd5fada53222",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a43c4",
+          "reference_delta": "-0xeeab0",
+          "slot": 96,
+          "symbols": [
+            "__ZN9IOService18lockForArbitrationEb"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5d18",
+          "entry_instruction_sha256": "2f201923cfb95e81671db1111059747e4c28e378c6bbdcdd51d7cf72d7a7c774",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a4694",
+          "reference_delta": "-0xee97c",
+          "slot": 97,
+          "symbols": [
+            "__ZN9IOService20unlockForArbitrationEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5ed8",
+          "entry_instruction_sha256": "4a766bc8cb9a3ff74079d02190550f819adc2f779fbda107431f873c7b962733",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a7b80",
+          "reference_delta": "-0xf1ca8",
+          "slot": 98,
+          "symbols": [
+            "__ZN9IOService15terminateClientEPS_j"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5f3c",
+          "entry_instruction_sha256": "46fa033c1f888abbe02a69b101fdef827d64f72cdbeffe25c62441b784bf278b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078ab88c",
+          "reference_delta": "-0xf5950",
+          "slot": 99,
+          "symbols": [
+            "__ZN9IOService12getBusyStateEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5f48",
+          "entry_instruction_sha256": "4fe164cfcdb567a49c5ca2b270954153bd3147fd9d136f77374ae3fa86bd6852",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078ab7d0",
+          "reference_delta": "-0xf5888",
+          "slot": 100,
+          "symbols": [
+            "__ZN9IOService10adjustBusyEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5f90",
+          "entry_instruction_sha256": "c03bf73c65cdbb6da546b4e22893afb963ec4f5ae6ebc5571e7e38eeb0b96280",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a36fc",
+          "reference_delta": "-0xed76c",
+          "slot": 101,
+          "symbols": [
+            "__ZN9IOService18matchPropertyTableEP12OSDictionaryPi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5f9c",
+          "entry_instruction_sha256": "a177bda608f732995495f51e0ccda3ae641fbf5f22c6882569f5bc9eac099d33",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3708",
+          "reference_delta": "-0xed76c",
+          "slot": 102,
+          "symbols": [
+            "__ZN9IOService18matchPropertyTableEP12OSDictionary"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5fa4",
+          "entry_instruction_sha256": "2c01a6406c349f977803757a1bbbcd089711e307dd51a6b55c397020bf1d2337",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aeaf0",
+          "reference_delta": "-0xf8b4c",
+          "slot": 103,
+          "symbols": [
+            "__ZN9IOService13matchLocationEPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b5fe8",
+          "entry_instruction_sha256": "4fd6239cd8bc4a7c3da4cd97a25ae59d2e0d6371c44ae2fde876eec805e36ae4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aaccc",
+          "reference_delta": "-0xf4ce4",
+          "slot": 104,
+          "symbols": [
+            "__ZN9IOService17addNeededResourceEPKc"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6170",
+          "entry_instruction_sha256": "489c6389e0ca46be8585f3bd5c2da6f6d5701c3c1f7ec680f0035a37a22693d0",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078ae898",
+          "reference_delta": "-0xf8728",
+          "slot": 105,
+          "symbols": [
+            "__ZN9IOService15comparePropertyEP12OSDictionaryPKc"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6204",
+          "entry_instruction_sha256": "36c5f6569c8f38534e0abb972cf92bb58c971e766a70af0c883e1a3490098989",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078ae92c",
+          "reference_delta": "-0xf8728",
+          "slot": 106,
+          "symbols": [
+            "__ZN9IOService15comparePropertyEP12OSDictionaryPK8OSString"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6298",
+          "entry_instruction_sha256": "8d5c2bf58e4ea2642c9a6f73b37d8c4f76655af3c73fa0a9b550c41ebaa29e9d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078ae9c0",
+          "reference_delta": "-0xf8728",
+          "slot": 107,
+          "symbols": [
+            "__ZN9IOService17comparePropertiesEP12OSDictionaryP12OSCollection"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b63ac",
+          "entry_instruction_sha256": "38647ccdc4fe193f1fc4b9d924258225e06cafca3e906abc2301edaba787abb8",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a1b00",
+          "reference_delta": "-0xeb754",
+          "slot": 108,
+          "symbols": [
+            "__ZN9IOService6attachEPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6740",
+          "entry_instruction_sha256": "cff87cb1263cc2286f9a046a547129b5c962d6cf9c0de7a58d57b37b15ea19c3",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a1d9c",
+          "reference_delta": "-0xeb65c",
+          "slot": 109,
+          "symbols": [
+            "__ZN9IOService6detachEPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6af4",
+          "entry_instruction_sha256": "283b18aa8be3c6b2e43607a31d22a500930b9c6cab5ff8f2c15581460f2681af",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3718",
+          "reference_delta": "-0xecc24",
+          "slot": 110,
+          "symbols": [
+            "__ZNK9IOService11getProviderEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cb78",
+          "entry_instruction_sha256": "89409aa473436c9c2a11f7ccc65bea1224b9561cf02c7bdf1c2e9f65d9266f15",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cb78",
+          "reference_delta": "0x1000000",
+          "slot": 111,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6b90",
+          "entry_instruction_sha256": "6e740584cc12b01176bc2797008ba8eaa674412c11817da309603646aed28302",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a37bc",
+          "reference_delta": "-0xecc2c",
+          "slot": 112,
+          "symbols": [
+            "__ZNK9IOService19getProviderIteratorEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6ba4",
+          "entry_instruction_sha256": "f34d82184fd9c78f1a296cb292136cd5654fa784c5ee39bf88377bd99e20d1a1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3a00",
+          "reference_delta": "-0xece5c",
+          "slot": 113,
+          "symbols": [
+            "__ZNK9IOService23getOpenProviderIteratorEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6cc0",
+          "entry_instruction_sha256": "6c68662b8f665162b8a7d065d8327875c791642d007817e32ff7d140a3898a6b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a37d0",
+          "reference_delta": "-0xecb10",
+          "slot": 114,
+          "symbols": [
+            "__ZNK9IOService9getClientEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6cd4",
+          "entry_instruction_sha256": "84b15c9175a879f88e171d45aa7479b28d0c6191cec2f7d76032ab0d7ae8c58d",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a37e4",
+          "reference_delta": "-0xecb10",
+          "slot": 115,
+          "symbols": [
+            "__ZNK9IOService17getClientIteratorEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6ce8",
+          "entry_instruction_sha256": "fdfc5837e2a61c0f84e2449d0534ea28f1ca6acbbafab4935006fa22c56c1efc",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3abc",
+          "reference_delta": "-0xecdd4",
+          "slot": 116,
+          "symbols": [
+            "__ZNK9IOService21getOpenClientIteratorEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b6e04",
+          "entry_instruction_sha256": "e309928ea37e8dfc515d4ec366ac2b6cacc24baad3452a6cf9b4c53338a0e7ef",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3b78",
+          "reference_delta": "-0xecd74",
+          "slot": 117,
+          "symbols": [
+            "__ZN9IOService20callPlatformFunctionEPK8OSSymbolbPvS3_S3_S3_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b716c",
+          "entry_instruction_sha256": "fbbd1899d9141fce51bbb63a1c1f120ac4e8826c1690c7585dfbfb2a542943b0",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3dd0",
+          "reference_delta": "-0xecc64",
+          "slot": 118,
+          "symbols": [
+            "__ZN9IOService20callPlatformFunctionEPKcbPvS2_S2_S2_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7210",
+          "entry_instruction_sha256": "be6ba4eae93d457ed7de0fc911a4b8525d5edb49a2dbf9b9bcc4afcd0b1dfb13",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a3710",
+          "reference_delta": "-0xec500",
+          "slot": 119,
+          "symbols": [
+            "__ZN9IOService12getResourcesEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7218",
+          "entry_instruction_sha256": "e233ed941623796921b6eb35a7437b76cbe1c19687fbd19e21300edc4239f5d9",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aef68",
+          "reference_delta": "-0xf7d50",
+          "slot": 120,
+          "symbols": [
+            "__ZN9IOService20getDeviceMemoryCountEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b728c",
+          "entry_instruction_sha256": "1f010a2ce4b03faacbacf8544ac573e11176bcfe642457013774cd96e51f3308",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aefb0",
+          "reference_delta": "-0xf7d24",
+          "slot": 121,
+          "symbols": [
+            "__ZN9IOService24getDeviceMemoryWithIndexEj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7308",
+          "entry_instruction_sha256": "2c54020b84e5d7c20d0d69c8f76fc9fb91d2a686b60f4ebb2031648dab88485c",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078af00c",
+          "reference_delta": "-0xf7d04",
+          "slot": 122,
+          "symbols": [
+            "__ZN9IOService24mapDeviceMemoryWithIndexEjj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b734c",
+          "entry_instruction_sha256": "e233ed941623796921b6eb35a7437b76cbe1c19687fbd19e21300edc4239f5d9",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078af050",
+          "reference_delta": "-0xf7d04",
+          "slot": 123,
+          "symbols": [
+            "__ZN9IOService15getDeviceMemoryEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b73b0",
+          "entry_instruction_sha256": "2ef3f7b6a438c2ee8a7354a3589bf5d242d0841fed54d81228307770f5f8d938",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078af080",
+          "reference_delta": "-0xf7cd0",
+          "slot": 124,
+          "symbols": [
+            "__ZN9IOService15setDeviceMemoryEP7OSArray"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b73c8",
+          "entry_instruction_sha256": "eae4876183e47ab5ea36f920810cba9975ff9b0ee52279d887e696616ec0cdbb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078af2f4",
+          "reference_delta": "-0xf7f2c",
+          "slot": 125,
+          "symbols": [
+            "__ZN9IOService17registerInterruptEiP8OSObjectPFvS1_PvPS_iES2_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7498",
+          "entry_instruction_sha256": "311627ce11084149e8a287fdd8176164d6ab91666439beb74a9af16c0df9b466",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078af468",
+          "reference_delta": "-0xf7fd0",
+          "slot": 126,
+          "symbols": [
+            "__ZN9IOService19unregisterInterruptEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7540",
+          "entry_instruction_sha256": "318cfa988fa833c099d8d6674e0542590a805f33d25288f5a8112d7e6e6e4878",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078af970",
+          "reference_delta": "-0xf8430",
+          "slot": 127,
+          "symbols": [
+            "__ZN9IOService16getInterruptTypeEiPi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b75f4",
+          "entry_instruction_sha256": "c190a7fb3d876a3ee7de4c02f9184aa526315bd7bf97c06a277ba4c2f99356c4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078afa24",
+          "reference_delta": "-0xf8430",
+          "slot": 128,
+          "symbols": [
+            "__ZN9IOService15enableInterruptEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7674",
+          "entry_instruction_sha256": "c190a7fb3d876a3ee7de4c02f9184aa526315bd7bf97c06a277ba4c2f99356c4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078afaa4",
+          "reference_delta": "-0xf8430",
+          "slot": 129,
+          "symbols": [
+            "__ZN9IOService16disableInterruptEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b76f4",
+          "entry_instruction_sha256": "c190a7fb3d876a3ee7de4c02f9184aa526315bd7bf97c06a277ba4c2f99356c4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078afb24",
+          "reference_delta": "-0xf8430",
+          "slot": 130,
+          "symbols": [
+            "__ZN9IOService14causeInterruptEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7774",
+          "entry_instruction_sha256": "8127886e77ed05e0f1710ccdb91415f006696b466ff601e91a8683ffd5377305",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aee3c",
+          "reference_delta": "-0xf76c8",
+          "slot": 131,
+          "symbols": [
+            "__ZN9IOService12requestProbeEj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7780",
+          "entry_instruction_sha256": "b30318c68a29dafe3675f0959a3ba64d60f442e16df4e376f1b35a018377e2b7",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aef5c",
+          "reference_delta": "-0xf77dc",
+          "slot": 132,
+          "symbols": [
+            "__ZN9IOService7messageEjPS_Pv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b778c",
+          "entry_instruction_sha256": "1a6d661c0fdb152616e290e8ad78d500f14475702984d66471e332232c2ba93c",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a485c",
+          "reference_delta": "-0xed0d0",
+          "slot": 133,
+          "symbols": [
+            "__ZN9IOService13messageClientEjP8OSObjectPvm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7ad4",
+          "entry_instruction_sha256": "4e6f7d26f8a11a155ca46ec526b29fdbd51b91fd288970ec91d59559d7267a7f",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a4bb4",
+          "reference_delta": "-0xed0e0",
+          "slot": 134,
+          "symbols": [
+            "__ZN9IOService14messageClientsEjPvm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7b24",
+          "entry_instruction_sha256": "eae4876183e47ab5ea36f920810cba9975ff9b0ee52279d887e696616ec0cdbb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a4c50",
+          "reference_delta": "-0xed12c",
+          "slot": 135,
+          "symbols": [
+            "__ZN9IOService16registerInterestEPK8OSSymbolPFiPvS3_jPS_S3_mES3_S3_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7c48",
+          "entry_instruction_sha256": "ab5e325c853c3e5028f44ca71411f5ae1c1a2a33cc602f9a50096ddf54885880",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a47f0",
+          "reference_delta": "-0xecba8",
+          "slot": 136,
+          "symbols": [
+            "__ZN9IOService16applyToProvidersEPFvPS_PvES1_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7c5c",
+          "entry_instruction_sha256": "46778610d3fb4e30548ed1839304dc8670cecb3276142792b78124fcd129af34",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a4804",
+          "reference_delta": "-0xecba8",
+          "slot": 137,
+          "symbols": [
+            "__ZN9IOService14applyToClientsEPFvPS_PvES1_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7c70",
+          "entry_instruction_sha256": "20e705aac0cd7ea96113771e36e9d93343d704b75674a300e071ea36541c1923",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a49fc",
+          "reference_delta": "-0xecd8c",
+          "slot": 138,
+          "symbols": [
+            "__ZN9IOService17applyToInterestedEPK8OSSymbolPFvP8OSObjectPvES5_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7cd8",
+          "entry_instruction_sha256": "d45f272833403a609d3999e83ecaa67bce87ca45e6ac9cbef847a02099d0f7d1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078a4c44",
+          "reference_delta": "-0xecf6c",
+          "slot": 139,
+          "symbols": [
+            "__ZN9IOService23acknowledgeNotificationEPvj"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7ce4",
+          "entry_instruction_sha256": "015e9dca4d7030c32a52ea3e5f1b2f04b39b76854d07856798d3650964751f12",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aeb44",
+          "reference_delta": "-0xf6e60",
+          "slot": 140,
+          "symbols": [
+            "__ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006789080",
+          "entry_instruction_sha256": "9de54db94ebcd75a9cde9d953e69240f78ab76316340a47efed3332e70c42e9f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005789080",
+          "reference_delta": "0x1000000",
+          "slot": 141,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7f64",
+          "entry_instruction_sha256": "7b2a5179151dd7a6d67a4a2498a3d38cae195620262353c880da007f670117dd",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aee70",
+          "reference_delta": "-0xf6f0c",
+          "slot": 142,
+          "symbols": [
+            "__ZN9IOService16stringFromReturnEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077b7fdc",
+          "entry_instruction_sha256": "ed3aeb69e811e24bf257414a4ebb42bde0fc1b9a6f0530f156f26c12e5d4a943",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078aee80",
+          "reference_delta": "-0xf6ea4",
+          "slot": 143,
+          "symbols": [
+            "__ZN9IOService15errnoFromReturnEi"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077d0bb0",
+          "entry_instruction_sha256": "065d7139d2516b6fb1f5758dd3e1c1dad290b632ecdc2be23437429f37c0207f",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b0330",
+          "reference_delta": "-0xdf780",
+          "slot": 144,
+          "symbols": [
+            "__ZN9IOService6PMinitEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077dea44",
+          "entry_instruction_sha256": "610013f351f0109504736157959e787b8a4dce62093a1fb17b41acfc859a0334",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b278c",
+          "reference_delta": "-0xd3d48",
+          "slot": 145,
+          "symbols": [
+            "__ZN9IOService6PMstopEv"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077dea28",
+          "entry_instruction_sha256": "122737c0b1aea33d4af2fc56d0b604ff4acc779a57502ea03a13e6c7b5e9e1b2",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b2750",
+          "reference_delta": "-0xd3d28",
+          "slot": 146,
+          "symbols": [
+            "__ZN9IOService10joinPMtreeEPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077df5ac",
+          "entry_instruction_sha256": "0a90373fe5377b1cbc587778e2dd15893bd537638829c7939b6cccb084346924",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b44b8",
+          "reference_delta": "-0xd4f0c",
+          "slot": 147,
+          "symbols": [
+            "__ZN9IOService19registerPowerDriverEPS_P14IOPMPowerStatem"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077dffe0",
+          "entry_instruction_sha256": "c76ae8e905132742990866b365ccf50f2e17aefc4cffb045fa0c0a7f25ca14b6",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b7040",
+          "reference_delta": "-0xd7060",
+          "slot": 148,
+          "symbols": [
+            "__ZN9IOService23requestPowerDomainStateEmP17IOPowerConnectionm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0bc8",
+          "entry_instruction_sha256": "47a0c2a61cbb17a614a1eb5de7db9ff697972ae01f7877209484c4fb98f0fc2b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b7fd4",
+          "reference_delta": "-0xd740c",
+          "slot": 149,
+          "symbols": [
+            "__ZN9IOService14activityTickleEmm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0e38",
+          "entry_instruction_sha256": "6b57ab8053ff2fa08f363e4cf6e123da7a4d837e74989faf1b9b50b93b45b3b4",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b88b8",
+          "reference_delta": "-0xd7a80",
+          "slot": 150,
+          "symbols": [
+            "__ZN9IOService17setAggressivenessEmm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0e40",
+          "entry_instruction_sha256": "4b8146971cef07bfb47a46d1bd56353bfc5d461b4483530601010e6d445a51e1",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b88c0",
+          "reference_delta": "-0xd7a80",
+          "slot": 151,
+          "symbols": [
+            "__ZN9IOService17getAggressivenessEmPm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077ded30",
+          "entry_instruction_sha256": "4dd158c4366b91a871e2b07e4287aaf8c4ec02a8511f6d1df81cea2df127922e",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b32bc",
+          "reference_delta": "-0xd458c",
+          "slot": 152,
+          "symbols": [
+            "__ZN9IOService13addPowerChildEPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077df3f4",
+          "entry_instruction_sha256": "e621923014a7cdb6b3ef5a49b849c40e5ae51045217a8041ef86be9470658802",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b3fe4",
+          "reference_delta": "-0xd4bf0",
+          "slot": 153,
+          "symbols": [
+            "__ZN9IOService16removePowerChildEP17IOPowerConnection"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0c34",
+          "entry_instruction_sha256": "a74fc169fb66cc4512f2422e0b4c87f2f84896e4906d9958f3744f90703f0cc3",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078b83f4",
+          "reference_delta": "-0xd77c0",
+          "slot": 154,
+          "symbols": [
+            "__ZN9IOService18setIdleTimerPeriodEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067972b0",
+          "entry_instruction_sha256": "fec07fc14b10f1e15121823f6047169bb6bc1cf551dda57d842cca02e020dfc5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057972b0",
+          "reference_delta": "0x1000000",
+          "slot": 155,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e20f8",
+          "entry_instruction_sha256": "090e2e7acf853c1229d78adf9fa3a2520a24138d0adf570745bd5fe1f574ac04",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078c026c",
+          "reference_delta": "-0xde174",
+          "slot": 156,
+          "symbols": [
+            "__ZN9IOService27maxCapabilityForDomainStateEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e2140",
+          "entry_instruction_sha256": "058b2f76f61c40fd8d4517476f236fd7a35a08b582cba7f6d6292db3c4966ade",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078c02b4",
+          "reference_delta": "-0xde174",
+          "slot": 157,
+          "symbols": [
+            "__ZN9IOService31initialPowerStateForDomainStateEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e2194",
+          "entry_instruction_sha256": "090e2e7acf853c1229d78adf9fa3a2520a24138d0adf570745bd5fe1f574ac04",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078c0308",
+          "reference_delta": "-0xde174",
+          "slot": 158,
+          "symbols": [
+            "__ZN9IOService24powerStateForDomainStateEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e21dc",
+          "entry_instruction_sha256": "71da67397ad79c688ee69edbfc65d33e72672312f99f0171e0b8513a2fa4242c",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078c0350",
+          "reference_delta": "-0xde174",
+          "slot": 159,
+          "symbols": [
+            "__ZN9IOService22powerStateWillChangeToEmmPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e21e4",
+          "entry_instruction_sha256": "23cddb358fc659e0f00d405044859bd60695a32a50fad1c972f0cf7c83de3b29",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078c0358",
+          "reference_delta": "-0xde174",
+          "slot": 160,
+          "symbols": [
+            "__ZN9IOService21powerStateDidChangeToEmmPS_"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0f74",
+          "entry_instruction_sha256": "223d6a2799b59a3c4404d93f8fde1e59582098e10ff852efe2f55de1eeb3eaf0",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078bd63c",
+          "reference_delta": "-0xdc6c8",
+          "slot": 161,
+          "symbols": [
+            "__ZN9IOService13askChangeDownEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0f80",
+          "entry_instruction_sha256": "88f9b9be97bdbbb1d31be68965e2e88a737e405871d92a75507aae48d05eb9b7",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078bd648",
+          "reference_delta": "-0xdc6c8",
+          "slot": 162,
+          "symbols": [
+            "__ZN9IOService14tellChangeDownEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e0f8c",
+          "entry_instruction_sha256": "25da702b8bb11a0118054c1e01ee43f00fea9e5455ca8fa4d4a208be1fb3b24b",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078bee9c",
+          "reference_delta": "-0xddf10",
+          "slot": 163,
+          "symbols": [
+            "__ZN9IOService16tellNoChangeDownEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e1578",
+          "entry_instruction_sha256": "0aa2cffc6ade890073494261f5d965d01096c53104daad9f682d002864899f66",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078beff8",
+          "reference_delta": "-0xdda80",
+          "slot": 164,
+          "symbols": [
+            "__ZN9IOService12tellChangeUpEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e1584",
+          "entry_instruction_sha256": "f13e5a28e256396403b8bc3f0313db3bd33c4d5dd75b6702568f8baa12bef321",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078bf8fc",
+          "reference_delta": "-0xde378",
+          "slot": 165,
+          "symbols": [
+            "__ZN9IOService16allowPowerChangeEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e1604",
+          "entry_instruction_sha256": "6d7f4c2c5f25f6c0e67ab1dab9c8740c9125e4506361dfeee5c9de66b551b7b0",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078bf964",
+          "reference_delta": "-0xde360",
+          "slot": 166,
+          "symbols": [
+            "__ZN9IOService17cancelPowerChangeEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0077e21ec",
+          "entry_instruction_sha256": "93a5f1ec76645ccc984d6270005ab5999bcb2c039b797450b2849756e18cbddf",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff0078c0360",
+          "reference_delta": "-0xde174",
+          "slot": 167,
+          "symbols": [
+            "__ZN9IOService15powerChangeDoneEm"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fb24",
+          "entry_instruction_sha256": "6d1c9cb543c0921f49b84de022d36bacba31e5263457a8fe3ca9f3cc2da75941",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fb24",
+          "reference_delta": "0x1000000",
+          "slot": 168,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067891d8",
+          "entry_instruction_sha256": "8cd2c0edf9c0a2130a82c272622dec2106098653b6bb4be303e0a68ba16ac9e7",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057891d8",
+          "reference_delta": "0x1000000",
+          "slot": 169,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678c998",
+          "entry_instruction_sha256": "199debbdd0e1f3b8bb01b92d0779ea9ed66f27c89b65574d4fb3d1189c8c6121",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578c998",
+          "reference_delta": "0x1000000",
+          "slot": 170,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cb00",
+          "entry_instruction_sha256": "24397c6ba1445cd0c60f20ef90838c721d53648bce6e3ecb2a7c14eb5b522c4b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cb00",
+          "reference_delta": "0x1000000",
+          "slot": 171,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cb10",
+          "entry_instruction_sha256": "41a76c5b048d415b209bd3ff4bb1fbc4280d178faaa6030aacdce07e4b67dc29",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cb10",
+          "reference_delta": "0x1000000",
+          "slot": 172,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cb90",
+          "entry_instruction_sha256": "41a9e5c4a6b0857d3296a062a1f5b39a2ba80fcceb5f50486e468538116a2429",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cb90",
+          "reference_delta": "0x1000000",
+          "slot": 173,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cbf8",
+          "entry_instruction_sha256": "0163dcd1956f864263ea25f886a3a73f49cc1ec95617dba35bb05b9d952d94f1",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cbf8",
+          "reference_delta": "0x1000000",
+          "slot": 174,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006792774",
+          "entry_instruction_sha256": "1735f009f8a28fe06b64d8726ac60796f77374ee385f2bd5a719a248c4a2f693",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005792774",
+          "reference_delta": "0x1000000",
+          "slot": 175,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678d998",
+          "entry_instruction_sha256": "5954e08a1fac6574ab110e9336af7bffbaefd0f56075639f246efad7a12d5155",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578d998",
+          "reference_delta": "0x1000000",
+          "slot": 176,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678e290",
+          "entry_instruction_sha256": "0a5431c00e01ff9e4270de1a29e935a08bb7888634f797df4516fe1823ef1a41",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578e290",
+          "reference_delta": "0x1000000",
+          "slot": 177,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678f224",
+          "entry_instruction_sha256": "0075e4617df4b1fb21f6307c20f9008e59c0a13c3a3da1f009297f7aa173e98a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578f224",
+          "reference_delta": "0x1000000",
+          "slot": 178,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006791ffc",
+          "entry_instruction_sha256": "ba50bbb60b22f355f339c1865ad18d332631896be30274f31bbf25c83c33d57e",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005791ffc",
+          "reference_delta": "0x1000000",
+          "slot": 179,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006798404",
+          "entry_instruction_sha256": "b9f0b2d801b5d293474e29292e377649b48eaf30531cda5653f948135806ee77",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005798404",
+          "reference_delta": "0x1000000",
+          "slot": 180,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006798538",
+          "entry_instruction_sha256": "78c30ed8d42dad12a28b727eefdb39c3d6631332397a7eb9e30891640520dae7",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005798538",
+          "reference_delta": "0x1000000",
+          "slot": 181,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fb3c",
+          "entry_instruction_sha256": "b7f05b52497b656e86e7d856074121dbf6f28eafcc9b23236adaee027721bbfc",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fb3c",
+          "reference_delta": "0x1000000",
+          "slot": 182,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006797470",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005797470",
+          "reference_delta": "0x1000000",
+          "slot": 183,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cb20",
+          "entry_instruction_sha256": "dfab9bc42f355371058dbd09e3898683ed182777ffac41887f5114758f0db568",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cb20",
+          "reference_delta": "0x1000000",
+          "slot": 184,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679748c",
+          "entry_instruction_sha256": "ced493dc1e83eeeb1d521ba9a14b855e4984f7143fd1ac91dca27931bd3a32a0",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579748c",
+          "reference_delta": "0x1000000",
+          "slot": 185,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067980e0",
+          "entry_instruction_sha256": "c86f5752bf1b87741627f7201e2e1ad9692dc07375b91ab9f04657c36453e864",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057980e0",
+          "reference_delta": "0x1000000",
+          "slot": 186,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cbb4",
+          "entry_instruction_sha256": "f5d434e19650e13c55252df1dc3a1ff63e0b6d1e51fd39aadbf7dcefe5ac14c7",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cbb4",
+          "reference_delta": "0x1000000",
+          "slot": 187,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006798184",
+          "entry_instruction_sha256": "4d462199bab6eda1a6a3b2dd7ac51cb88f9b7684acb492f765390e3bec1861f2",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005798184",
+          "reference_delta": "0x1000000",
+          "slot": 188,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067982bc",
+          "entry_instruction_sha256": "4f3e3a38ffd189fa7f302cfa5e784feeb83ea0bff1dd317ab353ea480838129f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057982bc",
+          "reference_delta": "0x1000000",
+          "slot": 189,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067974ac",
+          "entry_instruction_sha256": "40f68633d5d158f95b8db4264f34893b28037493c6da2ff787b4832a0eb702c9",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057974ac",
+          "reference_delta": "0x1000000",
+          "slot": 190,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067978b0",
+          "entry_instruction_sha256": "1c9e3c49106f30dee1f5b49c5b067439c4e72843c0e23b3ba4d7cfec8f538b64",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057978b0",
+          "reference_delta": "0x1000000",
+          "slot": 191,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006797d74",
+          "entry_instruction_sha256": "3f9fb492054bca8311a1f7132ba6461533348e05b470f327e47adfa6d88670bd",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005797d74",
+          "reference_delta": "0x1000000",
+          "slot": 192,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006798014",
+          "entry_instruction_sha256": "cb971672f17e1b9ea96649e0fafe0776a47d6bcb452cd93e9d1184e09ff7e8ab",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005798014",
+          "reference_delta": "0x1000000",
+          "slot": 193,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067977c8",
+          "entry_instruction_sha256": "6af84159c7fbb5702711a5765552c2c3e8f87b211d2e19b5db5a08954b813c36",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057977c8",
+          "reference_delta": "0x1000000",
+          "slot": 194,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795bec",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795bec",
+          "reference_delta": "0x1000000",
+          "slot": 195,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795c08",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795c08",
+          "reference_delta": "0x1000000",
+          "slot": 196,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795c24",
+          "entry_instruction_sha256": "ced493dc1e83eeeb1d521ba9a14b855e4984f7143fd1ac91dca27931bd3a32a0",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795c24",
+          "reference_delta": "0x1000000",
+          "slot": 197,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795e00",
+          "entry_instruction_sha256": "6e320261aab358cb9c890af7d8023531cecd7d5c051e409c0e7c71c677afa4da",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795e00",
+          "reference_delta": "0x1000000",
+          "slot": 198,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795c60",
+          "entry_instruction_sha256": "f8407332d2d2dfe8d52a399162f52b95ae1d38fadb53c4dc6f0aa1a59a512a63",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795c60",
+          "reference_delta": "0x1000000",
+          "slot": 199,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795c44",
+          "entry_instruction_sha256": "874b28114ac9fa4e72c4bb18bbd390d98bca7f8d50d61e4876c703c465fd731d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795c44",
+          "reference_delta": "0x1000000",
+          "slot": 200,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795cb8",
+          "entry_instruction_sha256": "a87a0cf3963cb80e8ae50b49ca69b84a1a2d8822c852557cd2125232e0fc485d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795cb8",
+          "reference_delta": "0x1000000",
+          "slot": 201,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795c7c",
+          "entry_instruction_sha256": "a87a0cf3963cb80e8ae50b49ca69b84a1a2d8822c852557cd2125232e0fc485d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795c7c",
+          "reference_delta": "0x1000000",
+          "slot": 202,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795c9c",
+          "entry_instruction_sha256": "f8407332d2d2dfe8d52a399162f52b95ae1d38fadb53c4dc6f0aa1a59a512a63",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795c9c",
+          "reference_delta": "0x1000000",
+          "slot": 203,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795d10",
+          "entry_instruction_sha256": "c5e21c163ac3ca8326ec0c2ec8706182f18026621ecbffd9113bd9ae3e474fed",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795d10",
+          "reference_delta": "0x1000000",
+          "slot": 204,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795d5c",
+          "entry_instruction_sha256": "4e6d1fb30ba375b8db64143a7256d63d2352fa1a7f968d1aea59a7a2b6b653fb",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795d5c",
+          "reference_delta": "0x1000000",
+          "slot": 205,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795d78",
+          "entry_instruction_sha256": "afe623da5ad5faed6af84732cbbbd8759c85c4f58fb1bc2ee83bc32db1475c6b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795d78",
+          "reference_delta": "0x1000000",
+          "slot": 206,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795de4",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795de4",
+          "reference_delta": "0x1000000",
+          "slot": 207,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795e14",
+          "entry_instruction_sha256": "d4c032cb132e922591290635f377718cd2ed6627da47fe894d0dc62903538109",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795e14",
+          "reference_delta": "0x1000000",
+          "slot": 208,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067960f0",
+          "entry_instruction_sha256": "72c2624c0f40a837772c99e28e8091d9cbda20372c5ecd189978b9406510ca88",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057960f0",
+          "reference_delta": "0x1000000",
+          "slot": 209,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006794058",
+          "entry_instruction_sha256": "6cccb18eb5d3f475d366ab3381ecb780d20c6b1610c6554f579bbca5ce09d919",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005794058",
+          "reference_delta": "0x1000000",
+          "slot": 210,
+          "symbols": []
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 211,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fb50",
+          "entry_instruction_sha256": "7a9957f1fe1bd4c2ca480e31e963afdde2db9d15c8b235f9e55ad95531fe64ff",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fb50",
+          "reference_delta": "0x1000000",
+          "slot": 212,
+          "symbols": []
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 213,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006796b7c",
+          "entry_instruction_sha256": "ebd728561e53ae60587804bceee75724350a8549f454e371b71dcb5c7a6fdaeb",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005796b7c",
+          "reference_delta": "0x1000000",
+          "slot": 214,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006796d0c",
+          "entry_instruction_sha256": "9926ca0bc881cd8855e2618bfd0b40a87091d729d0bfb2de4f882577be69be69",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005796d0c",
+          "reference_delta": "0x1000000",
+          "slot": 215,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006796f0c",
+          "entry_instruction_sha256": "8cf45fc889364de9d2edfcdbad6f233ce9193ab7db77ea86bfe7a2015c239774",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005796f0c",
+          "reference_delta": "0x1000000",
+          "slot": 216,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067893bc",
+          "entry_instruction_sha256": "a6fdb43420a8208ff22c1ce78b0a01ba75ff189676eb0da4e4e64cd17813d89e",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057893bc",
+          "reference_delta": "0x1000000",
+          "slot": 217,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678961c",
+          "entry_instruction_sha256": "54d75fc49b2a538c3489d342a0e804c57668526eac94c4678b666dd0283a6212",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578961c",
+          "reference_delta": "0x1000000",
+          "slot": 218,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678dde4",
+          "entry_instruction_sha256": "c22ec630906075239c51128126184cf6a6a535b86bba03a565aff0b334e4ec2b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578dde4",
+          "reference_delta": "0x1000000",
+          "slot": 219,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ed9c",
+          "entry_instruction_sha256": "0fd5f0e4830d7ad0031b4e56d23dc37e2abf5462db1ef5d4d11463c5140942ae",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ed9c",
+          "reference_delta": "0x1000000",
+          "slot": 220,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679edb4",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579edb4",
+          "reference_delta": "0x1000000",
+          "slot": 221,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679edd0",
+          "entry_instruction_sha256": "f8407332d2d2dfe8d52a399162f52b95ae1d38fadb53c4dc6f0aa1a59a512a63",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579edd0",
+          "reference_delta": "0x1000000",
+          "slot": 222,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fb64",
+          "entry_instruction_sha256": "a23243c587b0652a139a5895a21b6ba16f5cf079997d55b0a23437ee67af345a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fb64",
+          "reference_delta": "0x1000000",
+          "slot": 223,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fb98",
+          "entry_instruction_sha256": "a23243c587b0652a139a5895a21b6ba16f5cf079997d55b0a23437ee67af345a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fb98",
+          "reference_delta": "0x1000000",
+          "slot": 224,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fbcc",
+          "entry_instruction_sha256": "a23243c587b0652a139a5895a21b6ba16f5cf079997d55b0a23437ee67af345a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fbcc",
+          "reference_delta": "0x1000000",
+          "slot": 225,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fc00",
+          "entry_instruction_sha256": "b6c2de7607e2a934d6b370b2a3b9ff5e8fb53ca3c8a881a8f5b3e71df80d68f4",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fc00",
+          "reference_delta": "0x1000000",
+          "slot": 226,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679edec",
+          "entry_instruction_sha256": "663f0a3ae5f536773f9f05271d5fc51a0e500652ec6158f73842ea108b82849b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579edec",
+          "reference_delta": "0x1000000",
+          "slot": 227,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679efb0",
+          "entry_instruction_sha256": "5bc8f44e9327609d6b5da05fa2a03a60df1ab9a3c624bddb6d7042e265555f7f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579efb0",
+          "reference_delta": "0x1000000",
+          "slot": 228,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067973b8",
+          "entry_instruction_sha256": "4e69b10678b367c53b5373e0e956150ffb30b43e486246f023d067f866ba8a14",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057973b8",
+          "reference_delta": "0x1000000",
+          "slot": 229,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ae68",
+          "entry_instruction_sha256": "4970cefe1be5a9b208f4a8c23461d9d35a9d8d7d381fddc1bfa765447a301dc4",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ae68",
+          "reference_delta": "0x1000000",
+          "slot": 230,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a2a8",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a2a8",
+          "reference_delta": "0x1000000",
+          "slot": 231,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a2fc",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a2fc",
+          "reference_delta": "0x1000000",
+          "slot": 232,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795cd8",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795cd8",
+          "reference_delta": "0x1000000",
+          "slot": 233,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795cf4",
+          "entry_instruction_sha256": "8290c680a3d9d60c471a0424ec8fe0fd4192efb0826ac8257d1af71f94dbb3d1",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795cf4",
+          "reference_delta": "0x1000000",
+          "slot": 234,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a318",
+          "entry_instruction_sha256": "2f0fa0e1e4de550c28778f703cceae158fc348f9019fbae6c3b2c9699c00ac6f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a318",
+          "reference_delta": "0x1000000",
+          "slot": 235,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a338",
+          "entry_instruction_sha256": "874b28114ac9fa4e72c4bb18bbd390d98bca7f8d50d61e4876c703c465fd731d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a338",
+          "reference_delta": "0x1000000",
+          "slot": 236,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a354",
+          "entry_instruction_sha256": "874b28114ac9fa4e72c4bb18bbd390d98bca7f8d50d61e4876c703c465fd731d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a354",
+          "reference_delta": "0x1000000",
+          "slot": 237,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a370",
+          "entry_instruction_sha256": "f2cffa68428aed37dcd091c692bdb66307370714c3631431984d7f909b8849bb",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a370",
+          "reference_delta": "0x1000000",
+          "slot": 238,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a2c4",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a2c4",
+          "reference_delta": "0x1000000",
+          "slot": 239,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a2e0",
+          "entry_instruction_sha256": "874b28114ac9fa4e72c4bb18bbd390d98bca7f8d50d61e4876c703c465fd731d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a2e0",
+          "reference_delta": "0x1000000",
+          "slot": 240,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fc28",
+          "entry_instruction_sha256": "f514d05bc5dd26edca663d998042de48b2ae3c5974e2092eee58090252d016f1",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fc28",
+          "reference_delta": "0x1000000",
+          "slot": 241,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678b390",
+          "entry_instruction_sha256": "4ace6e6603c8966a435f33963343f243133a6b81818621a9945871a2d0d500e6",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578b390",
+          "reference_delta": "0x1000000",
+          "slot": 242,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678b450",
+          "entry_instruction_sha256": "97528034a42711a6f8515344cd4f3e0b0db7f799ebdff3b96d2c27b8f39a20c0",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578b450",
+          "reference_delta": "0x1000000",
+          "slot": 243,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fc48",
+          "entry_instruction_sha256": "9c3aa5a6f6b89daecfa37a6627bad6dbb7552a8eb02193e36be32b61e7f946f3",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fc48",
+          "reference_delta": "0x1000000",
+          "slot": 244,
+          "symbols": []
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 245,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 246,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fc5c",
+          "entry_instruction_sha256": "9e9c75a1832a51008c0356fc76b0e83e14cce1df1dab39fd1ea2cb65076597f2",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fc5c",
+          "reference_delta": "0x1000000",
+          "slot": 247,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fc74",
+          "entry_instruction_sha256": "d805017e4e7ca9433dfc960c26cfaaccb1b1614e46fc5f08800c059f664be766",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fc74",
+          "reference_delta": "0x1000000",
+          "slot": 248,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fc8c",
+          "entry_instruction_sha256": "a5518c614acdbb8d3482954875bce6b34ed497bde7857e60fd5dda87621001ca",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fc8c",
+          "reference_delta": "0x1000000",
+          "slot": 249,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fcfc",
+          "entry_instruction_sha256": "0bec2233b0c19168b178ba3b592f58ba56196c0fb147b0c16619d1a99d9fb4c2",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fcfc",
+          "reference_delta": "0x1000000",
+          "slot": 250,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd10",
+          "entry_instruction_sha256": "bc910828f4507a0d84fcd641ff81461cfafdb100de4fa7e31f51084f0b50c5b6",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd10",
+          "reference_delta": "0x1000000",
+          "slot": 251,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd24",
+          "entry_instruction_sha256": "e6f4535c114df0e60825f9676eef11d63eb16c50b3cfb192b58416bc4ea7fe7f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd24",
+          "reference_delta": "0x1000000",
+          "slot": 252,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd38",
+          "entry_instruction_sha256": "6d9755ab268d6fdb4aeefcdc71c3c4b6019fd8a172c33005beec4186ae2f024b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd38",
+          "reference_delta": "0x1000000",
+          "slot": 253,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd54",
+          "entry_instruction_sha256": "b2538716fc04a07cd6653962bb7fb9896e48079f747971d8319bb544ec0305ad",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd54",
+          "reference_delta": "0x1000000",
+          "slot": 254,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd68",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd68",
+          "reference_delta": "0x1000000",
+          "slot": 255,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd80",
+          "entry_instruction_sha256": "ad4dd430207de5d027972d2c8c09d58767b02e511ddec08ab5fe7ec760133559",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd80",
+          "reference_delta": "0x1000000",
+          "slot": 256,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fd9c",
+          "entry_instruction_sha256": "bf7a5a9e373e5280c53620a5a892bffbc82c1270e9559ffe8ac4e8afe9a99a62",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fd9c",
+          "reference_delta": "0x1000000",
+          "slot": 257,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fdb8",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fdb8",
+          "reference_delta": "0x1000000",
+          "slot": 258,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fdd0",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fdd0",
+          "reference_delta": "0x1000000",
+          "slot": 259,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fde8",
+          "entry_instruction_sha256": "d7f2479c8e3790c3a8acc70e666399267cd7fdd4987bb467161e80981261dda3",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fde8",
+          "reference_delta": "0x1000000",
+          "slot": 260,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fdfc",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fdfc",
+          "reference_delta": "0x1000000",
+          "slot": 261,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fe14",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fe14",
+          "reference_delta": "0x1000000",
+          "slot": 262,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fe2c",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fe2c",
+          "reference_delta": "0x1000000",
+          "slot": 263,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006796a40",
+          "entry_instruction_sha256": "3ba4a8945e016e0f69ce25153d887f580c4cf43b2a839c6e13bf6782d1b89b9d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005796a40",
+          "reference_delta": "0x1000000",
+          "slot": 264,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067969f8",
+          "entry_instruction_sha256": "ef9592fd597fc2a7c1b9e6290f2c771094292468cef88d2b4303134e2e365e18",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057969f8",
+          "reference_delta": "0x1000000",
+          "slot": 265,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fe44",
+          "entry_instruction_sha256": "3d453696f788efb8a2880b367b8dffd042fc7a76b5c458718a085fd8e7c46237",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fe44",
+          "reference_delta": "0x1000000",
+          "slot": 266,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fe60",
+          "entry_instruction_sha256": "33861a0829747d314f78137b5c36bf96642b0ab5490ffa22ec6228563414392b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fe60",
+          "reference_delta": "0x1000000",
+          "slot": 267,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fe78",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fe78",
+          "reference_delta": "0x1000000",
+          "slot": 268,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fe90",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fe90",
+          "reference_delta": "0x1000000",
+          "slot": 269,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fea8",
+          "entry_instruction_sha256": "09617355423827e397541dbd05c4381b08fd6da7a7c7da4f93917064ef46c622",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fea8",
+          "reference_delta": "0x1000000",
+          "slot": 270,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fecc",
+          "entry_instruction_sha256": "b8a5f3c0a98dd1eb80d88725bc3319972341d0d3fa7abe9ec55a985d445cba58",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fecc",
+          "reference_delta": "0x1000000",
+          "slot": 271,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fedc",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fedc",
+          "reference_delta": "0x1000000",
+          "slot": 272,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fef8",
+          "entry_instruction_sha256": "9aa648176cfb3287b99e73a6ab137274f7815bff45c91409964f6f1839b1f3d5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fef8",
+          "reference_delta": "0x1000000",
+          "slot": 273,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ff08",
+          "entry_instruction_sha256": "874b28114ac9fa4e72c4bb18bbd390d98bca7f8d50d61e4876c703c465fd731d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ff08",
+          "reference_delta": "0x1000000",
+          "slot": 274,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ff24",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ff24",
+          "reference_delta": "0x1000000",
+          "slot": 275,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ff40",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ff40",
+          "reference_delta": "0x1000000",
+          "slot": 276,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ff5c",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ff5c",
+          "reference_delta": "0x1000000",
+          "slot": 277,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ff78",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ff78",
+          "reference_delta": "0x1000000",
+          "slot": 278,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ff94",
+          "entry_instruction_sha256": "7bd522862bebb0e3897f319d636e24702a5a79ae16bdf7c9985f2554104a2f52",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ff94",
+          "reference_delta": "0x1000000",
+          "slot": 279,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ffac",
+          "entry_instruction_sha256": "7bd522862bebb0e3897f319d636e24702a5a79ae16bdf7c9985f2554104a2f52",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ffac",
+          "reference_delta": "0x1000000",
+          "slot": 280,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ffc4",
+          "entry_instruction_sha256": "c21042a7926c223d00c670814e84cee5860b344171b3d6cad0d2df6da52f7030",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ffc4",
+          "reference_delta": "0x1000000",
+          "slot": 281,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ffdc",
+          "entry_instruction_sha256": "a6df3bf23a10affe4c9618a7a136c9bb6edc80033ba081f51a2d08315b53050e",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ffdc",
+          "reference_delta": "0x1000000",
+          "slot": 282,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fffc",
+          "entry_instruction_sha256": "2f0fa0e1e4de550c28778f703cceae158fc348f9019fbae6c3b2c9699c00ac6f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fffc",
+          "reference_delta": "0x1000000",
+          "slot": 283,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a001c",
+          "entry_instruction_sha256": "37dda26cfc7e1231a766f7093a8d97bbad555069c2fd0dc93e1e2ebea4848667",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a001c",
+          "reference_delta": "0x1000000",
+          "slot": 284,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a004c",
+          "entry_instruction_sha256": "37dda26cfc7e1231a766f7093a8d97bbad555069c2fd0dc93e1e2ebea4848667",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a004c",
+          "reference_delta": "0x1000000",
+          "slot": 285,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a007c",
+          "entry_instruction_sha256": "515abf309b64d88635c0be9cef347e8ad6331121c3e30b9f360fb0c687850e4a",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a007c",
+          "reference_delta": "0x1000000",
+          "slot": 286,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679fa18",
+          "entry_instruction_sha256": "eac32c28ddf74c86f9cac2afb2b670f421cc4235deeb8737086d90a9c7e277ab",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579fa18",
+          "reference_delta": "0x1000000",
+          "slot": 287,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679278c",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579278c",
+          "reference_delta": "0x1000000",
+          "slot": 288,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067927a4",
+          "entry_instruction_sha256": "be3b2f9644dcc6d5215fa9ab2d0cae9304e067edad1897f494d40ffb5239b147",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057927a4",
+          "reference_delta": "0x1000000",
+          "slot": 289,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006794030",
+          "entry_instruction_sha256": "0bb2fc929462c754236bdf0a27c15cefdec650a54c2358d9b2d77d71e066d768",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005794030",
+          "reference_delta": "0x1000000",
+          "slot": 290,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067927c8",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057927c8",
+          "reference_delta": "0x1000000",
+          "slot": 291,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067927e0",
+          "entry_instruction_sha256": "1f080968e71f6e60b51c2ecf52a8ffe97278c40cc7e43f0cd10abef9830e5874",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057927e0",
+          "reference_delta": "0x1000000",
+          "slot": 292,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067927b4",
+          "entry_instruction_sha256": "cba81f3339dc1205b8afd4d5106bec317ba6b8a795f60ae0c3678c1b7c51b81d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057927b4",
+          "reference_delta": "0x1000000",
+          "slot": 293,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0090",
+          "entry_instruction_sha256": "07e43ffefed25f374f76678630f3f8bb7b746e180d7971bf704da73834b4ec6c",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0090",
+          "reference_delta": "0x1000000",
+          "slot": 294,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795b88",
+          "entry_instruction_sha256": "a18d9d7491a1b6cc7830b8235d29f05ad79174d14af508aaca7bef405bd853bc",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795b88",
+          "reference_delta": "0x1000000",
+          "slot": 295,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795bb4",
+          "entry_instruction_sha256": "3d453696f788efb8a2880b367b8dffd042fc7a76b5c458718a085fd8e7c46237",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795bb4",
+          "reference_delta": "0x1000000",
+          "slot": 296,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006795bd0",
+          "entry_instruction_sha256": "6d9755ab268d6fdb4aeefcdc71c3c4b6019fd8a172c33005beec4186ae2f024b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005795bd0",
+          "reference_delta": "0x1000000",
+          "slot": 297,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a00bc",
+          "entry_instruction_sha256": "b7f05b52497b656e86e7d856074121dbf6f28eafcc9b23236adaee027721bbfc",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a00bc",
+          "reference_delta": "0x1000000",
+          "slot": 298,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006793694",
+          "entry_instruction_sha256": "dba94b2f0f3c143091e3903a984446f4c4bcc48531174e6e96c4a402cd3e91b0",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005793694",
+          "reference_delta": "0x1000000",
+          "slot": 299,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678d87c",
+          "entry_instruction_sha256": "0a6d1d6f0e9c4de5d083e95abe76f48839201fc1cf0d542cdad764fa1e62a0e8",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578d87c",
+          "reference_delta": "0x1000000",
+          "slot": 300,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ea5c",
+          "entry_instruction_sha256": "f59c787c38118404ba04150f5ec85cdd58ac8504cf63f60ed6d4fd270be2d364",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ea5c",
+          "reference_delta": "0x1000000",
+          "slot": 301,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a00d0",
+          "entry_instruction_sha256": "7c8a3af069f505f24e3fbfd0d7c898fbabc5c60fcfad2ac681bf368f9d5705d9",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a00d0",
+          "reference_delta": "0x1000000",
+          "slot": 302,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067985e8",
+          "entry_instruction_sha256": "8938ec08eb47f5fec5665fbe060da0dad0320ec79fded6167d2df61880d456e3",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057985e8",
+          "reference_delta": "0x1000000",
+          "slot": 303,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a00e4",
+          "entry_instruction_sha256": "df9916bc14ce9f25b42b843387647a9ffa155a9e3ee6a7eb497c9ac8e2407c0c",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a00e4",
+          "reference_delta": "0x1000000",
+          "slot": 304,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006794040",
+          "entry_instruction_sha256": "c47a46d7add641f8b1fd1a416d8d6d294b3814b9c7940c462cb3fb179a567d29",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005794040",
+          "reference_delta": "0x1000000",
+          "slot": 305,
+          "symbols": []
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 306,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 307,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a00f4",
+          "entry_instruction_sha256": "d5afd6ba39531fc90d2d6c8d9dab64f4a8d30384c701f1029fd1deca4e6f01e6",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a00f4",
+          "reference_delta": "0x1000000",
+          "slot": 308,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679c5ac",
+          "entry_instruction_sha256": "def99b8a2d7842b36dc7787171a2076bf0884ce48b32d7207545c7f27b80be68",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579c5ac",
+          "reference_delta": "0x1000000",
+          "slot": 309,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679c9d8",
+          "entry_instruction_sha256": "84650c95b0fa5961ab9035438454c0bed5644ce8c56e60b5ff13af032054500f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579c9d8",
+          "reference_delta": "0x1000000",
+          "slot": 310,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679c6c0",
+          "entry_instruction_sha256": "f7871b6c713da67265c3224b6ac8d74b491b15063c08309e0c273d3bbdc4d158",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579c6c0",
+          "reference_delta": "0x1000000",
+          "slot": 311,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679cf6c",
+          "entry_instruction_sha256": "ce6bc756aab5138d9d7dc96981841d27668e48568a13ac7423857f85dd1b7cba",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579cf6c",
+          "reference_delta": "0x1000000",
+          "slot": 312,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679d228",
+          "entry_instruction_sha256": "5788a497b175ab99e9400cf778c0335e02c53a5456be7e1db0a65a7caf05d12c",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579d228",
+          "reference_delta": "0x1000000",
+          "slot": 313,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679d584",
+          "entry_instruction_sha256": "39d9bed6a689876f4a2b7823f5b42634ed7c55e1a32d6adf2872ccb4445bf4cb",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579d584",
+          "reference_delta": "0x1000000",
+          "slot": 314,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679d85c",
+          "entry_instruction_sha256": "c0c4eacdc47f8669b34ceb3f1c7ea8cc257a71fdd5131188af3c51075dd47812",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579d85c",
+          "reference_delta": "0x1000000",
+          "slot": 315,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679ea44",
+          "entry_instruction_sha256": "abdd68420116c9b0dbceb70fd16479c988ae680123d5ec6bb5fa385d01280778",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579ea44",
+          "reference_delta": "0x1000000",
+          "slot": 316,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679af20",
+          "entry_instruction_sha256": "ced493dc1e83eeeb1d521ba9a14b855e4984f7143fd1ac91dca27931bd3a32a0",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579af20",
+          "reference_delta": "0x1000000",
+          "slot": 317,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679af40",
+          "entry_instruction_sha256": "721c641d57b4efc9dafb6f58366cd2f26466df5e8cf638752d34816d41b119af",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579af40",
+          "reference_delta": "0x1000000",
+          "slot": 318,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0108",
+          "entry_instruction_sha256": "3d453696f788efb8a2880b367b8dffd042fc7a76b5c458718a085fd8e7c46237",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0108",
+          "reference_delta": "0x1000000",
+          "slot": 319,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0124",
+          "entry_instruction_sha256": "d5afd6ba39531fc90d2d6c8d9dab64f4a8d30384c701f1029fd1deca4e6f01e6",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0124",
+          "reference_delta": "0x1000000",
+          "slot": 320,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0138",
+          "entry_instruction_sha256": "d5114895e7542ba3c68260670a8a7170c86a4a8688e206f5b5438c8010b211a4",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0138",
+          "reference_delta": "0x1000000",
+          "slot": 321,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006798af4",
+          "entry_instruction_sha256": "080b2ce2e92f8e3c910786df7be990470bd7eb621864ef932674982166df3591",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005798af4",
+          "reference_delta": "0x1000000",
+          "slot": 322,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a014c",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a014c",
+          "reference_delta": "0x1000000",
+          "slot": 323,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0164",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0164",
+          "reference_delta": "0x1000000",
+          "slot": 324,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679a13c",
+          "entry_instruction_sha256": "341e2c336995dfc62b023e75370281f44fd991a845ff1c9a4a9b46e08b0e9737",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579a13c",
+          "reference_delta": "0x1000000",
+          "slot": 325,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a017c",
+          "entry_instruction_sha256": "b9784af68bcbefc750863a9cf106b90fe6104fb3ae829b5be6309f598f684838",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a017c",
+          "reference_delta": "0x1000000",
+          "slot": 326,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0190",
+          "entry_instruction_sha256": "08f29f849a6f29ae47b9c2f0a4803c16bfd7701149b838a8e405d69c130d0adf",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0190",
+          "reference_delta": "0x1000000",
+          "slot": 327,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a01b0",
+          "entry_instruction_sha256": "a687c45580243a9021b9d35c6a7324c373c886f0a5c6dcc0a9afb2ce75eb080c",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a01b0",
+          "reference_delta": "0x1000000",
+          "slot": 328,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a01c8",
+          "entry_instruction_sha256": "ad4dd430207de5d027972d2c8c09d58767b02e511ddec08ab5fe7ec760133559",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a01c8",
+          "reference_delta": "0x1000000",
+          "slot": 329,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a01e4",
+          "entry_instruction_sha256": "8290c680a3d9d60c471a0424ec8fe0fd4192efb0826ac8257d1af71f94dbb3d1",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a01e4",
+          "reference_delta": "0x1000000",
+          "slot": 330,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0200",
+          "entry_instruction_sha256": "a87a0cf3963cb80e8ae50b49ca69b84a1a2d8822c852557cd2125232e0fc485d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0200",
+          "reference_delta": "0x1000000",
+          "slot": 331,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0220",
+          "entry_instruction_sha256": "b36bd0327b4aba8ed9fe8ebbb8fe38826344f75bcd61226716795936101215c5",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0220",
+          "reference_delta": "0x1000000",
+          "slot": 332,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678cca8",
+          "entry_instruction_sha256": "579423197d942fb97bcdbcd8982c470f8274b13cc9bb74061da839d3ea7faf9f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578cca8",
+          "reference_delta": "0x1000000",
+          "slot": 333,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678b2e8",
+          "entry_instruction_sha256": "df500be544265a9139daa4e4b40985ebafe84253809d5362376c1c7333a3c4e7",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578b2e8",
+          "reference_delta": "0x1000000",
+          "slot": 334,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678d91c",
+          "entry_instruction_sha256": "d749c12d29cf8752de9ae05ad271167a0911c72ae47845a363209f2f7deaa91b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578d91c",
+          "reference_delta": "0x1000000",
+          "slot": 335,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a023c",
+          "entry_instruction_sha256": "33861a0829747d314f78137b5c36bf96642b0ab5490ffa22ec6228563414392b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a023c",
+          "reference_delta": "0x1000000",
+          "slot": 336,
+          "symbols": []
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 337,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 338,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679e150",
+          "entry_instruction_sha256": "b602cbcae7261a95a889a6170c03f602b91273134b12b85b886e7fc5b2a1b93f",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579e150",
+          "reference_delta": "0x1000000",
+          "slot": 339,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006789698",
+          "entry_instruction_sha256": "617c52b7da5c47a78a9c828510c946b7a84b7f09f43086ad83c632096408a8de",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005789698",
+          "reference_delta": "0x1000000",
+          "slot": 340,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0254",
+          "entry_instruction_sha256": "593e7eb1dc441341566b5e05a61fc4c5eb27dd18e50b997729a47bd9dac02a93",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0254",
+          "reference_delta": "0x1000000",
+          "slot": 341,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a026c",
+          "entry_instruction_sha256": "6d9755ab268d6fdb4aeefcdc71c3c4b6019fd8a172c33005beec4186ae2f024b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a026c",
+          "reference_delta": "0x1000000",
+          "slot": 342,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006796524",
+          "entry_instruction_sha256": "40229905aab4bd6480befc6da3005784fc3b6725abf06a48104fa6ec8b5c958e",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005796524",
+          "reference_delta": "0x1000000",
+          "slot": 343,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006797224",
+          "entry_instruction_sha256": "e335a5e85699e32ebda8359b58fd2ca7384e778d7c6a3e14edbbab42833c32d6",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005797224",
+          "reference_delta": "0x1000000",
+          "slot": 344,
+          "symbols": []
+        },
+        {
+          "abstract": true,
+          "address": "0xfffffff0077785e0",
+          "entry_instruction_sha256": "bed8cb452af486e2450d6b94153b5b68060b5c459b99ce991b9ca95bf66dcefb",
+          "owner": "kernelcache:__TEXT_EXEC",
+          "reference_address": "0xfffffff007a29350",
+          "reference_delta": "-0x2b0d70",
+          "slot": 345,
+          "symbols": [
+            "___cxa_pure_virtual"
+          ]
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00678a428",
+          "entry_instruction_sha256": "e110104c3a36912d430859122627508eee7a7bf70db52a845c873d642d2bc379",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00578a428",
+          "reference_delta": "0x1000000",
+          "slot": 346,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067941f8",
+          "entry_instruction_sha256": "4fd33ccfc45ca124698fd73e97e17dd26e8f01c00179e830d3744861a7d32bcb",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057941f8",
+          "reference_delta": "0x1000000",
+          "slot": 347,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067942c0",
+          "entry_instruction_sha256": "ed907cc5c5163b585211b926ecbc72a385d00d8b27dbb96e7319ac394f978980",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057942c0",
+          "reference_delta": "0x1000000",
+          "slot": 348,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff006794318",
+          "entry_instruction_sha256": "08335da1a3bb3e9d2f381270bee5b2329bd22fe3eac634d591e25905564038d6",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff005794318",
+          "reference_delta": "0x1000000",
+          "slot": 349,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a0288",
+          "entry_instruction_sha256": "7c8a3af069f505f24e3fbfd0d7c898fbabc5c60fcfad2ac681bf368f9d5705d9",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a0288",
+          "reference_delta": "0x1000000",
+          "slot": 350,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a029c",
+          "entry_instruction_sha256": "24397c6ba1445cd0c60f20ef90838c721d53648bce6e3ecb2a7c14eb5b522c4b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a029c",
+          "reference_delta": "0x1000000",
+          "slot": 351,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a02ac",
+          "entry_instruction_sha256": "0bb2fc929462c754236bdf0a27c15cefdec650a54c2358d9b2d77d71e066d768",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a02ac",
+          "reference_delta": "0x1000000",
+          "slot": 352,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a02bc",
+          "entry_instruction_sha256": "a687c45580243a9021b9d35c6a7324c373c886f0a5c6dcc0a9afb2ce75eb080c",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a02bc",
+          "reference_delta": "0x1000000",
+          "slot": 353,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067970cc",
+          "entry_instruction_sha256": "c989f7a33c3c2b8c24cc61324a3e5f0e526bd07c5db93a69872b21332bd8aeef",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057970cc",
+          "reference_delta": "0x1000000",
+          "slot": 354,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067a02d4",
+          "entry_instruction_sha256": "409655f63d0a3230850439901154de681aaedb501165498e4081ab0e7704510b",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057a02d4",
+          "reference_delta": "0x1000000",
+          "slot": 355,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff0067971f8",
+          "entry_instruction_sha256": "d7f2479c8e3790c3a8acc70e666399267cd7fdd4987bb467161e80981261dda3",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff0057971f8",
+          "reference_delta": "0x1000000",
+          "slot": 356,
+          "symbols": []
+        },
+        {
+          "abstract": false,
+          "address": "0xfffffff00679720c",
+          "entry_instruction_sha256": "db32d738335b4b0923da4c29de8434a7591a04598d0fb687d4847db4b337e71d",
+          "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+          "reference_address": "0xfffffff00579720c",
+          "reference_delta": "0x1000000",
+          "slot": 357,
+          "symbols": []
+        }
+      ],
+      "table_prefix_zero": true,
+      "table_sha256": "c958b551b17b2af7a4bb798c83e6ca288792af054461148e577371aa71a194fd",
+      "vptr": "0xfffffff006f38570"
+    }
+  ],
+  "missing_evidence": [
+    "Stripped kexts: no exported Legacy/IOSurface method names to authenticate per-slot prototypes.",
+    "Candidate table is structurally located, but complete parent class graph, method identities and all overridden slot prototypes need instruction-level audit.",
+    "IOSurface leaf adapter is implemented with live UUID/instruction validation; trusted loader must supply live text span and producer must supply stable CPU-complete IOSurface.",
+    "Swap request offsets, activation/retirement locking, completion and fence ownership require local instruction/control-flow validation.",
+    "Final imported-kext relocation map, native-kernel export rebinding and admission order are not supplied by a stock kernelcache.",
+    "GOP format, ownership handover and a CPU-complete compositor frame producer remain runtime integration requirements."
+  ],
+  "modules": {
+    "com.apple.iokit.IOMobileGraphicsFamily": {
+      "dependencies": {
+        "com.apple.driver.AppleARMPlatform": "1.0.0",
+        "com.apple.driver.AppleM2ScalerCSCDriver": "1.0.0",
+        "com.apple.driver.AppleMobileFileIntegrity": "1.0.1",
+        "com.apple.iokit.IOAVFamily": "1.0.0",
+        "com.apple.iokit.IOSurface": "52.7.0",
+        "com.apple.kpi.bsd": "8.4.1",
+        "com.apple.kpi.iokit": "8.0",
+        "com.apple.kpi.libkern": "8.0",
+        "com.apple.kpi.mach": "8.0",
+        "com.apple.kpi.private": "10.0.0d3",
+        "com.apple.kpi.unsupported": "8.0"
+      },
+      "file_offset": "0xdc9780",
+      "load_address": "0xfffffff0055f5780",
+      "sections": [
+        {
+          "address": "0xfffffff0055f5d88",
+          "bytes": 34751,
+          "name": "__cstring",
+          "segment": "__TEXT",
+          "sha256": "41e21fb66a48dc375d7b83c8c3c74a074dbda39d2272ecbc9e7fa0642850f192"
+        },
+        {
+          "address": "0xfffffff0055fe550",
+          "bytes": 2360,
+          "name": "__const",
+          "segment": "__TEXT",
+          "sha256": "23d846a447a0bb2b3711c9b7b8fe0b715f14558c0bbbfb0e6e7924bb8cfe2c87"
+        },
+        {
+          "address": "0xfffffff00676c000",
+          "bytes": 222908,
+          "name": "__text",
+          "segment": "__TEXT_EXEC",
+          "sha256": "3b5a7caefdfac75fe7b5c0606a37bb2b9da3082007b7189d197e7185242318c8"
+        },
+        {
+          "address": "0xfffffff0067a26bc",
+          "bytes": 2232,
+          "name": "__stubs",
+          "segment": "__TEXT_EXEC",
+          "sha256": "63551726f588a7d75c6c87b5ee7ace0b7f944c6f39a42b61d0109a49225acec0"
+        },
+        {
+          "address": "0xfffffff006f33840",
+          "bytes": 1776,
+          "name": "__got",
+          "segment": "__DATA_CONST",
+          "sha256": "524c82a0ee8085a2e03f01768188472719fa366d32f427b648a64b498e5be360"
+        },
+        {
+          "address": "0xfffffff006f33f30",
+          "bytes": 80,
+          "name": "__mod_init_func",
+          "segment": "__DATA_CONST",
+          "sha256": "20847ed4021039f2950d0f064acf1831d813738e3d5781d36ecddc68cef2d877"
+        },
+        {
+          "address": "0xfffffff006f33f80",
+          "bytes": 80,
+          "name": "__mod_term_func",
+          "segment": "__DATA_CONST",
+          "sha256": "629b5f45a493d8edd4cc17cdb38da7210b9b5e5f9a41be4d5a917d89f1f6585a"
+        },
+        {
+          "address": "0xfffffff006f33fd0",
+          "bytes": 20848,
+          "name": "__const",
+          "segment": "__DATA_CONST",
+          "sha256": "dbef24794c09bba5168bcc63200836be9285b843a270eed8b618acbcb2bf31f6"
+        },
+        {
+          "address": "0xfffffff006f39140",
+          "bytes": 2752,
+          "name": "__kalloc_type",
+          "segment": "__DATA_CONST",
+          "sha256": "28e5742a3d0b11d84cfcfcf6526c8be5655e6f3be0b6762538e86a5dba5d6606"
+        }
+      ],
+      "stripped": true,
+      "symbol_table_fields": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uuid": "18accbf2-bb7c-3461-9245-ed0e6367bffb",
+      "version": "343.0.0"
+    },
+    "com.apple.iokit.IOSurface": {
+      "dependencies": {
+        "com.apple.kpi.bsd": "9.0.0b1",
+        "com.apple.kpi.iokit": "9.0.0b1",
+        "com.apple.kpi.libkern": "9.0.0b1",
+        "com.apple.kpi.mach": "9.0.0b1",
+        "com.apple.kpi.private": "9.0.0b1",
+        "com.apple.kpi.unsupported": "9.0.0b1"
+      },
+      "file_offset": "0xae0e40",
+      "load_address": "0xfffffff00530ce40",
+      "sections": [
+        {
+          "address": "0xfffffff00530d4e8",
+          "bytes": 20424,
+          "name": "__cstring",
+          "segment": "__TEXT",
+          "sha256": "82571bdbd1d579c225964ea173dd1b96d57862b38a44562dfcebf59adb0b3fc5"
+        },
+        {
+          "address": "0xfffffff0053124b0",
+          "bytes": 85,
+          "name": "__const",
+          "segment": "__TEXT",
+          "sha256": "c4811407a86515ad8254df4e6416e742e8b75b1d9430a580ac40e60ad3a20dfc"
+        },
+        {
+          "address": "0xfffffff005312505",
+          "bytes": 1328,
+          "name": "__os_log",
+          "segment": "__TEXT",
+          "sha256": "b823261a4927afa2ff0588e23edd58b0ee8f9751c9fd26113b92f10024684a2f"
+        },
+        {
+          "address": "0xfffffff005b96000",
+          "bytes": 139800,
+          "name": "__text",
+          "segment": "__TEXT_EXEC",
+          "sha256": "6117454cb09b5e36100ee3b1d9b250adfd89fb90684154e059418dd974496c3f"
+        },
+        {
+          "address": "0xfffffff005bb8218",
+          "bytes": 1668,
+          "name": "__stubs",
+          "segment": "__TEXT_EXEC",
+          "sha256": "a02fb87e7792d68778245ae7e03153f55d723d1e01eb954d2d68e3bc13c21cb0"
+        },
+        {
+          "address": "0xfffffff006d39740",
+          "bytes": 1320,
+          "name": "__got",
+          "segment": "__DATA_CONST",
+          "sha256": "62842db40d69a3cd974e46270ccb9f2c963c6c25c0efaa164d0d75cc2ff0799d"
+        },
+        {
+          "address": "0xfffffff006d39c68",
+          "bytes": 120,
+          "name": "__mod_init_func",
+          "segment": "__DATA_CONST",
+          "sha256": "9656626b6875e405569e0ecbe88d3d6eadea1e80a144c102c4c3825aeeab89a9"
+        },
+        {
+          "address": "0xfffffff006d39ce0",
+          "bytes": 120,
+          "name": "__mod_term_func",
+          "segment": "__DATA_CONST",
+          "sha256": "30936ece06cdbcaad97be75e722037743cf213d59ea6fb00a1658e3673ad4377"
+        },
+        {
+          "address": "0xfffffff006d39d58",
+          "bytes": 16080,
+          "name": "__const",
+          "segment": "__DATA_CONST",
+          "sha256": "a2386890e676cfc7412b80891243e33c81a2b87c7b632cad07ade70bf2aa424a"
+        },
+        {
+          "address": "0xfffffff006d3dc28",
+          "bytes": 2880,
+          "name": "__kalloc_type",
+          "segment": "__DATA_CONST",
+          "sha256": "7db94c2c132b8c6bc4364f444a35896dbc7e0f6358190ac61c2b3fe9336244b1"
+        },
+        {
+          "address": "0xfffffff006d3e768",
+          "bytes": 2240,
+          "name": "__kalloc_var",
+          "segment": "__DATA_CONST",
+          "sha256": "8daad9f8a46ba8ce288feb75ef985bd4c4def55d33c5bf1522a8c791bbd59f79"
+        }
+      ],
+      "stripped": true,
+      "symbol_table_fields": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uuid": "f73d44bb-e674-36e7-a577-83789a86fe7a",
+      "version": "352.50.1"
+    }
+  },
+  "reference": [
+    {
+      "bytes": 34059,
+      "revision": "ac0c900485f3c0cd18de9707579a1cdcd3365503",
+      "sha256": "47a9bc397e42562600eda05a4c303083912eac5400befc4bc3eadeeec5a476df",
+      "url": "https://raw.githubusercontent.com/HuajiFruit/UniXNU-sirius/ac0c900485f3c0cd18de9707579a1cdcd3365503/scripts/data/mobile-graphics-legacy-abi.json"
+    },
+    {
+      "bytes": 18206,
+      "revision": "ac0c900485f3c0cd18de9707579a1cdcd3365503",
+      "sha256": "bb286326d3f60f25bbc4e52ebdf913d87f97d7e7927d6f20ca5e4c433811bbb0",
+      "url": "https://raw.githubusercontent.com/HuajiFruit/UniXNU-sirius/ac0c900485f3c0cd18de9707579a1cdcd3365503/scripts/build-native-legacy-display.py"
+    },
+    {
+      "bytes": 32804,
+      "revision": "ac0c900485f3c0cd18de9707579a1cdcd3365503",
+      "sha256": "4c3753e9498538c752818684121e11a870562fbd423a17549062d4f6565b2ee9",
+      "url": "https://raw.githubusercontent.com/HuajiFruit/UniXNU-sirius/ac0c900485f3c0cd18de9707579a1cdcd3365503/package/LegacyDisplayProbe.cpp"
+    }
+  ],
+  "reference_bindings": [
+    {
+      "admitted": false,
+      "local_owner": "kernelcache:__PLK_TEXT_EXEC",
+      "local_symbols": [],
+      "name": "__ZN25IOMobileFramebufferLegacy10gMetaClassE",
+      "reference_address": "0xfffffff006b35940"
+    },
+    {
+      "admitted": false,
+      "local_owner": "kernelcache:__PRELINK_TEXT",
+      "local_symbols": [],
+      "name": "__ZN25IOMobileFramebufferLegacyC2EPK11OSMetaClass",
+      "reference_address": "0xfffffff0057865cc"
+    },
+    {
+      "admitted": false,
+      "local_owner": "kernelcache:__PRELINK_TEXT",
+      "local_symbols": [],
+      "name": "__ZN25IOMobileFramebufferLegacyD2Ev",
+      "reference_address": "0xfffffff005786618"
+    },
+    {
+      "admitted": false,
+      "local_owner": "kernelcache:__PRELINK_TEXT",
+      "local_symbols": [],
+      "name": "_native_legacy_set_refresh_properties",
+      "reference_address": "0xfffffff00579ebb8"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_allocation",
+      "reference_address": "0xfffffff004b9ebfc"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_descriptor",
+      "reference_address": "0xfffffff004b9ead0"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_format",
+      "reference_address": "0xfffffff004b9ebac"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_height",
+      "reference_address": "0xfffffff004b9ebc4"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_planes",
+      "reference_address": "0xfffffff004b9ebf4"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_stride",
+      "reference_address": "0xfffffff004b9ebd4"
+    },
+    {
+      "admitted": false,
+      "local_owner": "unmapped",
+      "local_symbols": [],
+      "name": "_native_legacy_surface_width",
+      "reference_address": "0xfffffff004b9ebbc"
+    },
+    {
+      "admitted": false,
+      "local_owner": "kernelcache:__PRELINK_TEXT",
+      "local_symbols": [],
+      "name": "_native_legacy_vsync_notify",
+      "reference_address": "0xfffffff005796720"
+    },
+    {
+      "admitted": false,
+      "local_owner": "kernelcache:__PLK_TEXT_EXEC",
+      "local_symbols": [],
+      "name": "__ZTV25IOMobileFramebufferLegacy",
+      "reference_address": "0xfffffff005f38560"
+    }
+  ],
+  "reference_file_sha256": "546b248179edd802b8c09bc23d32d1748de3367c165e63ae7d1e1e475f6a73e5",
+  "relevant_exported_symbols": [],
+  "schema": 1,
+  "sibling_metadata": [
+    {
+      "file": "SystemVersion.plist",
+      "product_build": "21H461",
+      "product_version": "17.7.11",
+      "relation": "sibling metadata only; decoded Mach-O provenance is not cryptographically established",
+      "sha256": "25642e864859c69c08e93f853d4a3a46bbe4e21e6b6abee783ed86d5e9ebd406"
+    },
+    {
+      "file": "BuildManifest.plist",
+      "kernelcache_paths": [
+        "kernelcache.release.ipad7"
+      ],
+      "product_build": "21H461",
+      "product_version": "17.7.11",
+      "relation": "sibling metadata only; decoded Mach-O provenance is not cryptographically established",
+      "sha256": "199fb5de41c26d86c080b4e8e402c40309c5f42e7bda18c210451b09bcb49bf7"
+    }
+  ],
+  "sirius_table": {
+    "admissible": false,
+    "identical_slots": 0,
+    "local_owner": "kernelcache:__PLK_TEXT_EXEC",
+    "total_slots": 358,
+    "vptr": "0xfffffff005f38570"
+  },
+  "surface_adapter": {
+    "leaves": [
+      {
+        "address": "0xfffffff005b9ead0",
+        "load_instruction": "0xf9401800",
+        "name": "descriptor",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "6b819324b4a3bc2d390c83c7fe02ea41a1f57ae5d4f2a9b0c9256341a5b8d37f",
+        "text_offset": "0x8ad0"
+      },
+      {
+        "address": "0xfffffff005b9ebac",
+        "load_instruction": "0xb9408000",
+        "name": "format",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "b8b3bd2e38816d82c156176d3f423b837ecea21aae12d748584af20b84f122d8",
+        "text_offset": "0x8bac"
+      },
+      {
+        "address": "0xfffffff005b9ebbc",
+        "load_instruction": "0xf9402c00",
+        "name": "width",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "d598436bff3a9dd6f386d52e9d196b4b622d920d9df2d4b374773cddd2c4c4b8",
+        "text_offset": "0x8bbc"
+      },
+      {
+        "address": "0xfffffff005b9ebc4",
+        "load_instruction": "0xf9403000",
+        "name": "height",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "dc0647a8f63aacbe9d6b7a7bf9b54950de74e29f82066e71731415b61d501071",
+        "text_offset": "0x8bc4"
+      },
+      {
+        "address": "0xfffffff005b9ebd4",
+        "load_instruction": "0xf9403400",
+        "name": "stride",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "f637e07b3820a82a5634a0174c92391b8ec5194fafa5b124fa3a73d3007ae512",
+        "text_offset": "0x8bd4"
+      },
+      {
+        "address": "0xfffffff005b9ebf4",
+        "load_instruction": "0xb9409800",
+        "name": "planes",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "9249f32b31e8d77574e88f31ddf3813a4540bc0947a0e7d86edc408c31449897",
+        "text_offset": "0x8bf4"
+      },
+      {
+        "address": "0xfffffff005b9ebfc",
+        "load_instruction": "0xf9404800",
+        "name": "allocation",
+        "return_instruction": "0xd65f03c0",
+        "sha256": "2c5f27fe901329ddd9be5f1b7961d0a984f813a76cac0c1f81ae43071f5b08b1",
+        "text_offset": "0x8bfc"
+      }
+    ],
+    "pattern_candidates": 1,
+    "runtime_binding_ready": true,
+    "semantics": "pinned Sirius accessor names plus independently matched local load/return instructions; kernel-only stable IOSurface input required",
+    "text_address": "0xfffffff005b96000",
+    "text_bytes": 139800,
+    "uuid": "f73d44bb-e674-36e7-a577-83789a86fe7a"
+  }
+}

@@ -6,6 +6,12 @@ XNU IOKit interfaces, no private Apple framework addresses, private vtable
 slots, static constructors, GPU registers, SDM710 code, or display queue edits.
 The MobileFramebuffer compositor is **not connected** by this change.
 
+The coordinating agent has since linked the archive in `3851f2f`. The next
+step's reproducible local kernelcache audit is documented in
+[ABI-AUDIT.md](ABI-AUDIT.md), with machine-readable evidence under `abi/`.
+It identifies the local Legacy table candidate and rejects reuse of the
+reference's absolute addresses; private compositor binding remains unqualified.
+
 ## Exact integration requirements for the coordinating agent
 
 No existing scripts, board/config/workflow/component manifests have been edited.

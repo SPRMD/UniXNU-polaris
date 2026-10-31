@@ -4,433 +4,473 @@
     "kernel_family": "UniXNU Darwin 23",
     "source_components": [
       {
-        "path": "drivers/GopFramebuffer/NativeMobileDisplay.cpp",
         "bytes": 13733,
+        "path": "drivers/GopFramebuffer/NativeMobileDisplay.cpp",
         "sha256": "0261d0d22ffafaf88dfb74714e479040e1601fbca15dae3ddefea183c1a050ff"
       },
       {
-        "path": "drivers/GopFramebuffer/OriginalMobileFramebufferABI.h",
         "bytes": 6754,
+        "path": "drivers/GopFramebuffer/OriginalMobileFramebufferABI.h",
         "sha256": "676e9c956683a91bf8224901cf4c94db5f0e36826b3de5c870bd54b9bab179f9"
       },
       {
-        "path": "drivers/GopFramebuffer/PolarisCpuScanout.cpp",
         "bytes": 1821,
+        "path": "drivers/GopFramebuffer/PolarisCpuScanout.cpp",
         "sha256": "75d9ee405c9cc07c254f1b8fc89e005f3bb3c747ec255e8e85bb353b1827b38d"
       },
       {
-        "path": "drivers/GopFramebuffer/PolarisCpuScanout.h",
         "bytes": 805,
+        "path": "drivers/GopFramebuffer/PolarisCpuScanout.h",
         "sha256": "a02353c3145ed7c1732484d515e6ca8d7e32cba2885da59122214481d53a4f65"
       },
       {
-        "path": "drivers/GopFramebuffer/README.md",
         "bytes": 1381,
+        "path": "drivers/GopFramebuffer/README.md",
         "sha256": "c542e51bc8fd38553c219621b71c7643e7f3d8d231c46ee194213f4c5417b1f4"
       },
       {
+        "bytes": 7336,
+        "path": "drivers/PolarisDisplayRuntime/ABI-AUDIT.md",
+        "sha256": "c726cade86f623e0246b1236ff77ff77e48aa7ac984be2838e709e6713ed6aeb"
+      },
+      {
+        "bytes": 9756,
         "path": "drivers/PolarisDisplayRuntime/PolarisDisplayRuntime.cpp",
-        "bytes": 6349,
-        "sha256": "e987e888ce82d7a1c979b6fedd4f42fdbd2d6fe5ddcb336dee51260e8c646f8f"
+        "sha256": "ca73fa2d9481ac6e3978ada408606f05bee703ef05be703ebf3e694700cf6561"
       },
       {
+        "bytes": 2083,
         "path": "drivers/PolarisDisplayRuntime/PolarisDisplayRuntime.h",
-        "bytes": 1169,
-        "sha256": "2c861a22f6c303ba71d0c4608c65a62d9390bee23cd63c7b0fedd0ab1220acbd"
+        "sha256": "b9a04b0ee1f595cb4e71a346335847024f3ee7a5cf1d42602e25e3a9ae1215c3"
       },
       {
+        "bytes": 1776,
+        "path": "drivers/PolarisDisplayRuntime/PolarisSurfaceABI.h",
+        "sha256": "8674b25f4e9bb401f02d35bd904c0f00686ec2cf5427c27fc37feea2ca874acc"
+      },
+      {
+        "bytes": 8473,
         "path": "drivers/PolarisDisplayRuntime/README.md",
-        "bytes": 8109,
-        "sha256": "2d9e76710cb06534d9bc219ded4d69fa966132d9127531fb6617a213a59e836a"
+        "sha256": "acadf7b855680fb4bfd39a6264a57402ee857746b28dbbbdf584c53313555185"
       },
       {
-        "path": "drivers/ShengUfs/GccUfs.h",
+        "bytes": 2673,
+        "path": "drivers/PolarisDisplayRuntime/abi/SIRIUS-LICENSE",
+        "sha256": "5b1d3d911103cb0f41641ec0964c5ac1f7e229f57aa072b6ac38bae913a1307b"
+      },
+      {
+        "bytes": 176216,
+        "path": "drivers/PolarisDisplayRuntime/abi/local-kernelcache-audit.json",
+        "sha256": "4b7923bbcae2ed7e8e4a7161f2832505e0f842cdb945f68958efdf315e051942"
+      },
+      {
+        "bytes": 39551,
+        "path": "drivers/PolarisDisplayRuntime/abi/sirius-reference.json",
+        "sha256": "af3d128ea70c633ed313f283d85ccdc1d41c0721ef248ea06c498c540b7360dc"
+      },
+      {
         "bytes": 1351,
+        "path": "drivers/ShengUfs/GccUfs.h",
         "sha256": "6b3ad7088213f48658399547c2fb51c0573d17093dce6bc7b5c6932d9951218f"
       },
       {
-        "path": "drivers/ShengUfs/Info.plist",
         "bytes": 786,
+        "path": "drivers/ShengUfs/Info.plist",
         "sha256": "31a7ecf9ab553dcba9c891e9c98f5f9112fddabe4703e9f472499e821484faa7"
       },
       {
-        "path": "drivers/ShengUfs/LICENSE",
         "bytes": 1320,
+        "path": "drivers/ShengUfs/LICENSE",
         "sha256": "d3cdce3b19df47f2e4dcafdfd54909eb9bc64ac722645ceb1feae58695c97b09"
       },
       {
+        "bytes": 47881,
         "path": "drivers/ShengUfs/NativeUfs.cpp",
-        "bytes": 46058,
-        "sha256": "234e456313f0712ed686382da57ab1e332fadd8685a10bc207948803fb54b8e7"
+        "sha256": "338d5948989499fa7f2c7cbf50b4e3e98765e4912b6137c1910e406877783624"
       },
       {
+        "bytes": 5023,
         "path": "drivers/ShengUfs/PolarisBlockDevice.h",
-        "bytes": 4410,
-        "sha256": "7dda7e19031307e21a6a6db6bcfc3004edd7075fbeee80eebefd1f18d99a20bd"
+        "sha256": "cbfbe92c3c844891ba4f63d619f356d66a3f5f414f883b012edffb9437df8e08"
       },
       {
+        "bytes": 4212,
         "path": "drivers/ShengUfs/PolarisDmaHandoff.h",
-        "bytes": 2067,
-        "sha256": "59e57c6cf6d5a0956c3edc025e96bbd07eb2f6b32821781082cc4e8cc6201ade"
+        "sha256": "056da710d1bc83d89edbc6e856562d8612ed6018fc07771a64af400a4787027c"
       },
       {
+        "bytes": 8270,
+        "path": "drivers/ShengUfs/PolarisRootLayout.h",
+        "sha256": "1ecb4ed231370bed40e28462a6c61377dfceb73d6f29b56b2c954ac353c2081e"
+      },
+      {
+        "bytes": 4856,
+        "path": "drivers/ShengUfs/PolarisRootPublisher.h",
+        "sha256": "3fc87bbc30c97d70fa837c1db5633866765bfa38c0adfaf0159f2edb12ddbd02"
+      },
+      {
+        "bytes": 6624,
         "path": "drivers/ShengUfs/README.md",
-        "bytes": 6323,
-        "sha256": "7ad2c1d6f58715bda231a1096006ac2fc4d1a03fb37b35d494e404c722d455f6"
+        "sha256": "e8e83ad434d51c3227789ea280d8d0b5269b5acfdff0837203968b3294a33aee"
       },
       {
-        "path": "drivers/ShengUfs/RootCommands.h",
+        "bytes": 6120,
+        "path": "drivers/ShengUfs/ROOT-WINDOWS.md",
+        "sha256": "010dbf706ff335157759627870a53091a2b5f064fb0661ed64a904326d5597a6"
+      },
+      {
         "bytes": 10849,
+        "path": "drivers/ShengUfs/RootCommands.h",
         "sha256": "603b71c196b7dd6d2c6dce184b4cbbad076e5d5c2256faeac66b0883032a4059"
       },
       {
-        "path": "drivers/ShengUfs/RootDiagnostics.h",
         "bytes": 3186,
+        "path": "drivers/ShengUfs/RootDiagnostics.h",
         "sha256": "0ad96da909e87d161b17694e32768a9d84500da96f975dcc6913535c413fde29"
       },
       {
-        "path": "drivers/ShengUfs/RootLayout.h",
         "bytes": 8998,
+        "path": "drivers/ShengUfs/RootLayout.h",
         "sha256": "3e25127486a5102cd477fcfabd62366a3b3f02bb12a0b8db2294330a4b233484"
       },
       {
-        "path": "drivers/ShengUfs/RootPublication.h",
         "bytes": 3225,
+        "path": "drivers/ShengUfs/RootPublication.h",
         "sha256": "3c289b44f4d7c082b3f214eda2d4225f53860dd007f4a89402bdc910f268aeda"
       },
       {
-        "path": "drivers/ShengUfs/RootQueue.h",
         "bytes": 2044,
+        "path": "drivers/ShengUfs/RootQueue.h",
         "sha256": "001d06dcc4c3c7073704cffa3105a28d11e3e97985e7fcb49b8cc107216248bf"
       },
       {
-        "path": "drivers/ShengUfs/RootTransportLayout.h",
         "bytes": 213,
+        "path": "drivers/ShengUfs/RootTransportLayout.h",
         "sha256": "77699362f09e103ceda0d5f216d0be7749cdc1e88c6143ddd15ceb11dfd42e91"
       },
       {
-        "path": "drivers/ShengUfs/RootWindowRead.h",
         "bytes": 2765,
+        "path": "drivers/ShengUfs/RootWindowRead.h",
         "sha256": "e8d98556290cf540204227f863b043eb09996bb87d38e1d6894b83b351c8d112"
       },
       {
-        "path": "drivers/ShengUfs/SmmuTakeover.h",
         "bytes": 5786,
+        "path": "drivers/ShengUfs/SmmuTakeover.h",
         "sha256": "54868bf0745ee6093627e73ba8cec9ac3c574446955c359463507d0f122f90a8"
       },
       {
-        "path": "drivers/ShengUfs/TransferPoll.h",
         "bytes": 1110,
+        "path": "drivers/ShengUfs/TransferPoll.h",
         "sha256": "742df51cdce6d06df6bf93294176f01305c9d1359c8ffdfb99daff7b76a1ece3"
       },
       {
-        "path": "drivers/PolarisA630Probe/Info.plist",
         "bytes": 892,
+        "path": "drivers/PolarisA630Probe/Info.plist",
         "sha256": "ddc192ef7d2e968dad0e79ed18e2ee8102813107e41ec7783ff64af576945e00"
       },
       {
-        "path": "drivers/PolarisA630Probe/PolarisA630Board.h",
         "bytes": 1236,
+        "path": "drivers/PolarisA630Probe/PolarisA630Board.h",
         "sha256": "c6c6b83519dff687d514824682cd9aa7b91d326d33a400f49e35337b52c53d00"
       },
       {
-        "path": "drivers/PolarisA630Probe/PolarisA630Policy.h",
         "bytes": 3357,
+        "path": "drivers/PolarisA630Probe/PolarisA630Policy.h",
         "sha256": "d39ca55323b11b963c8ad5885747b997c9fa7d97fa03422608d03193eabad6cb"
       },
       {
-        "path": "drivers/PolarisA630Probe/PolarisA630Probe.cpp",
         "bytes": 9691,
+        "path": "drivers/PolarisA630Probe/PolarisA630Probe.cpp",
         "sha256": "c09728cd4c6906c35f3b0ffe0b0cf185d864877c5181dc6df27239977d47d1a2"
       },
       {
-        "path": "drivers/PolarisA630Probe/README.md",
         "bytes": 1665,
+        "path": "drivers/PolarisA630Probe/README.md",
         "sha256": "17c607aa19c5f43c47fbf16c0acb7b54329ccb3d6665575f1a3f8ba04b2f3213"
       },
       {
-        "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.c",
         "bytes": 5747,
+        "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.c",
         "sha256": "d0fa719d3933242d19640e066d4610e09be6bf4f55dcec04b3402760e32b5484"
       },
       {
-        "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.h",
         "bytes": 4814,
+        "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.h",
         "sha256": "2e48c690a877c665b3765480db48249c7d1e81af45d46cd4fd3c3d0726ee8617"
       },
       {
-        "path": "drivers/PolarisGeniI2c/PolarisGeniI2cResources.h",
         "bytes": 1789,
+        "path": "drivers/PolarisGeniI2c/PolarisGeniI2cResources.h",
         "sha256": "a4fe7c01b0f621200b0183805badbbf93ae8e5caa6a5d3b8da6dc4b2dcb03188"
       },
       {
-        "path": "drivers/PolarisGeniI2c/README.md",
         "bytes": 1469,
+        "path": "drivers/PolarisGeniI2c/README.md",
         "sha256": "e91ee886814a3b8e689f97a7ffbfb2095884cd0d2dbeccccd2731ae0db6fae43"
       },
       {
-        "path": "drivers/PolarisPmicInput/Info.plist",
         "bytes": 893,
+        "path": "drivers/PolarisPmicInput/Info.plist",
         "sha256": "fc3ce121568b6750852368acc22db5c30370da41b7ee45d56ab0b191a95ab945"
       },
       {
-        "path": "drivers/PolarisPmicInput/PolarisPmicInput.cpp",
         "bytes": 5277,
+        "path": "drivers/PolarisPmicInput/PolarisPmicInput.cpp",
         "sha256": "8f1809057cb21637713f318cfcddad1ac3e1e7a07baf2c0ce2508dff9f16b6cb"
       },
       {
-        "path": "drivers/PolarisPmicInput/PolarisPmicInputProtocol.h",
         "bytes": 5829,
+        "path": "drivers/PolarisPmicInput/PolarisPmicInputProtocol.h",
         "sha256": "34775b2cfc2899e0df7f2d2dd2884626957f2e626151d6c7a7ae02b9d9b2ca6c"
       },
       {
-        "path": "drivers/PolarisPmicInput/README.md",
         "bytes": 1001,
+        "path": "drivers/PolarisPmicInput/README.md",
         "sha256": "4e6ba7e067ca498493ff3025395ac5d25834f7cb0a16059cf38a7a55f3ce908a"
       },
       {
-        "path": "drivers/PolarisProtocols/LICENSE",
         "bytes": 736,
+        "path": "drivers/PolarisProtocols/LICENSE",
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "path": "drivers/PolarisProtocols/README.md",
         "bytes": 1081,
+        "path": "drivers/PolarisProtocols/README.md",
         "sha256": "de324fce0396cde70f10de4da124ade48d65945145381ffaee53c1dea0646c36"
       },
       {
-        "path": "drivers/PolarisProtocols/polaris_protocols.py",
         "bytes": 14345,
+        "path": "drivers/PolarisProtocols/polaris_protocols.py",
         "sha256": "d6e74e537008cd403222bbcf31925c26762f235067c5589bd7c5c7226372c126"
       },
       {
-        "path": "drivers/PolarisSynapticsTouch/Info.plist",
         "bytes": 1169,
+        "path": "drivers/PolarisSynapticsTouch/Info.plist",
         "sha256": "03455bc41c14eaa32b0eeca03918027aff4293f54c90b09a01d268efd476e582"
       },
       {
-        "path": "drivers/PolarisSynapticsTouch/LICENSE",
         "bytes": 736,
+        "path": "drivers/PolarisSynapticsTouch/LICENSE",
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "path": "drivers/PolarisSynapticsTouch/PolarisSynapticsTouch.cpp",
         "bytes": 6665,
+        "path": "drivers/PolarisSynapticsTouch/PolarisSynapticsTouch.cpp",
         "sha256": "a94a128b76e69de2a1db5784eebda54b25d3bb155443bbbead1f28ef02051c87"
       },
       {
-        "path": "drivers/PolarisSynapticsTouch/PolarisTouchRuntime.c",
         "bytes": 13309,
+        "path": "drivers/PolarisSynapticsTouch/PolarisTouchRuntime.c",
         "sha256": "c6ea73b5ba500a2311b5eb8d3ab4f42d399c5308af792527285b1558308791af"
       },
       {
-        "path": "drivers/PolarisSynapticsTouch/README.md",
         "bytes": 2354,
+        "path": "drivers/PolarisSynapticsTouch/README.md",
         "sha256": "bb51e0b323cd29380a23491faf5aa7d96fbdf0201fcb361deb67b543b298ba30"
       },
       {
-        "path": "drivers/PolarisSynapticsTouch/SynapticsRmi4Protocol.h",
         "bytes": 4540,
+        "path": "drivers/PolarisSynapticsTouch/SynapticsRmi4Protocol.h",
         "sha256": "119b6916302e5721a2f51afc34aa64accce2a38a929a44a117753f96b9bcd2ac"
       },
       {
-        "path": "drivers/PolarisTouch/README.md",
         "bytes": 1239,
+        "path": "drivers/PolarisTouch/README.md",
         "sha256": "6b867ba5a251110a79685113c0110d31581fc79dc0c213c24aeaa4d53d011d54"
       },
       {
-        "path": "drivers/PolarisTouch/synaptics_rmi4_protocol.py",
         "bytes": 6328,
+        "path": "drivers/PolarisTouch/synaptics_rmi4_protocol.py",
         "sha256": "70d6825199dbc2edeb1e83b20e1bfc5ca69da1253b897c7078f76c5c641d17a7"
       },
       {
-        "path": "drivers/PolarisTransportContracts/Info.plist",
         "bytes": 878,
+        "path": "drivers/PolarisTransportContracts/Info.plist",
         "sha256": "11db8fec996afa3cf33f31222577966a4ca128e85e4188da5ac680e31ccf93ef"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisCciProtocol.h",
         "bytes": 3466,
+        "path": "drivers/PolarisTransportContracts/PolarisCciProtocol.h",
         "sha256": "949e0b4ba48268e5aea7b310a964a1490fcc9920fe2dc8dceb28a41b25e3d323"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisH4Protocol.h",
         "bytes": 5339,
+        "path": "drivers/PolarisTransportContracts/PolarisH4Protocol.h",
         "sha256": "dc9ac75934109c3eda9bc7ffbafeba1145244dd02fa41e994089c6bfc22b16f5"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisNci.h",
         "bytes": 2617,
+        "path": "drivers/PolarisTransportContracts/PolarisNci.h",
         "sha256": "6e63b7e04e02bcb701a39bc73cd70fa3fb3041bd7c83c5bb9983f716bf36de03"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisPmicProtocol.h",
         "bytes": 4039,
+        "path": "drivers/PolarisTransportContracts/PolarisPmicProtocol.h",
         "sha256": "749a3fe9940cfd2bf715657bf645c03568caa51bf6a114a70f7d8cdb9f0d1029"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisProtocolSelfTest.h",
         "bytes": 5779,
+        "path": "drivers/PolarisTransportContracts/PolarisProtocolSelfTest.h",
         "sha256": "5a15f2a567dcf7ca4cd8353ee10a5136b957dec4bb6d08c128f62fb49ddf1300"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisQcaProtocol.h",
         "bytes": 2540,
+        "path": "drivers/PolarisTransportContracts/PolarisQcaProtocol.h",
         "sha256": "1681fd60c7bfcada4382949830c1856468ce5d8b8b00e02d6a579a971909e717"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisTransportContracts.cpp",
         "bytes": 4759,
+        "path": "drivers/PolarisTransportContracts/PolarisTransportContracts.cpp",
         "sha256": "7b7bb510518d7279313445926f94d180be6a54d29760a6ad7522fb4191dd20ae"
       },
       {
-        "path": "drivers/PolarisTransportContracts/PolarisWlfwProtocol.h",
         "bytes": 2267,
+        "path": "drivers/PolarisTransportContracts/PolarisWlfwProtocol.h",
         "sha256": "5f3d87a5cc88bb483b81e7854945f0e1f75ec57b4f442ff8f1c784cb2ee5fc82"
       },
       {
-        "path": "drivers/PolarisTransportContracts/README.md",
         "bytes": 1287,
+        "path": "drivers/PolarisTransportContracts/README.md",
         "sha256": "a4d571a95d3f0516a10c96025672b0aaca3b04668f1be879d616593a6f4d75be"
       },
       {
-        "path": "drivers/PolarisPeripheralContracts/Info.plist",
         "bytes": 927,
+        "path": "drivers/PolarisPeripheralContracts/Info.plist",
         "sha256": "4534a6274af0e26f7f07cdbad46b2e235f67fe03b4601242432e24e61b4b89f4"
       },
       {
-        "path": "drivers/PolarisPeripheralContracts/PolarisPeripheralContracts.cpp",
         "bytes": 12267,
+        "path": "drivers/PolarisPeripheralContracts/PolarisPeripheralContracts.cpp",
         "sha256": "6f1b544b2789809bb911b0d87bd07e8f29c8ad1c911ccc88ceb7db6b2f179d34"
       },
       {
-        "path": "drivers/PolarisPeripheralContracts/README.md",
         "bytes": 847,
+        "path": "drivers/PolarisPeripheralContracts/README.md",
         "sha256": "edd5958d299dcc7c3ced6cd8ba09d4a20966621cdc74401112eb89163ab1b5ce"
       },
       {
-        "path": "drivers/PolarisNfcContract/Info.plist",
         "bytes": 902,
+        "path": "drivers/PolarisNfcContract/Info.plist",
         "sha256": "6abfeb63ee7b54e133b58c369066ee5c648d94e89a9bbf88f05c4a761c6de0ae"
       },
       {
-        "path": "drivers/PolarisNfcContract/PolarisNfcContract.cpp",
         "bytes": 5578,
+        "path": "drivers/PolarisNfcContract/PolarisNfcContract.cpp",
         "sha256": "fd5b1ea5e1b600c7671e39ad13c42c26b0263858e07f62f782054fe7b3e95d2a"
       },
       {
-        "path": "drivers/PolarisNfcContract/PolarisNfcPolicy.h",
         "bytes": 2964,
+        "path": "drivers/PolarisNfcContract/PolarisNfcPolicy.h",
         "sha256": "61b2d7106546415e219afb4d945c59266db98480d61dcc69890a0b4c73b4a32d"
       },
       {
-        "path": "drivers/PolarisNfcContract/README.md",
         "bytes": 624,
+        "path": "drivers/PolarisNfcContract/README.md",
         "sha256": "7f33b5f8c71f335d3883cf98939160d600b7615758aa528da73c07203582c775"
       },
       {
-        "path": "drivers/PolarisCameraContract/Info.plist",
         "bytes": 915,
+        "path": "drivers/PolarisCameraContract/Info.plist",
         "sha256": "a982493f9f32896ef5b3145dda40a2cc3e1e1f40da17c186800022dcaa3b4647"
       },
       {
-        "path": "drivers/PolarisCameraContract/PolarisCameraContract.cpp",
         "bytes": 7395,
+        "path": "drivers/PolarisCameraContract/PolarisCameraContract.cpp",
         "sha256": "cc9554c8b2f6cc8d75eb3621f881720ef800ea4134aac4a09ab8c758dbd56808"
       },
       {
-        "path": "drivers/PolarisCameraContract/PolarisCameraPolicy.h",
         "bytes": 3743,
+        "path": "drivers/PolarisCameraContract/PolarisCameraPolicy.h",
         "sha256": "7656a4fd865673bcbf6740f9af16c8e25c8f21a71b7f42739c43adf6590b8e07"
       },
       {
-        "path": "drivers/PolarisCameraContract/README.md",
         "bytes": 615,
+        "path": "drivers/PolarisCameraContract/README.md",
         "sha256": "b7f569546c4da5798a4f2ce55463e5b05ceeb2ae98527d1c6bffb21faf2b4a2a"
       },
       {
-        "path": "drivers/PolarisDisplayContract/Info.plist",
         "bytes": 913,
+        "path": "drivers/PolarisDisplayContract/Info.plist",
         "sha256": "13dc2a47783716688fadd3b799942edacd04d269f21f9d3a6bbc290dbcd97f33"
       },
       {
-        "path": "drivers/PolarisDisplayContract/PolarisDisplayContract.cpp",
         "bytes": 3189,
+        "path": "drivers/PolarisDisplayContract/PolarisDisplayContract.cpp",
         "sha256": "424db8cac41560918b3ee11da74c7c836dddd1f658387589d737215ba3569b86"
       },
       {
-        "path": "drivers/PolarisDisplayContract/PolarisDisplayPanelProtocol.h",
         "bytes": 3548,
+        "path": "drivers/PolarisDisplayContract/PolarisDisplayPanelProtocol.h",
         "sha256": "7136a123aa9a969b32725bf7041a9a44a305afb58670362445906c62158edd4b"
       },
       {
-        "path": "drivers/PolarisDisplayContract/README.md",
         "bytes": 522,
+        "path": "drivers/PolarisDisplayContract/README.md",
         "sha256": "18755fb0176cf552409ab2de96ac4f0ab610a1b67e29cccd0569167f8801fda0"
       },
       {
-        "path": "drivers/PolarisRuntime/Info.plist",
         "bytes": 544,
+        "path": "drivers/PolarisRuntime/Info.plist",
         "sha256": "1f76a0e4353b335ed3abf6e7c8c9a83bd9fd722dc866612737384d6914621c9b"
       },
       {
+        "bytes": 7229,
         "path": "drivers/PolarisRuntime/PolarisRuntime.cpp",
-        "bytes": 7280,
-        "sha256": "12ef283df308dbbe992089140f8dfdf69747576965f0a985df60501969fba59a"
+        "sha256": "ee21b2c54f379868ec9278106f3bf5e4e7c1018dfa5f66c9cdaa543f942fe667"
       },
       {
-        "path": "drivers/PolarisRuntime/README.md",
         "bytes": 1209,
+        "path": "drivers/PolarisRuntime/README.md",
         "sha256": "31334ad16ed6391624bd5ed54771ea1f1b34ea44429934dc39462017ef1e8fc8"
       },
       {
-        "path": "drivers/PolarisPmicRuntime/Info.plist",
         "bytes": 384,
+        "path": "drivers/PolarisPmicRuntime/Info.plist",
         "sha256": "1b87e01855fde07be4c22fd0db13193bb8b2b4dddd2c79e5da8bb1cc6bf1e3d4"
       },
       {
-        "path": "drivers/PolarisPmicRuntime/PolarisPmicRuntime.cpp",
         "bytes": 19835,
+        "path": "drivers/PolarisPmicRuntime/PolarisPmicRuntime.cpp",
         "sha256": "baea88828afc7674bf971e125258a5ac97115a52e68a62f0230742e472ca758b"
       },
       {
-        "path": "drivers/PolarisPmicRuntime/README.md",
         "bytes": 906,
+        "path": "drivers/PolarisPmicRuntime/README.md",
         "sha256": "c0c669971bf3eb2e9196aa20f2545dfe0bc5ca0bda48febc90d7088861158eed"
       },
       {
-        "path": "drivers/PolarisHidInput/Info.plist",
         "bytes": 621,
+        "path": "drivers/PolarisHidInput/Info.plist",
         "sha256": "63b1b2384ba3aa78ec2353ed6d1b6f5020fcfc7013f335c94d37fdcb76f11bb7"
       },
       {
-        "path": "drivers/PolarisHidInput/LICENSE",
         "bytes": 2681,
+        "path": "drivers/PolarisHidInput/LICENSE",
         "sha256": "fc56b096347b83da4a300f97ad6182484941bbeff8becf91914b7fdc203d5a9f"
       },
       {
-        "path": "drivers/PolarisHidInput/OriginalHidDeviceABI.h",
         "bytes": 5243,
+        "path": "drivers/PolarisHidInput/OriginalHidDeviceABI.h",
         "sha256": "fb15346bca7542e5b77fedc69ad1e46eb32312d92640b949411aaf08554bf616"
       },
       {
-        "path": "drivers/PolarisHidInput/PolarisHidInput.cpp",
         "bytes": 21982,
+        "path": "drivers/PolarisHidInput/PolarisHidInput.cpp",
         "sha256": "1191fe4ff08ee56117e4e8dd1e2ec194864e660e272275eacd14cd4f084bced2"
       },
       {
-        "path": "drivers/PolarisHidInput/PolarisHidProbe.cpp",
         "bytes": 8087,
+        "path": "drivers/PolarisHidInput/PolarisHidProbe.cpp",
         "sha256": "5a09a06c9024ca56e05822da0a46b7528cb2c083cf5fcb0b3d4299355bb8fcf1"
       },
       {
-        "path": "drivers/PolarisHidInput/README.md",
         "bytes": 2129,
+        "path": "drivers/PolarisHidInput/README.md",
         "sha256": "0b033868621c808d5c5af07bde312b8c5786a4ec3998e17de2bd4d76d44603c7"
       }
     ]
   },
-  "generated_at": "2026-10-31T08:19:51.208840+00:00",
+  "generated_at": "2026-10-31T09:27:38.909036+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,

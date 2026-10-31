@@ -287,9 +287,17 @@ class IOSStageScriptTests(unittest.TestCase):
         self.assertIn("OS and SystemOS inputs must be different files", source)
 
     def test_udif_extractor_treats_liblzfse_as_lazy_dependency(self):
-        source = (ROOT / "scripts" / "udif-extract.py").read_text(encoding="utf-8")
-        self.assertIn("except ImportError", source)
-        self.assertIn("requires the Python liblzfse module", source)
+        import zlib
+        with patch.dict(sys.modules, {"liblzfse": None, "lzfse": None}):
+            extractor = load("udif_lazy_dependency", ROOT / "scripts" / "udif-extract.py")
+        self.assertIsNone(extractor.liblzfse)
+        plain = b"x" * 512
+        self.assertEqual(extractor.decode(extractor.ZLIB, zlib.compress(plain), len(plain)), plain)
+        with self.assertRaisesRegex(ValueError, r"LZFSE requires.*--lzfse-bin"):
+            extractor.decode(extractor.LZFSE, b"encoded", len(plain))
+        with patch.object(extractor, "external_lzfse", return_value=plain) as external:
+            self.assertEqual(extractor.decode(extractor.LZFSE, b"encoded", len(plain), "decoder"), plain)
+            external.assert_called_once_with(b"encoded", len(plain), "decoder")
 
     def test_package_carries_optional_darwin_root(self):
         with tempfile.TemporaryDirectory() as directory:

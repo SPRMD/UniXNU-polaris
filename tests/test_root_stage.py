@@ -6,6 +6,7 @@ import struct
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,6 +43,12 @@ class RootStageTests(unittest.TestCase):
             inputs.mkdir(parents=True)
             (inputs / "044-76040-038.dmg").write_bytes(b"OS fixture")
             (inputs / "044-76034-038.dmg").write_bytes(b"SystemOS fixture")
+            # check() deliberately distinguishes a missing kernel from a
+            # missing compiler.  Supply a minimal plain arm64 Mach-O so this
+            # fixture reaches the toolchain gate it is intended to test.
+            (inputs / "kernelcache.release.ipad7.arm64.macho").write_bytes(
+                struct.pack("<8I", 0xFEEDFACF, 0x0100000C, 0, 2, 0, 0, 0, 0)
+            )
             userdata = root / "out" / "polaris" / "userdata" / "userdata-root.img"
             userdata.parent.mkdir(parents=True)
             header = bytearray(4096)
@@ -50,7 +57,15 @@ class RootStageTests(unittest.TestCase):
             header[4064:4096] = hashlib.sha256(header[:4064]).digest()
             userdata.write_bytes(header)
 
-            report = MODULE.check(root, upstream, inputs)
+            real_which = MODULE.shutil.which
+            with patch.object(
+                MODULE.shutil,
+                "which",
+                side_effect=lambda name: None
+                if name in ("clang", "clang++", "xcrun")
+                else real_which(name),
+            ):
+                report = MODULE.check(root, upstream, inputs)
         self.assertFalse(report["device_access"])
         self.assertFalse(report["ready_for_phone_boot"])
         self.assertTrue(report["ready_for_userdata_build"])

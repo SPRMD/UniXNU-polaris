@@ -3,7 +3,9 @@
 // Included after the transport and window reader; no independent translation unit.
 class PolarisUfsBlock : public IOBlockStorageDevice {
   OSDeclareDefaultStructors (PolarisUfsBlock)
-  uint64_t bytes = 0;
+  uint64_t bytes = 0, absolute = 0;
+  uint32_t sector = 4096;
+  char label[32] = "UFS LUN 0";
   uint8_t *bounce = nullptr;
   IOLock *windowLock = nullptr;
   bool online = false;
@@ -15,6 +17,16 @@ public:
     bounce = static_cast<uint8_t *> (IOMalloc (kDataMax));
     return windowLock && bounce;
   }
+  bool configureWindow (const char *name, uint64_t offset, uint64_t size, uint64_t lunBytes) {
+    if (!name || (strcmp (name, "OS") && strcmp (name, "SystemOS")) ||
+        !ufsWindowGeometry (offset, size) || (size & 4095) ||
+        offset >= lunBytes || size > lunBytes - offset || !configure (size)) return false;
+    absolute = offset; sector = 512;
+    memcpy (label, name, strlen (name) + 1);
+    return true;
+  }
+  const char *windowLabel () const { return label; }
+  uint64_t windowBytes () const { return bytes; }
   bool start (IOService *provider) override {
     if (!bounce || !windowLock || !IOBlockStorageDevice::start (provider)) return false;
     online = true;
@@ -37,12 +49,12 @@ public:
   IOReturn doFormatMedia (UInt64) override { return kIOReturnNotWritable; }
   UInt32 doGetFormatCapacities (UInt64 *, UInt32) const override { return 0; }
   char *getVendorString () override { return const_cast<char *> ("Polaris"); }
-  char *getProductString () override { return const_cast<char *> ("UFS LUN 0"); }
+  char *getProductString () override { return label; }
   char *getRevisionString () override { return const_cast<char *> ("0.1"); }
   char *getAdditionalDeviceInfoString () override { return const_cast<char *> ("experimental read-only UFS"); }
   // Preserve the physical LUN's 4 KiB geometry: its GPT LBAs are NOT 512-byte LBAs.
-  IOReturn reportBlockSize (UInt64 *v) override { *v = 4096; return kIOReturnSuccess; }
-  IOReturn reportMaxValidBlock (UInt64 *v) override { *v = bytes / 4096 - 1; return kIOReturnSuccess; }
+  IOReturn reportBlockSize (UInt64 *v) override { *v = sector; return kIOReturnSuccess; }
+  IOReturn reportMaxValidBlock (UInt64 *v) override { *v = bytes / sector - 1; return kIOReturnSuccess; }
   IOReturn reportEjectability (bool *v) override { *v = false; return kIOReturnSuccess; }
   IOReturn reportRemovability (bool *v) override { *v = false; return kIOReturnSuccess; }
   IOReturn reportWriteProtection (bool *v) override { *v = true; return kIOReturnSuccess; }
@@ -59,8 +71,8 @@ public:
   IOReturn setWriteCacheState (bool) override { return kIOReturnNotWritable; }
   IOReturn doAsyncReadWrite (IOMemoryDescriptor *buffer, UInt64 block, UInt64 count,
                             IOStorageAttributes *, IOStorageCompletion *completion) override {
-    if (!buffer || !completion || !completion->action || !count || block >= bytes / 4096 ||
-        count > bytes / 4096 - block || buffer->getLength () < count * 4096)
+    if (!buffer || !completion || !completion->action || !count || block >= bytes / sector ||
+        count > bytes / sector - block || buffer->getLength () < count * sector)
       return kIOReturnBadArgument;
     if (buffer->getDirection () != kIODirectionIn) return kIOReturnNotWritable;
     struct Operations {
@@ -76,7 +88,7 @@ public:
         return buffer->writeBytes (offset, data, length);
       }
     } ops = { this, buffer };
-    UfsWindowResult result = ufsReadWindow (ops, 0, bytes, block * 8, count * 8, bounce);
+    UfsWindowResult result = ufsReadWindow (ops, absolute, bytes, block * (sector / 512), count * (sector / 512), bounce);
     // Completion may re-enter the device; both window and transport locks are released.
     completion->action (completion->target, completion->parameter, result.status, result.done);
     return kIOReturnSuccess;

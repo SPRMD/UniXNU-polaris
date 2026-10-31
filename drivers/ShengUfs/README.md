@@ -16,7 +16,11 @@ integrator and are intentionally outside this change.
 - Only `native-ufs-block=1` enables the block runtime. It requires the existing
   root-device NativeUfs personality and rejects concurrent `native-ufs-probe`
   or `native-ufs-smmu` takeover. No board, workflow or manifest is changed here.
-- `native-ufs-root=1` is NOT implemented by this backend. Keep it disabled.
+- `native-ufs-windows=1` discovers GPT darwin and publishes separate read-only
+  SystemOS/OS windows. Requires the same runtime build option; do not combine
+  with block/probe. Replace root=1 in packaging rather than adding windows.
+- `native-ufs-root=1` still refuses: APFS volume identity/trust and root readiness
+  are not qualified here. See ROOT-WINDOWS.md for integration and blockers.
 
 The new device publishes **LUN 0 with its actual 4096-byte sector geometry**,
 not a 512-byte reinterpretation of its GPT. READ CAPACITY(10) must return a
@@ -75,11 +79,11 @@ The package uses userdata for ESP and a separate GPT `darwin` partition containi
 SHNGROOT OS/SystemOS disk windows. Publishing LUN 0 alone does not publish those
 embedded disks and cannot satisfy APFS root matching. RootLayout.h remains the
 old userdata diagnostic parser, and is NOT called by the new block start path.
-The next stage must select and bound-check `darwin`, validate SHNGROOT and each
-window against both partition and detected LUN capacity, publish the OS/SystemOS
-windows with their own 512-byte logical geometry, then establish media/root
-matching. TrustCache/ADT and IOStorageFamily matching/link integration are separate
-requirements. No root-success property, root boot argument or packaging is added.
+The new PolarisRootLayout/PolarisRootPublisher path now validates darwin,
+SHNGROOT and both raw APFS payloads, and publishes 512-byte OS/SystemOS windows.
+Real whole-window IOMedia is observed, but APFS volume/root matching is not
+certified. TrustCache/ADT and IOStorageFamily matching/link remain requirements.
+No root-success property or packaging change is added. See ROOT-WINDOWS.md.
 
 ## Validation (2026-10-31)
 

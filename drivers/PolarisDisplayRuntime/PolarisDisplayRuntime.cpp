@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause-Patent
 #include "PolarisDisplayRuntime.h"
+#include "PolarisSurfaceABI.h"
 #include <IOKit/IOService.h>
 #include <IOKit/IODeviceMemory.h>
 #include <IOKit/IODeviceTreeSupport.h>
@@ -134,4 +135,64 @@ void polaris_display_destroy(PolarisDisplayRuntime *ctx) {
     polaris_display_stop(ctx);
     IOLockFree(ctx->lock);
     IOFree(ctx, sizeof(*ctx));
+}
+
+// Kept in this translation unit so the existing, already linked archive recipe
+// picks up the surface adapter without board/build/manifest modifications.
+struct PolarisSurfaceAdapter {
+    const unsigned char *text;
+};
+
+IOReturn polaris_surface_adapter_create(const uint8_t uuid[16], const void *text,
+                                        size_t bytes, PolarisSurfaceAdapter **out) {
+    if (!out) return kIOReturnBadArgument;
+    *out = nullptr;
+    if (!polaris_surface_validate_code(uuid, text, bytes)) return kIOReturnUnsupported;
+    auto adapter = static_cast<PolarisSurfaceAdapter *>(IOMalloc(sizeof(PolarisSurfaceAdapter)));
+    if (!adapter) return kIOReturnNoMemory;
+    adapter->text = static_cast<const unsigned char *>(text);
+    *out = adapter;
+    return kIOReturnSuccess;
+}
+
+IOReturn polaris_surface_present(PolarisSurfaceAdapter *adapter, PolarisDisplayRuntime *runtime,
+                                 OSObject *surface, PolarisDisplayTransfer *out) {
+    if (out) *out = {};
+    if (!adapter || !runtime || !surface || !out) return kIOReturnBadArgument;
+    // Original IOSurface subclasses are allowed; geometry/backing must be held
+    // stable by the compositor's producer lock throughout this synchronous call.
+    if (!surface->metaCast("IOSurface") || surface->getMetaClass()->getClassSize() < 160)
+        return kIOReturnUnsupported;
+    surface->retain();
+    using Descriptor = IOMemoryDescriptor *(*)(OSObject *);
+    using Word = uint32_t (*)(OSObject *);
+    using Wide = uint64_t (*)(OSObject *);
+    auto address = [adapter](unsigned index) { return adapter->text + polaris_surface_leaves[index].offset; };
+    const uint32_t format = reinterpret_cast<Word>(address(PDS_FORMAT))(surface);
+    const uint32_t planes = reinterpret_cast<Word>(address(PDS_PLANES))(surface);
+    // Reject compressed '&BGA' even though Sirius accepts it for its renderer.
+    // This port has no evidence that such surfaces contain plain linear pixels.
+    if (format != 0x42475241 || planes != 0) { surface->release(); return kIOReturnUnsupported; }
+    const uint64_t width = reinterpret_cast<Wide>(address(PDS_WIDTH))(surface);
+    const uint64_t height = reinterpret_cast<Wide>(address(PDS_HEIGHT))(surface);
+    const uint64_t stride = reinterpret_cast<Wide>(address(PDS_STRIDE))(surface);
+    const uint64_t allocation = reinterpret_cast<Wide>(address(PDS_ALLOCATION))(surface);
+    IOMemoryDescriptor *memory = reinterpret_cast<Descriptor>(address(PDS_DESCRIPTOR))(surface);
+    if (width != runtime->mode.width || height != runtime->mode.height || !memory ||
+        !memory->metaCast("IOMemoryDescriptor") || allocation > memory->getLength()) {
+        surface->release(); return kIOReturnBadArgument;
+    }
+    PolarisScanoutLayout geometry = {allocation, stride, uint32_t(width), uint32_t(height), POLARIS_SCANOUT_BGRX8888};
+    if (!polaris_scanout_layout_valid(geometry)) { surface->release(); return kIOReturnBadArgument; }
+    // Runtime deliberately validates the whole descriptor, including padding.
+    geometry.bytes = memory->getLength();
+    memory->retain();
+    IOReturn status = polaris_display_present(runtime, memory, &geometry, out);
+    memory->release();
+    surface->release();
+    return status;
+}
+
+void polaris_surface_adapter_destroy(PolarisSurfaceAdapter *adapter) {
+    if (adapter) IOFree(adapter, sizeof(*adapter));
 }

@@ -301,6 +301,8 @@ def main() -> int:
         "blockers": [
             "prelinked kernel has not been temporarily booted on this Polaris",
             "NativeUfs root mount and APFS handoff are unverified",
+            "writable APFS Data volume and initial userland seed are not assembled",
+            "MobileFramebuffer compositor is not connected to the CPU scanout runtime",
             "Apple userland, trust chain and retargeted ADT are unverified on hardware",
             "GPU, Wi-Fi, Bluetooth, NFC and camera Darwin backends are not hardware-tested",
         ],

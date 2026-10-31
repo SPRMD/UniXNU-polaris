@@ -127,6 +127,7 @@ static void hostWrite (unsigned offset, uint32_t value) {
 #include "RootCommands.h"
 #include "RootWindowRead.h"
 #include "PolarisBlockDevice.h"
+#include "RootPublication.h"
 static void reset (Mode next = Mode::Good) {
   mode = next;
   std::memset (regs, 0, sizeof (regs));
@@ -143,23 +144,42 @@ static void complete (void *p, void *, IOReturn status, uint64_t bytes) {
 }
 int main () {
   uint32_t smmu[1024] = {};
+  smmu[0x28 / 4] = (5U << 0) | (5U << 4) | (0xfU << 8);
   smmu[0x20 / 4] = (1U << 27) | 2;
   smmu[0x800 / 4] = 0x800f0100;
   smmu[0xc00 / 4] = 1U << 16;
   auto read = [&](unsigned offset) { assert (offset < sizeof (smmu)); return smmu[offset / 4]; };
-  assert (!polarisDmaHandoff (0x90000000, kDmaBytes, read));
-  assert (polarisDmaHandoff (0xfffff000, kDmaBytes, read));
+  auto hostRead = [&](unsigned offset) { assert (offset < 4); return regs[offset / 4]; };
+  PolarisDmaEvidence evidence;
+  assert (!polarisDmaHandoff (0x90000000, kDmaBytes, hostRead, read, evidence));
+  // The SMMU supports larger addresses, but the controller CAP 64AS bit also
+  // has to advertise 64-bit addressing before an above-4-GiB request is legal.
+  assert (evidence.limit == 32);
+  assert (polarisDmaHandoff (0xfffff000, kDmaBytes, hostRead, read, evidence));
+  regs[0] = 1U << 24;
+  assert (!polarisDmaHandoff (0x100000000ULL, kDmaBytes, hostRead, read, evidence));
+  assert (evidence.limit == 48);
+  smmu[0x28 / 4] = (5U << 0) | (5U << 4) | (1U << 8);
+  assert (!polarisDmaHandoff (0x100000000ULL, kDmaBytes, hostRead, read, evidence));
+  assert (evidence.limit == 36);
+  smmu[0x28 / 4] = (5U << 0) | (1U << 4) | (0xfU << 8);
+  assert (!polarisDmaHandoff (0x100000000ULL, kDmaBytes, hostRead, read, evidence));
+  assert (evidence.limit == 36);
+  smmu[0x28 / 4] = (5U << 0) | (5U << 4) | (0xfU << 8);
+  assert (!polarisDmaHandoff (0x100000000ULL, kDmaBytes, hostRead, read, evidence));
+  assert (evidence.limit == 48);
+  regs[0] = 0;
   smmu[0x800 / 4] = 0x80000100; // missing fifteen streams
-  assert (polarisDmaHandoff (0x90000000, kDmaBytes, read));
+  assert (polarisDmaHandoff (0x90000000, kDmaBytes, hostRead, read, evidence));
   smmu[0x800 / 4] = 0x800f0100;
   smmu[0xc00 / 4] = 0; // translated mapping must not be assumed identity
-  assert (polarisDmaHandoff (0x90000000, kDmaBytes, read));
+  assert (polarisDmaHandoff (0x90000000, kDmaBytes, hostRead, read, evidence));
   smmu[0xc00 / 4] = 1U << 16;
   smmu[0x804 / 4] = 0x80000101;
-  assert (polarisDmaHandoff (0x90000000, kDmaBytes, read));
+  assert (polarisDmaHandoff (0x90000000, kDmaBytes, hostRead, read, evidence));
   smmu[0x804 / 4] = 0;
   smmu[0] = 8; // extended IDs unsupported
-  assert (polarisDmaHandoff (0x90000000, kDmaBytes, read));
+  assert (polarisDmaHandoff (0x90000000, kDmaBytes, hostRead, read, evidence));
   uint8_t capacity[8] = {0, 0, 0, 99, 0, 0, 0x10, 0};
   uint64_t bytes = 0;
   assert (polarisCapacity (capacity, bytes) && bytes == 100 * 4096);
@@ -212,5 +232,83 @@ int main () {
   assert (!device.doAsyncReadWrite (&buffer, 0, 1, nullptr, &completion));
   assert (done.status == kIOReturnNotReady && !rings);
   device.free ();
+  // A 512-byte window read crosses a physical 4K boundary and must stay within
+  // its own absolute range, including the last logical sector.
+  PolarisUfsBlock window;
+  assert (window.configureWindow ("OS", 10 * 4096, 2 * 4096, 100 * 4096));
+  assert (window.start (nullptr));
+  window.reportBlockSize (&size); window.reportMaxValidBlock (&last);
+  assert (size == 512 && last == 15);
+  reset (); done = {};
+  assert (!window.doAsyncReadWrite (&buffer, 7, 2, nullptr, &completion));
+  assert (done.calls == 1 && done.status == 0 && done.bytes == 1024);
+  for (unsigned i = 0; i < 1024; ++i) assert (buffer.data[i] == (i < 512 ? 10 : 11));
+  done = {};
+  assert (!window.doAsyncReadWrite (&buffer, 15, 1, nullptr, &completion));
+  assert (done.bytes == 512 && done.status == 0 && buffer.data[511] == 11);
+  auto before = rings;
+  assert (window.doAsyncReadWrite (&buffer, 15, 2, nullptr, &completion) == kIOReturnBadArgument);
+  assert (rings == before);
+  window.stop (nullptr); window.free ();
+  PolarisUfsBlock invalid;
+  assert (!invalid.configureWindow ("OS", UINT64_MAX - 4095, 4096, UINT64_MAX));
+  assert (!invalid.configureWindow ("OS", 99 * 4096, 2 * 4096, 100 * 4096));
+
+  const char *names[] = { "OS", "SystemOS" };
+  UfsRootPlan plan;
+  assert (ufsBuildRootPlan (names, 2, plan) && plan.order[0] == 1 && plan.order[1] == 0);
+  struct Publication {
+    int failStart = -1, failWait = -1;
+    std::vector<unsigned> started, discarded, waited;
+    bool start (unsigned i) { started.push_back (i); return int(i) != failStart; }
+    bool wait (unsigned i) { waited.push_back (i); return int(i) != failWait; }
+    void discard (unsigned i) { discarded.push_back (i); }
+  } pub;
+  auto result = ufsPublishRootWindows (pub, plan);
+  assert (result.phase == UfsRootPhase::Complete && result.published == 2);
+  assert ((pub.started == std::vector<unsigned>{1, 0}) && pub.discarded.empty ());
+  pub = {}; pub.failWait = 1;
+  result = ufsPublishRootWindows (pub, plan);
+  assert (result.phase == UfsRootPhase::Media && result.published == 1);
+  assert ((pub.started == std::vector<unsigned>{1}) && (pub.discarded == std::vector<unsigned>{0}));
+  pub = {}; pub.failStart = 0;
+  result = ufsPublishRootWindows (pub, plan);
+  assert (result.phase == UfsRootPhase::Start && result.published == 1);
+  assert ((pub.discarded == std::vector<unsigned>{0}));
+  struct Preparation {
+    int failAt = -1; bool valid = true, dispatched = true;
+    std::vector<unsigned> discarded;
+    bool prepare (unsigned i) { return int(i) != failAt; }
+    bool validate () { return valid; }
+    bool schedule () { return dispatched; }
+    void discard (unsigned i) { discarded.push_back (i); }
+  } prep;
+  prep.failAt = 1;
+  result = ufsPrepareRootWindows (prep, 2);
+  assert (result.phase == UfsRootPhase::Prepare && (prep.discarded == std::vector<unsigned>{1, 0}));
+  prep = {}; prep.dispatched = false;
+  result = ufsPrepareRootWindows (prep, 2);
+  assert (result.phase == UfsRootPhase::Schedule && prep.discarded.size () == 2);
+  pub = {}; pub.failStart = 1;
+  result = ufsPublishRootWindows (pub, plan);
+  assert (result.published == 0 && pub.discarded.size () == 2);
+  pub = {}; pub.failWait = 0;
+  result = ufsPublishRootWindows (pub, plan);
+  assert (result.phase == UfsRootPhase::Media && result.published == 2 && pub.discarded.empty ());
+  prep = {}; prep.valid = false;
+  result = ufsPrepareRootWindows (prep, 2);
+  assert (result.phase == UfsRootPhase::Identity && prep.discarded.size () == 2);
+  struct Ancestors {
+    int *entry; bool valid; unsigned count = 0;
+    bool isValid () { return valid; }
+    int *getNextObject () { return count++ ? nullptr : entry; }
+  };
+  int ours = 1, unrelated = 2;
+  Ancestors parent = { &ours, true };
+  assert (ufsMediaHasAncestor (parent, &ours));
+  parent = { &unrelated, true };
+  assert (!ufsMediaHasAncestor (parent, &ours));
+  parent = { &ours, false };
+  assert (!ufsMediaHasAncestor (parent, &ours));
   std::puts ("PASS: DMA handoff, capacity, block reads, bounds, writes, completion, stop, transport faults");
 }
