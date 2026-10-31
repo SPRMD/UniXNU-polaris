@@ -14,6 +14,7 @@ BOARD = ROOT / "drivers" / "PolarisA630Probe" / "PolarisA630Board.h"
 PROBE = ROOT / "drivers" / "PolarisA630Probe" / "PolarisA630Probe.cpp"
 RESOURCES = ROOT / "research" / "polaris-a630-resources.json"
 MATRIX = ROOT / "research" / "polaris-driver-matrix.json"
+GAP = ROOT / "research" / "a630-port-gap.md"
 
 
 def define(name):
@@ -189,6 +190,68 @@ class A630BoardContractTests(unittest.TestCase):
         self.assertIn("readStreamIds(user, userSids, 2)", source)
         self.assertIn("readStreamIds(secure, secureSids, 2)", source)
         self.assertIn("be32(bytes + offset + 4)", source)
+
+
+class A630RecordedTreeTests(unittest.TestCase):
+    """Facts read out of the appended-DTB tail, pinned so they cannot drift.
+
+    Each value here was extracted from the stock Polaris DTB. The point of the
+    class is not that they are true of the silicon - it is that the JSON and the
+    header keep saying the same thing, and that the awkward ones stay awkward.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.resources = json.loads(RESOURCES.read_text())
+
+    def test_highest_bank_bit_is_the_device_tree_value(self):
+        # 15 is what qcom,highest-bank-bit declares. A wrong bank bit corrupts
+        # every tiled surface silently, so it is worth a dedicated assertion.
+        self.assertEqual(self.resources["gpu"]["highest_bank_bit"], 15)
+        self.assertIn("highest-bank-bit", self.resources["gpu"]["highest_bank_bit_source"])
+
+    def test_gpu_power_levels_descend_and_match_initial_level(self):
+        levels = self.resources["gpu"]["power_levels"]
+        self.assertEqual(len(levels), 8)
+        self.assertEqual([row["level"] for row in levels], list(range(8)))
+        frequencies = [row["gpu_hz"] for row in levels]
+        self.assertEqual(frequencies, sorted(frequencies, reverse=True))
+        self.assertEqual(frequencies[0], 710000000)
+        self.assertEqual(frequencies[-1], 0)
+        # initial-pwrlevel indexes this table, so it must be a valid index.
+        self.assertLess(self.resources["gpu"]["initial_pwrlevel"], len(levels))
+        self.assertEqual(levels[self.resources["gpu"]["initial_pwrlevel"]]["gpu_hz"], 257000000)
+
+    def test_gmu_power_levels_are_the_three_declared_states(self):
+        levels = self.resources["gmu"]["power_levels"]
+        self.assertEqual([row["gmu_hz"] for row in levels], [0, 200000000, 500000000])
+
+    def test_secure_context_keeps_the_device_tree_order(self):
+        # iommus = <&kgsl_smmu 2>, <&kgsl_smmu 1> - 2 before 1. A reader that
+        # sorts or deduplicates the tuple would swap which bank is which, so the
+        # recorded order is asserted exactly.
+        banks = {bank["node"]: bank["sid"] for bank in self.resources["smmu"]["context_banks"]}
+        self.assertEqual(banks["gfx3d_user"], 0)
+        self.assertEqual(banks["gfx3d_secure"], [2, 1])
+
+    def test_gmu_context_banks_come_from_the_gmu_node(self):
+        banks = {bank["node"]: bank["sid"] for bank in self.resources["smmu"]["gmu_context_banks"]}
+        self.assertEqual(banks["/soc/qcom,gmu/gmu_user"], 4)
+        self.assertEqual(banks["/soc/qcom,gmu/gmu_kernel"], 5)
+
+    def test_lpac_sid_is_not_claimed_from_the_numbering_coincidence(self):
+        # The A642L gate wants lpacSid 1; polaris has SID 1 only as the second
+        # gfx3d_secure bank. The gap document must say so rather than let a
+        # future reader fill the field with 1.
+        gap = GAP.read_text()
+        self.assertIn("lpacSid", gap)
+        self.assertIn("still unresolved", gap)
+
+    def test_quirks_are_recorded_as_booleans_not_values(self):
+        quirks = self.resources["gpu"]["quirks"]
+        self.assertIn("gpu-quirk-hfi-use-reg", quirks)
+        self.assertIn("gpu-quirk-secvid-set-once", quirks)
+        self.assertIn("no-nap", quirks)
 
 
 class A630PortGapTests(unittest.TestCase):

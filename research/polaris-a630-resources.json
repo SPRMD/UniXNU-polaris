@@ -31,7 +31,78 @@
     "irq_spi": 300,
     "irq_intid": 332,
     "interrupt_names": ["kgsl_3d0_irq"],
-    "initial_pwrlevel": 6
+    "initial_pwrlevel": 6,
+    "highest_bank_bit": 15,
+    "highest_bank_bit_source": "qcom,highest-bank-bit in the stock DT",
+    "min_access_length": 32,
+    "ubwc_mode": 2,
+    "snapshot_bytes": "0x00100000",
+    "gpu_qdss_stm": {
+      "base": "0x161c0000",
+      "bytes": "0x00040000"
+    },
+    "idle_timeout_ms": 80,
+    "power_levels": [
+      {
+        "level": 0,
+        "gpu_hz": 710000000,
+        "bus_level": 12,
+        "bus_min": 12,
+        "bus_max": 12
+      },
+      {
+        "level": 1,
+        "gpu_hz": 675000000,
+        "bus_level": 12,
+        "bus_min": 10,
+        "bus_max": 12
+      },
+      {
+        "level": 2,
+        "gpu_hz": 596000000,
+        "bus_level": 10,
+        "bus_min": 9,
+        "bus_max": 12
+      },
+      {
+        "level": 3,
+        "gpu_hz": 520000000,
+        "bus_level": 9,
+        "bus_min": 8,
+        "bus_max": 11
+      },
+      {
+        "level": 4,
+        "gpu_hz": 414000000,
+        "bus_level": 8,
+        "bus_min": 7,
+        "bus_max": 9
+      },
+      {
+        "level": 5,
+        "gpu_hz": 342000000,
+        "bus_level": 6,
+        "bus_min": 5,
+        "bus_max": 7
+      },
+      {
+        "level": 6,
+        "gpu_hz": 257000000,
+        "bus_level": 4,
+        "bus_min": 3,
+        "bus_max": 5
+      },
+      {
+        "level": 7,
+        "gpu_hz": 0,
+        "bus_level": 0,
+        "bus_min": 0,
+        "bus_max": 0
+      }
+    ],
+    "power_levels_source": "qcom,gpu-pwrlevels/qcom,gpu-pwrlevel@N in the stock DT",
+    "quirks": ["gpu-quirk-hfi-use-reg", "gpu-quirk-secvid-set-once", "no-nap"],
+    "quirks_source": "empty (boolean) properties present in the stock DT node"
   },
   "gmu": {
     "node": "/soc/qcom,gmu",
@@ -41,9 +112,30 @@
     "reg_names": ["kgsl_gmu_reg", "kgsl_gmu_pdc_reg"],
     "pdc_base": "0x0b200000",
     "pdc_bytes": "0x00300000",
-    "irq_spi": {"hfi": 304, "gmu": 305},
-    "irq_intid": {"hfi": 336, "gmu": 337},
-    "interrupt_names": ["kgsl_hfi_irq", "kgsl_gmu_irq"]
+    "irq_spi": {
+      "hfi": 304,
+      "gmu": 305
+    },
+    "irq_intid": {
+      "hfi": 336,
+      "gmu": 337
+    },
+    "interrupt_names": ["kgsl_hfi_irq", "kgsl_gmu_irq"],
+    "power_levels": [
+      {
+        "level": 0,
+        "gmu_hz": 0
+      },
+      {
+        "level": 1,
+        "gmu_hz": 200000000
+      },
+      {
+        "level": 2,
+        "gmu_hz": 500000000
+      }
+    ],
+    "power_levels_source": "qcom,gmu-pwrlevels/qcom,gmu-pwrlevel@N in the stock DT"
   },
   "smmu": {
     "node": "/soc/arm,smmu-kgsl@5040000",
@@ -54,10 +146,32 @@
     "context_irq_spi": [364, 365, 366, 367, 368, 369, 370, 371],
     "context_irq_count": 8,
     "context_banks": [
-      {"node": "gfx3d_user", "compatible": "qcom,smmu-kgsl-cb", "sid": 0},
-      {"node": "gfx3d_secure", "compatible": "qcom,smmu-kgsl-cb", "sid": [1, 2]}
+      {
+        "node": "gfx3d_user",
+        "compatible": "qcom,smmu-kgsl-cb",
+        "sid": 0
+      },
+      {
+        "node": "gfx3d_secure",
+        "compatible": "qcom,smmu-kgsl-cb",
+        "sid": [2, 1],
+        "sid_source": "iommus = <&kgsl_smmu 2>, <&kgsl_smmu 1>; the pair is the DT order, not a sort"
+      }
     ],
-    "note": "This is the GPU's own SMMU instance, distinct from the apps-SMMU that the UFS transport qualifies."
+    "note": "This is the GPU's own SMMU instance, distinct from the apps-SMMU that the UFS transport qualifies.",
+    "gmu_context_banks": [
+      {
+        "node": "/soc/qcom,gmu/gmu_user",
+        "compatible": "qcom,smmu-gmu-user-cb",
+        "sid": 4
+      },
+      {
+        "node": "/soc/qcom,gmu/gmu_kernel",
+        "compatible": "qcom,smmu-gmu-kernel-cb",
+        "sid": 5
+      }
+    ],
+    "gmu_context_banks_source": "iommus = <&kgsl_smmu 4> and <&kgsl_smmu 5> under /soc/qcom,gmu"
   },
   "gpucc": {
     "node": "/soc/qcom,gpucc@5090000",
@@ -66,13 +180,33 @@
     "bytes": "0x00009000"
   },
   "supporting_windows": {
-    "gcc": {"base": "0x00100000", "bytes": "0x001f0000", "compatible": ["qcom,gcc-sdm845-v2.1", "syscon"]},
-    "pdc": {"base": "0x0b220000", "bytes": "0x00000400", "compatible": ["qcom,pdc-sdm845-v2"]},
-    "rscc": {"base": "0x0af20000", "bytes": "0x00001c44", "compatible": ["qcom,sde-rsc"]}
+    "gcc": {
+      "base": "0x00100000",
+      "bytes": "0x001f0000",
+      "compatible": ["qcom,gcc-sdm845-v2.1", "syscon"]
+    },
+    "pdc": {
+      "base": "0x0b220000",
+      "bytes": "0x00000400",
+      "compatible": ["qcom,pdc-sdm845-v2"]
+    },
+    "rscc": {
+      "base": "0x0af20000",
+      "bytes": "0x00001c44",
+      "compatible": ["qcom,sde-rsc"]
+    }
   },
   "firmware_regions": {
-    "gpu_region": {"base": "0x8c415000", "bytes": "0x00002000", "compatible": ["removed-dma-pool"]},
-    "pil_spss_region": {"base": "0x97f00000", "bytes": "0x00100000", "compatible": ["removed-dma-pool"]}
+    "gpu_region": {
+      "base": "0x8c415000",
+      "bytes": "0x00002000",
+      "compatible": ["removed-dma-pool"]
+    },
+    "pil_spss_region": {
+      "base": "0x97f00000",
+      "bytes": "0x00100000",
+      "compatible": ["removed-dma-pool"]
+    }
   },
   "runtime": {
     "mmio_allowed": false,
