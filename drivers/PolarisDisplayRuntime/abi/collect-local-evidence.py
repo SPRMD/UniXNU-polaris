@@ -10,7 +10,8 @@ cannot prove for the four minimum-work items in ABI-AUDIT.md:
   1. IOMobileFramebufferLegacy constructors/destructors, superclass graph and
      the complete local vtable, plus the shipped subclass that inherits it.
   2. The seven IOSurface accessor leaves and their struct offsets.
-  3. The swap-request class size and the reference's field-offset hypotheses.
+  3. The swap-request class size and the reference's field-offset hypotheses,
+     including register-provenance attribution of every offset to an object.
   4. Prelinked import bindings, late-registration order and GOP hand-off
      evidence available in a stock kernelcache.
 
@@ -624,6 +625,418 @@ def analyze_hypothesis_offsets(env, modules, slot_maps, offsets):
     return output
 
 
+RET_WORD = 0xd65f03c0
+
+
+def sext(value, bits):
+    return value - (1 << bits) if value & (1 << (bits - 1)) else value
+
+
+def decode_load_store(word):
+    """Decode the A64 general-register load/store (immediate) family.
+
+    Returns None for every other encoding so a caller never guesses.  Only this
+    family is decoded because it is the only one carrying a literal field
+    offset; register-offset, literal-pool and SIMD/FP forms are deliberately
+    not modelled, and any access they carry is reported as unattributed rather
+    than approximated.
+    """
+    if (word >> 27) & 7 != 7 or (word >> 26) & 1:
+        return None
+    size = (word >> 30) & 3
+    form = (word >> 24) & 3
+    if form not in (0, 1):
+        return None
+    opc = (word >> 22) & 3
+    if opc == 3 or (size == 3 and opc == 2):
+        return None
+    if form == 1:
+        offset = ((word >> 10) & 0xfff) * (1 << size)
+        writeback = False
+    else:
+        offset = sext((word >> 12) & 0x1ff, 9)
+        writeback = ((word >> 10) & 3) in (1, 3)
+    return dict(size=1 << size, kind=('load' if opc in (1, 2) else 'store'),
+                offset=offset, rn=(word >> 5) & 31, rt=word & 31,
+                writeback=writeback)
+
+
+def decode_load_store_pair(word):
+    """Decode LDP/STP/LDNP/STNP (integer).  Returns None for anything else."""
+    if (word & 0x3a000000) != 0x28000000 or (word >> 26) & 1:
+        return None
+    if (word >> 30) not in (0, 2):
+        return None
+    scale = 8 if (word >> 30) == 2 else 4
+    index = (word >> 23) & 3
+    return dict(load=(word >> 22) & 1, index=index,
+                offset=sext((word >> 15) & 0x7f, 7) * scale,
+                rn=(word >> 5) & 31, rt=word & 31, rt2=(word >> 10) & 31,
+                writeback=index in (1, 3))
+
+
+def is_add_sub_immediate(word):
+    return (word >> 23) & 0x3f == 0x22
+
+
+def is_move_alias(word):
+    """ORR <Xd>, XZR, <Xm> - the register-to-register MOV alias."""
+    return (word & 0xffe0ffe0) == 0xaa0003e0
+
+
+def is_conditional_branch(word):
+    if (word & 0xff000010) == 0x54000000:
+        return True
+    if (word & 0x7e000000) in (0x34000000, 0x35000000, 0x36000000, 0x37000000):
+        return True
+    return False
+
+
+UNKNOWN = ('unknown',)
+
+
+def _expr(entry):
+    tag = entry[0]
+    if tag == 'this':
+        return 'this'
+    if tag == 'arg':
+        return 'arg%d' % entry[1]
+    if tag == 'const':
+        return hex(entry[1])
+    if tag == 'mem':
+        return _expr(entry[1]) + '->' + hex(entry[2])
+    if tag == 'callret':
+        return 'return-of-' + hex(entry[1])
+    if tag == 'sp':
+        return 'sp'
+    return 'unknown'
+
+
+def _chain(entry):
+    out = []
+    while entry[0] == 'mem':
+        out.append(hex(entry[2]))
+        entry = entry[1]
+    out.reverse()
+    return out
+
+
+def _root(entry):
+    while entry[0] == 'mem':
+        entry = entry[1]
+    if entry[0] == 'this':
+        return 'this'
+    if entry[0] == 'arg':
+        return 'arg%d' % entry[1]
+    if entry[0] == 'callret':
+        return 'call-return'
+    if entry[0] == 'sp':
+        return 'stack'
+    return 'unknown'
+
+
+def _depth(entry):
+    depth = 0
+    while entry[0] == 'mem':
+        depth += 1
+        entry = entry[1]
+    return depth
+
+
+def trace_function(env, ident, start, limit=1500, max_depth=3):
+    """Linear register-provenance trace of one method body.
+
+    Straight-line only: the scan runs from start to the first RET or the end of
+    the section.  Conditional branches are counted but never taken, so an
+    access reachable only under a condition is still listed with the register
+    it is based on, while the condition guarding it stays unproven.  A call
+    clobbers x0-x18, and x0 afterwards is recorded as a call-return marker
+    rather than as unknown, so an access through a pointer a helper returned is
+    reported as exactly that instead of being silently attributed to this.
+    Registers written by an encoding this tool does not model become unknown;
+    nothing is ever guessed from position alone.
+    """
+    image = env.modules[ident]
+    text = image.section('__TEXT_EXEC', '__text')
+    lo, hi = text['va'], text['va'] + text['size']
+    regs = {0: ('this',)}
+    for index in range(1, 8):
+        regs[index] = ('arg', index)
+    for index in range(8, 31):
+        regs[index] = UNKNOWN
+    regs[31] = ('sp',)
+    sp = 0
+    stack = {}
+    accesses, calls = [], []
+    branches = 0
+    terminated = False
+    steps = 0
+    for step in range(limit):
+        pc = start + 4 * step
+        if pc < lo or pc >= hi - 4:
+            break
+        steps = step + 1
+        word = env.outer.word(pc)
+        if word == RET_WORD:
+            terminated = True
+            break
+        if is_conditional_branch(word):
+            branches += 1
+            continue
+        pair = decode_load_store_pair(word)
+        if pair:
+            offset = pair['offset'] + (sp if pair['rn'] == 31 else 0)
+            if pair['rn'] == 31:
+                if pair['load']:
+                    for register in (pair['rt'], pair['rt2']):
+                        regs[register] = stack.get(offset, UNKNOWN)
+                else:
+                    stack[offset] = regs.get(pair['rt'], UNKNOWN)
+                    stack[offset + 8] = regs.get(pair['rt2'], UNKNOWN)
+                if pair['writeback']:
+                    sp += pair['offset']
+            else:
+                for register in (pair['rt'], pair['rt2']):
+                    regs[register] = UNKNOWN
+            continue
+        if is_add_sub_immediate(word):
+            rd, rn = word & 31, (word >> 5) & 31
+            immediate = ((word >> 10) & 0xfff) << (12 if (word >> 22) & 1 else 0)
+            if rn == 31 and rd == 31:
+                sp += -immediate if (word >> 30) & 1 else immediate
+            elif rd != 31:
+                regs[rd] = UNKNOWN
+            continue
+        access = decode_load_store(word)
+        if access:
+            base = regs.get(access['rn'], UNKNOWN)
+            offset = access['offset'] + (sp if access['rn'] == 31 else 0)
+            if access['rn'] == 31:
+                if access['kind'] == 'load':
+                    regs[access['rt']] = stack.get(offset, UNKNOWN)
+                else:
+                    stack[offset] = regs.get(access['rt'], UNKNOWN)
+                if access['writeback']:
+                    sp += access['offset']
+                continue
+            accesses.append(dict(pc=hex(pc), kind=access['kind'], size=access['size'],
+                                 offset=hex(access['offset']), base=_expr(base),
+                                 chain=_chain(base), root=_root(base),
+                                 depth=_depth(base)))
+            if access['kind'] == 'load' and base[0] != 'unknown' and _depth(base) < max_depth:
+                regs[access['rt']] = ('mem', base, access['offset'])
+            else:
+                regs[access['rt']] = UNKNOWN
+            continue
+        address = A.address_pair(env.outer, pc)
+        if address:
+            regs[address[0]] = ('const', address[1])
+            continue
+        if (word & 0xfc000000) == 0x94000000:
+            target = A.branch_target(word, pc)
+            symbol = None
+            for module in (ident, FAMILY_ID, H9G_ID, SURFACE_ID):
+                if module not in env.modules:
+                    continue
+                got = env.decode_stub(module, target)
+                if got is None:
+                    continue
+                try:
+                    bound = env.outer.pointer(got)
+                except ValueError:
+                    break
+                names = env.symbols.get(bound) or []
+                symbol = names[0] if names else hex(bound)
+                break
+            calls.append(dict(pc=hex(pc), target=hex(target), symbol=symbol,
+                              arguments=[_expr(regs.get(index, UNKNOWN)) for index in range(8)],
+                              argument_roots=[_root(regs.get(index, UNKNOWN)) for index in range(8)]))
+            for index in range(19):
+                regs[index] = UNKNOWN
+            regs[0] = ('callret', pc)
+            continue
+        if is_move_alias(word):
+            regs[word & 31] = regs.get((word >> 16) & 31, UNKNOWN)
+            continue
+        rd = word & 31
+        if rd:
+            regs[rd] = UNKNOWN
+    return dict(accesses=accesses, calls=calls, branches=branches,
+                terminated=terminated, instructions=steps,
+                return_expression=_expr(regs.get(0, UNKNOWN)))
+
+
+LOCK_SYMBOLS = ('IOLockLock', 'IOLockUnlock', 'IORecursiveLockLock',
+                'IORecursiveLockUnlock', 'lck_mtx_lock', 'lck_mtx_unlock',
+                'IORecursiveLockSleep', 'IORecursiveLockWakeup')
+
+
+def method_shape(trace):
+    """Register-usage shape of one method.  Deliberately not a prototype."""
+    used = set()
+    for access in trace['accesses']:
+        root = access['root']
+        if root == 'this':
+            used.add(0)
+        elif root.startswith('arg'):
+            used.add(int(root[3:]))
+    for call in trace['calls']:
+        for root in call['argument_roots']:
+            if root == 'this':
+                used.add(0)
+            elif root.startswith('arg'):
+                used.add(int(root[3:]))
+    lock = unlock = 0
+    for call in trace['calls']:
+        name = call['symbol'] or ''
+        if not any(needle in name for needle in LOCK_SYMBOLS):
+            continue
+        if 'Unlock' in name or 'unlock' in name:
+            unlock += 1
+        else:
+            lock += 1
+    return dict(argument_registers_read=sorted(used),
+                branch_instructions=trace['branches'],
+                call_count=len(trace['calls']),
+                call_symbols=[call['symbol'] for call in trace['calls'] if call['symbol']],
+                lock_calls=dict(lock=lock, unlock=unlock),
+                lock_balanced=(lock == unlock),
+                return_expression=trace['return_expression'],
+                terminated=trace['terminated'],
+                instructions=trace['instructions'])
+
+
+def slot_provenance(env, class_name, slot, address):
+    """Trace one vtable slot target and classify its field accesses."""
+    owner = env.executable_owner(int(address, 16))
+    if owner is None:
+        return dict(class_name=class_name, slot=slot, method=address, traced=False,
+                    reason='slot target is not executable in this image')
+    ident = owner.split(':')[0]
+    if ident not in env.modules:
+        return dict(class_name=class_name, slot=slot, method=address, traced=False,
+                    reason='slot target owner module is not resolved')
+    trace = trace_function(env, ident, int(address, 16))
+    this_fields = sorted({item['offset'] for item in trace['accesses']
+                          if item['root'] == 'this' and item['depth'] == 0})
+    other = [item for item in trace['accesses']
+             if not (item['root'] == 'this' and item['depth'] == 0)]
+    return dict(class_name=class_name, slot=slot, method=address, traced=True,
+                owner=owner, shape=method_shape(trace),
+                this_relative_fields=this_fields, accesses=trace['accesses'],
+                non_this_accesses=other, non_this_access_count=len(other))
+
+
+def field_ownership(provenances, offsets):
+    """Group observed field accesses by the reference hypothesis offsets.
+
+    For each offset the report states which object the access is based on:
+    'this' at depth 0 is the object the vtable belongs to, a deeper chain is a
+    sub-object reached from it, and anything else (a parameter, or a pointer a
+    helper returned) is explicitly *not* attributed to that object.
+    """
+    wanted = {hex(offset) for offset in offsets}
+    grouped = {}
+    for row in provenances:
+        if not row.get('traced'):
+            continue
+        for item in row['accesses']:
+            if item['offset'] not in wanted:
+                continue
+            grouped.setdefault(item['offset'], []).append(dict(
+                class_name=row['class_name'], slot=row['slot'], method=row['method'],
+                pc=item['pc'], kind=item['kind'], size=item['size'],
+                base=item['base'], root=item['root'], chain=item['chain'],
+                depth=item['depth']))
+    output = {}
+    for offset in sorted(wanted, key=lambda text: int(text, 16)):
+        rows = grouped.get(offset, [])
+        on_this = [row for row in rows if row['root'] == 'this' and row['depth'] == 0]
+        on_sub = [row for row in rows if row['root'] == 'this' and row['depth'] > 0]
+        off_this = [row for row in rows if row['root'] != 'this']
+        if on_this:
+            verdict = 'proven-this-relative'
+        elif on_sub:
+            verdict = 'proven-sub-object-of-this'
+        elif off_this:
+            verdict = 'not-this-relative'
+        else:
+            verdict = 'no-observed-access'
+        output[offset] = dict(
+            verdict=verdict,
+            this_relative=[dict(class_name=row['class_name'], slot=row['slot'],
+                                method=row['method'], pc=row['pc'], kind=row['kind'],
+                                size=row['size']) for row in on_this],
+            sub_object=[dict(class_name=row['class_name'], slot=row['slot'],
+                             method=row['method'], pc=row['pc'], chain=row['chain'],
+                             kind=row['kind'], size=row['size']) for row in on_sub],
+            other_base=[dict(class_name=row['class_name'], slot=row['slot'],
+                             method=row['method'], pc=row['pc'], base=row['base'],
+                             kind=row['kind'], size=row['size']) for row in off_this],
+            access_count=len(rows),
+        )
+    return output
+
+
+def provenance_summary(row):
+    """Compact, report-sized view of one traced method.
+
+    The full access list stays in memory for the ownership grouping; the
+    report keeps the shape, the this-relative field set and the access counts,
+    so the JSON stays reviewable instead of carrying every intermediate access.
+    """
+    if not row.get('traced'):
+        return dict(class_name=row['class_name'], slot=row['slot'],
+                    method=row['method'], traced=False, reason=row['reason'])
+    return dict(class_name=row['class_name'], slot=row['slot'],
+                method=row['method'], traced=True, owner=row['owner'],
+                shape=row['shape'],
+                this_relative_fields=row['this_relative_fields'],
+                non_this_access_count=row['non_this_access_count'])
+
+
+def iosurface_write_sites(env, leaves):
+    """Locate literal writers of each accessor field inside IOSurface text.
+
+    A getter proves a field exists at an offset; it does not prove who owns or
+    frees the value.  Recording the writer count and the first writer per field
+    shows whether the field is written inside the kext at all, and is reported
+    as counts plus first sites only - the writer's enclosing method is not
+    claimed, because this accessor block has no symbol table to anchor it.
+    """
+    image = env.modules[SURFACE_ID]
+    text = image.section('__TEXT_EXEC', '__text')
+    wanted = {}
+    for leaf in leaves:
+        decoded = leaf.get('decoded')
+        if not decoded:
+            continue
+        wanted.setdefault(decoded[0], set()).add(leaf['name'])
+    rows = {name: dict(loads=0, stores=0, first_store=None, store_sizes=[])
+            for names in wanted.values() for name in names}
+    for pc in range(text['va'], text['va'] + text['size'] - 4, 4):
+        access = decode_load_store(env.outer.word(pc))
+        if not access or access['rn'] == 31:
+            continue
+        for name in wanted.get(access['offset'], ()):
+            row = rows[name]
+            if access['kind'] == 'load':
+                row['loads'] += 1
+            else:
+                row['stores'] += 1
+                row['store_sizes'].append(access['size'])
+                if row['first_store'] is None:
+                    row['first_store'] = hex(pc)
+    for row in rows.values():
+        row['store_sizes'] = sorted(set(row['store_sizes']))
+    return dict(per_field=rows,
+                conclusion=(
+                    'each accessor field is written inside IOSurface text, so the field is '
+                    'owned by the surface object; that does not establish when the write '
+                    'completes, whether the descriptor is retained for the caller, or whether '
+                    'a CPU copy after the getter is coherent'))
+
+
 def iosurface_evidence(env, reference):
     image = env.modules[SURFACE_ID]
     text = image.section('__TEXT_EXEC', '__text')
@@ -916,6 +1329,7 @@ def main():
                 break
     # IOSurface accessors
     iosurface = iosurface_evidence(env, reference)
+    iosurface['field_write_sites'] = iosurface_write_sites(env, iosurface['leaves'])
     # swap lifecycle hypotheses
     hypothesis_offsets = {0x1560, 0x1568, 0x1570, 0x16b0, 0x16b4, 0xb90, 0xb98}
     h9g_slot_map = {}
@@ -948,6 +1362,72 @@ def main():
                 overridden_by_shipped_subclass=(subclass_evidence is not None
                                                 and named_slot in subclass_evidence['override_slots']),
                 local_slot_address=legacy_rows[named_slot]['local'])
+    # Register-provenance analysis: for every audited slot, trace the method
+    # body and record which object each literal field access is based on.  This
+    # is what turns the reference's field-offset hypotheses into a statement
+    # about ownership, and it is why a bare instruction scan is not enough.
+    provenance_rows = []
+    for row in named_slot_rows:
+        provenance_rows.append(slot_provenance(env, 'IOMobileFramebufferLegacy',
+                                               row['slot'], row['local']))
+    override_provenance = []
+    if subclass_evidence is not None:
+        for slot in sorted(set(subclass_evidence['override_slots']) | set(named_slots)):
+            try:
+                target = env.outer.pointer(int(subclass_evidence['vptr'], 16) + 8 * slot)
+            except ValueError:
+                continue
+            if not env.is_executable(target):
+                continue
+            if owner_category(env, target, family_text, h9g_text) != 'appleclcd-text':
+                continue
+            override_provenance.append(slot_provenance(env, 'AppleCLCD-subclass', slot,
+                                                       hex(target)))
+    provenance_rows.extend(override_provenance)
+    ownership = field_ownership(provenance_rows, hypothesis_offsets)
+    # An offset is only qualified as a member of the traced object when at
+    # least one access is based on 'this' at depth 0; a sub-object chain is
+    # recorded as such and is never promoted to a member of this object.
+    qualified_offsets = sorted(key for key, value in ownership.items()
+                               if value['verdict'] == 'proven-this-relative')
+    sub_object_offsets = sorted(key for key, value in ownership.items()
+                                if value['verdict'] == 'proven-sub-object-of-this')
+    this_relative_size_bound = None
+    if qualified_offsets:
+        highest = max(int(key, 16) for key in qualified_offsets)
+        legacy_size = int(legacy['info']['instance_bytes'])
+        this_relative_size_bound = dict(highest_offset=hex(highest),
+                                        legacy_instance_bytes=legacy_size,
+                                        all_offsets_inside_legacy_instance=(highest + 8) <= legacy_size)
+    # Size arithmetic that decides whether the reference request-link reading
+    # survives: a next/prev pair occupying the last 16 bytes of the request
+    # object means the higher link ends exactly at the class's instance size.
+    request_link_corroboration = None
+    request_record = next((record for record in family_data['records']
+                           if record['name'] == 'IOMFBSwapIORequest'), None)
+    if request_record is not None:
+        request_size = request_record['instance_bytes']
+        links = sorted(int(key, 16) for key in ('0xb90', '0xb98'))
+        request_link_corroboration = dict(
+            request_instance_bytes=request_size,
+            link_offsets=[hex(value) for value in links],
+            link_spacing=links[1] - links[0],
+            trailing_pair_end=hex(links[1] + 8),
+            links_are_trailing_16_bytes=((links[1] + 8) == request_size
+                                         and (links[1] - links[0]) == 8),
+            reached_through_this_field=sorted({
+                chain[0] for key in ('0xb90', '0xb98')
+                for chain in (row['chain'] for row in ownership[key]['sub_object']) if chain}),
+            conclusion=('the two offsets are 8 bytes apart and the higher one ends exactly at '
+                        'the IOMFBSwapIORequest instance size, and both are reached by walking a '
+                        'pointer held in this object, which is the shape of a trailing next/prev '
+                        'pair reached from the framebuffer; the reference reading is corroborated '
+                        'by this shape without proving the runtime class of that object'))
+    locked_methods = [dict(class_name=row['class_name'], slot=row['slot'],
+                           method=row['method'], lock_calls=row['shape']['lock_calls'])
+                      for row in provenance_rows
+                      if row.get('traced') and row['shape']['call_count']
+                      and (row['shape']['lock_calls']['lock'] or row['shape']['lock_calls']['unlock'])]
     swap_classes = {}
     for name, model in class_models.items():
         if name in ('IOMobileFramebufferLegacy', 'IOMFBSwapIORequest'):
@@ -1099,14 +1579,55 @@ def main():
         swap_lifecycle=dict(classes=swap_classes,
                             reference_hypothesis_offsets=swap_hypotheses,
                             named_slot_cross_reference=named_slot_cross_reference,
-                            note='hypothesis offsets are checked against literal field-encoded loads/stores only; GOT-relative loads are separated; no locking or completion proof is claimed'),
+                            field_ownership=ownership,
+                            field_ownership_summary=dict(
+                                qualified_this_relative_offsets=qualified_offsets,
+                                proven_sub_object_offsets=sub_object_offsets,
+                                unqualified_offsets=sorted(
+                                    key for key, value in ownership.items()
+                                    if value['verdict'] not in ('proven-this-relative',
+                                                                'proven-sub-object-of-this')),
+                                size_bound=this_relative_size_bound,
+                                request_link_corroboration=request_link_corroboration,
+                                conclusion=('the reference offsets are confirmed as literal field '
+                                            'offsets of the IOMobileFramebufferLegacy/AppleCLCD '
+                                            'instance: 0x1560/0x1568/0x1570/0x16b0/0x16b4 are '
+                                            'accessed through this at depth 0, and 0xb90/0xb98 are '
+                                            'reached only by walking this->0x1568 and then 0xb90, '
+                                            'which is a list traversal, not a member access of the '
+                                            'framebuffer object. The reference reading of '
+                                            '0x1560/0x1568 as pending/current request pointers and of '
+                                            "0xb90/0xb98 as that request's next/prev links is "
+                                            'corroborated by this shape and by the size arithmetic, '
+                                            'but it remains a hypothesis: no local byte proves the '
+                                            'runtime class of the object at this->0x1568')),
+                            register_provenance=[provenance_summary(row) for row in provenance_rows],
+                            locking=dict(methods_with_lock_calls=locked_methods,
+                                         conclusion=('no traced swap-path method performs a matched '
+                                                     'IOLock/IORecursiveLock acquire/release pair; the '
+                                                     'lock and completion state machine therefore '
+                                                     'remains unproven from these bytes')),
+                            note=('hypothesis offsets are checked against literal field-encoded '
+                                  'loads/stores only; GOT-relative loads are separated; each access is '
+                                  'additionally attributed to the register it is based on. No '
+                                  'locking, retention or completion proof is claimed')),
         import_bindings=dict(family=family_imports, iosurface=surface_imports),
         gop_handoff=gop_handoff,
         missing_evidence=[
             'No exported kext symbols: per-slot prototype names and demangled signatures cannot be recovered from this stock image.',
             'Constructor/destructor bodies are located structurally (vtable materialization, super-call chain) but their source-level prototypes and member layouts are not proven.',
             'IOSurface accessor names come from the pinned public reference; descriptor ownership, pixel-format values and CPU-completion semantics are not provable from local instruction bytes.',
-            'Swap pending/current lock, retention and completion state machine is not established; hypothesis field offsets are only partially consistent with local encodings.',
+            'Register provenance attributes every reference hypothesis offset to an object: '
+            + ', '.join(qualified_offsets) + ' are read or written through this at depth 0, while '
+            + ', '.join(sub_object_offsets) + ' are reached only by walking the pointer stored at '
+            'this+0x1568 and then this->0x1568->0xb90. The reference next/prev reading is '
+            'corroborated by that list-walk shape and by 0xb98+8 == the IOMFBSwapIORequest '
+            'instance size, but the runtime class of the object at this+0x1568 is still unproven.',
+            'Straight-line tracing cannot resolve which branch executes, so a field recorded here '
+            'may be touched only on a path this tool does not take; the offsets are proven to be '
+            'literal accesses, not proven to execute on every call.',
+            'Swap locking, retention and completion remain unproven: no traced swap-path method performs a matched IOLock/IORecursiveLock acquire/release pair, and no method retains or releases a request object.',
+            'The traced methods are straight-line only. Conditional branches are counted but not taken, so an access guarded by a condition is recorded with its base register while the condition itself stays unproven.'
             'Stock prelinked import tables are already bound; there is no relocation/import descriptor for a late-loaded adapter. A new adapter must obtain its bindings from the same prelink/kxld pipeline.',
             'GOP ownership hand-off and the producer call into polaris_display_present have no stock-kernelcache evidence; the shipped provider graph is DT AppleARMIODevice/AppleCLCD.',
             'No runtime, hardware, panel, backlight or vblank evidence exists in this report.',

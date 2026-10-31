@@ -30,6 +30,13 @@ class PolarisTransportContractTests(unittest.TestCase):
                           "write32", "write8", "IOWorkLoop", "loadFirmware"):
             self.assertNotIn(forbidden, source)
 
+    def test_start_is_board_gated_not_only_probe(self):
+        """A service started without probe() must still refuse a non-Polaris DT."""
+        source = (DRIVER / "PolarisTransportContracts.cpp").read_text(encoding="utf-8")
+        start = source.split("bool start(IOService *provider) override", 1)[1]
+        self.assertIn("boardIsPolaris()", start.split("setProperty", 1)[0])
+        self.assertIn('"polaris-transport-hardware-self-test-performed", false', source)
+
     def test_qca_firmware_session_is_bounded_and_side_effect_free(self):
         header = (DRIVER / "PolarisH4Protocol.h").read_text(encoding="utf-8")
         for symbol in (

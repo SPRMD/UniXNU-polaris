@@ -74,7 +74,11 @@ public:
 
   bool start(IOService *provider) override
   {
-    if (!IOService::start(provider)) return false;
+    /* Re-check the board here as well as in probe(): a service that is started
+     * directly (no probe) must still refuse to publish contract properties on
+     * a non-Polaris device tree. */
+    if (provider == nullptr || !IOService::start(provider) ||
+        !boardIsPolaris()) return false;
     setProperty("polaris-transport-contract-version", 1U, 32);
     setProperty("polaris-transport-qca-h4", true);
     setProperty("polaris-transport-wlfw-qmi", true);
@@ -104,6 +108,8 @@ public:
                 selfTest.failed == 0 && selfTest.passed == PolarisTransportSelfTest::kAll);
     setProperty("polaris-transport-self-test-scope",
                 "QCA H4/NCI/CCI/WLFW codec vectors only; no hardware I/O");
+    /* A passing codec vector says nothing about the attached hardware. */
+    setProperty("polaris-transport-hardware-self-test-performed", false);
     setName("PolarisTransportContracts");
     registerService();
     polaris_transport_contract_started = 1;

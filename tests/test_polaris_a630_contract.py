@@ -163,6 +163,24 @@ class A630BoardContractTests(unittest.TestCase):
         self.assertFalse(gpu["enabled_by_default"])
         self.assertFalse(gpu["userland_ready"])
 
+    def test_supporting_windows_come_from_their_own_dt_nodes(self):
+        source = PROBE.read_text()
+        for node in ('"/soc/qcom,gcc@100000"', '"/soc/interrupt-controller@0xb220000"',
+                     '"/soc/qcom,sde_rscc@af20000"'):
+            self.assertIn(node, source)
+        windows = self.resources["supporting_windows"]
+        self.assertEqual(int(windows["gcc"]["base"], 16), value("POLARIS_A630_GCC_BASE"))
+        self.assertEqual(int(windows["pdc"]["base"], 16), value("POLARIS_A630_PDC_BASE"))
+        self.assertEqual(int(windows["rscc"]["base"], 16), value("POLARIS_A630_RSCC_BASE"))
+
+    def test_record_completeness_is_not_readiness(self):
+        source = PROBE.read_text()
+        # A complete resource record must not imply a usable GPU.
+        self.assertIn("polaris-a630-resource-record-complete", source)
+        self.assertIn('setProperty("polaris-a630-darwin-driver-ready", false)', source)
+        runtime = self.resources["runtime"]
+        self.assertFalse(runtime["darwin_driver_ready"])
+
     def test_iommus_are_not_parsed_as_ranges(self):
         # A {phandle, sid} tuple read as {address, size} would turn SID 0 into a
         # zero-size range and silently drop it; the probe needs its own reader.
@@ -171,6 +189,32 @@ class A630BoardContractTests(unittest.TestCase):
         self.assertIn("readStreamIds(user, userSids, 2)", source)
         self.assertIn("readStreamIds(secure, secureSids, 2)", source)
         self.assertIn("be32(bytes + offset + 4)", source)
+
+
+class A630PortGapTests(unittest.TestCase):
+    """The reference component must keep refusing Polaris values."""
+
+    REF = ROOT.parents[1] / "references" / "unixnu-adreno6xx" / "NativeAdrenoService.cpp"
+
+    def test_gap_analysis_exists_and_names_the_blocking_fields(self):
+        gap = (ROOT / "research" / "a630-port-gap.md").read_text(encoding="utf-8")
+        for field in ("chipId", "gmemBytes", "frequencyHz", "gpuSidMask",
+                      "gmuSid", "lpacSid"):
+            self.assertIn(field, gap)
+        # The recorded A642L sentinel must appear as the value Polaris cannot meet.
+        self.assertIn("0x06030500", gap)
+        self.assertIn("0x06030001", gap)
+
+    def test_reference_still_rejects_a_polaris_chip_id(self):
+        if not self.REF.is_file():
+            self.skipTest("reference checkout not present")
+        source = self.REF.read_text(encoding="utf-8", errors="replace")
+        # The component's own gate is what makes the A642L code unusable here.
+        self.assertIn("0x06030500", source)
+        self.assertIn("kIOReturnBadArgument", source)
+
+    def test_polaris_chip_id_is_not_the_reference_sentinel(self):
+        self.assertNotEqual(value("POLARIS_A630_CHIP_ID_DT_DECLARED"), 0x06030500)
 
 
 if __name__ == "__main__":

@@ -26,6 +26,10 @@ enum PolarisCameraReason {
     PolarisCameraReasonSensorIdentityRequired = 5,
     PolarisCameraReasonFirmwareIncomplete = 6,
     PolarisCameraReasonHardwareValidationRequired = 7,
+    /* No camera sensor node was found at all.  This is deliberately distinct
+     * from an out-of-range address so an absent DT node is never reported as
+     * a bad address.  Appended, so the existing wire values do not move. */
+    PolarisCameraReasonMissingSensor = 8,
 };
 
 typedef struct {
@@ -96,8 +100,17 @@ polaris_camera_make_plan(PolarisCameraEvidence evidence)
         plan.reason = PolarisCameraReasonMissingCsi;
         return plan;
     }
-    if (!evidence.sensor_candidate || evidence.sensor_kind == PolarisCameraSensorUnknown ||
-        !polaris_camera_address_valid(evidence.address7)) {
+    if (!evidence.sensor_candidate) {
+        plan.reason = PolarisCameraReasonMissingSensor;
+        return plan;
+    }
+    if (evidence.sensor_kind == PolarisCameraSensorUnknown) {
+        /* A node matched the generic camera names but its identity is unknown;
+         * nothing in the contract may assume IMX363. */
+        plan.reason = PolarisCameraReasonSensorIdentityRequired;
+        return plan;
+    }
+    if (!polaris_camera_address_valid(evidence.address7)) {
         plan.reason = PolarisCameraReasonInvalidSensorAddress;
         return plan;
     }

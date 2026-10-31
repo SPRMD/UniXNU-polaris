@@ -33,7 +33,13 @@ enum Subsystem : unsigned {
 };
 
 struct Fact {
+  /* "nodes" counts every name/compatible match, including pinctrl state
+   * children, thermal zones and reserved-memory regions.  "devices" counts
+   * only the matches that actually look like a device node (they carry a
+   * non-empty "reg" and are not inside reserved-memory).  Publishing both
+   * stops a 9-node WiFi "inventory" from reading as nine WiFi controllers. */
   unsigned nodes = 0;
+  unsigned devices = 0;
   unsigned reg = 0;
   unsigned interrupts = 0;
   unsigned clocks = 0;
@@ -49,36 +55,46 @@ struct Descriptor {
   const char *gpios;
   const char *state;
   const char *ready;
+  const char *devices;
 };
 
 static const Descriptor kDescriptors[kSubsystemCount] = {
   {"power-keys", "polaris-power-keys-nodes", "polaris-power-keys-reg-nodes",
    "polaris-power-keys-interrupt-nodes", "polaris-power-keys-clock-nodes",
-   "polaris-power-keys-gpio-nodes", "polaris-power-keys-state", "polaris-power-keys-darwin-driver-ready"},
+   "polaris-power-keys-gpio-nodes", "polaris-power-keys-state", "polaris-power-keys-darwin-driver-ready",
+   "polaris-power-keys-device-nodes"},
   {"display", "polaris-display-nodes", "polaris-display-reg-nodes",
    "polaris-display-interrupt-nodes", "polaris-display-clock-nodes",
-   "polaris-display-gpio-nodes", "polaris-display-state", "polaris-display-darwin-driver-ready"},
+   "polaris-display-gpio-nodes", "polaris-display-state", "polaris-display-darwin-driver-ready",
+   "polaris-display-device-nodes"},
   {"touch", "polaris-touch-nodes", "polaris-touch-reg-nodes",
    "polaris-touch-interrupt-nodes", "polaris-touch-clock-nodes",
-   "polaris-touch-gpio-nodes", "polaris-touch-state", "polaris-touch-darwin-driver-ready"},
+   "polaris-touch-gpio-nodes", "polaris-touch-state", "polaris-touch-darwin-driver-ready",
+   "polaris-touch-device-nodes"},
   {"battery", "polaris-battery-nodes", "polaris-battery-reg-nodes",
    "polaris-battery-interrupt-nodes", "polaris-battery-clock-nodes",
-   "polaris-battery-gpio-nodes", "polaris-battery-state", "polaris-battery-darwin-driver-ready"},
+   "polaris-battery-gpio-nodes", "polaris-battery-state", "polaris-battery-darwin-driver-ready",
+   "polaris-battery-device-nodes"},
   {"gpu", "polaris-gpu-nodes", "polaris-gpu-reg-nodes",
    "polaris-gpu-interrupt-nodes", "polaris-gpu-clock-nodes",
-   "polaris-gpu-gpio-nodes", "polaris-gpu-state", "polaris-gpu-darwin-driver-ready"},
+   "polaris-gpu-gpio-nodes", "polaris-gpu-state", "polaris-gpu-darwin-driver-ready",
+   "polaris-gpu-device-nodes"},
   {"wifi", "polaris-wifi-nodes", "polaris-wifi-reg-nodes",
    "polaris-wifi-interrupt-nodes", "polaris-wifi-clock-nodes",
-   "polaris-wifi-gpio-nodes", "polaris-wifi-state", "polaris-wifi-darwin-driver-ready"},
+   "polaris-wifi-gpio-nodes", "polaris-wifi-state", "polaris-wifi-darwin-driver-ready",
+   "polaris-wifi-device-nodes"},
   {"bluetooth", "polaris-bluetooth-nodes", "polaris-bluetooth-reg-nodes",
    "polaris-bluetooth-interrupt-nodes", "polaris-bluetooth-clock-nodes",
-   "polaris-bluetooth-gpio-nodes", "polaris-bluetooth-state", "polaris-bluetooth-darwin-driver-ready"},
+   "polaris-bluetooth-gpio-nodes", "polaris-bluetooth-state", "polaris-bluetooth-darwin-driver-ready",
+   "polaris-bluetooth-device-nodes"},
   {"nfc", "polaris-nfc-nodes", "polaris-nfc-reg-nodes",
    "polaris-nfc-interrupt-nodes", "polaris-nfc-clock-nodes",
-   "polaris-nfc-gpio-nodes", "polaris-nfc-state", "polaris-nfc-darwin-driver-ready"},
+   "polaris-nfc-gpio-nodes", "polaris-nfc-state", "polaris-nfc-darwin-driver-ready",
+   "polaris-nfc-device-nodes"},
   {"camera", "polaris-camera-nodes", "polaris-camera-reg-nodes",
    "polaris-camera-interrupt-nodes", "polaris-camera-clock-nodes",
-   "polaris-camera-gpio-nodes", "polaris-camera-state", "polaris-camera-darwin-driver-ready"},
+   "polaris-camera-gpio-nodes", "polaris-camera-state", "polaris-camera-darwin-driver-ready",
+   "polaris-camera-device-nodes"},
 };
 
 static bool contains(const char *text, const char *wanted)
@@ -157,8 +173,11 @@ static bool matchesSubsystem(IORegistryEntry *entry, Subsystem subsystem)
   static const char *const batteryCompat[] = {"qcom,fg-gen3", "qcom,pm8998-fg", "qcom,battery"};
   static const char *const gpuNames[] = {"kgsl", "adreno", "gpu"};
   static const char *const gpuCompat[] = {"qcom,kgsl-3d0", "qcom,adreno"};
-  static const char *const wifiNames[] = {"icnss", "wifi", "wlan", "wcn"};
-  static const char *const wifiCompat[] = {"qcom,icnss", "qcom,wcn3990", "qcom,wlan"};
+  /* "wcn" is intentionally not a WiFi token: the reference Polaris DTB only
+   * uses it for Bluetooth nodes (bt_wcn3990, SLIMbus wcn3990), so including it
+   * double-counted Bluetooth nodes as WiFi. */
+  static const char *const wifiNames[] = {"icnss", "wifi", "wlan"};
+  static const char *const wifiCompat[] = {"qcom,icnss", "qcom,wlan"};
   static const char *const bluetoothNames[] = {"bluetooth", "bt", "wcn3990"};
   static const char *const bluetoothCompat[] = {"qca,wcn3990", "qcom,wcn3990", "qcom,bluetooth"};
   static const char *const nfcNames[] = {"nfc", "nq", "pn5", "pn54"};
@@ -179,6 +198,21 @@ static bool matchesSubsystem(IORegistryEntry *entry, Subsystem subsystem)
   }
 }
 
+/* A node that carries a non-empty "reg" and is not a reserved-memory child is
+ * a device node.  Everything else that matched by name (pinctrl state children,
+ * thermal zones, LED stubs, SMMU context banks) is a related node, not a
+ * controller, so it must not inflate the controller count. */
+static bool looksLikeDeviceNode(IORegistryEntry *entry)
+{
+  if (entry == nullptr || !hasProperty(entry, "reg")) return false;
+  IORegistryEntry *parent = entry->getParentEntry(gIODTPlane);
+  if (parent != nullptr) {
+    const char *name = parent->getName();
+    if (name != nullptr && strcmp(name, "reserved-memory") == 0) return false;
+  }
+  return true;
+}
+
 static void walk(IORegistryEntry *entry, unsigned depth, unsigned *visited,
                  Fact facts[kSubsystemCount])
 {
@@ -188,6 +222,7 @@ static void walk(IORegistryEntry *entry, unsigned depth, unsigned *visited,
     if (!matchesSubsystem(entry, static_cast<Subsystem>(subsystem))) continue;
     Fact &fact = facts[subsystem];
     ++fact.nodes;
+    if (looksLikeDeviceNode(entry)) ++fact.devices;
     fact.reg += hasProperty(entry, "reg") ? 1U : 0U;
     fact.interrupts += hasProperty(entry, "interrupts") ? 1U : 0U;
     fact.clocks += hasProperty(entry, "clocks") ? 1U : 0U;
@@ -214,10 +249,13 @@ static void publish(IOService *service, unsigned visited, const Fact facts[kSubs
     const Descriptor &d = kDescriptors[i];
     const Fact &f = facts[i];
     service->setProperty(d.nodes, f.nodes, 32);
+    service->setProperty(d.devices, f.devices, 32);
     service->setProperty(d.reg, f.reg, 32);
     service->setProperty(d.interrupts, f.interrupts, 32);
     service->setProperty(d.clocks, f.clocks, 32);
     service->setProperty(d.gpios, f.gpios, 32);
+    /* "nodes" is every related DT node; only "device-nodes" is a controller
+     * candidate, and even that is a resource fact, not a working driver. */
     service->setProperty(d.state, "resource-only; no Darwin transport");
     service->setProperty(d.ready, false);
   }
@@ -239,7 +277,10 @@ public:
   }
 
   bool start(IOService *provider) override {
-    if (!IOService::start(provider)) return false;
+    /* Re-check the board here as well as in probe(): a service that is started
+     * directly must not publish an inventory for a non-Polaris device tree. */
+    if (provider == nullptr || !IOService::start(provider) ||
+        !boardIsPolaris()) return false;
     unsigned visited = 0;
     Fact facts[kSubsystemCount] = {};
     walk(provider, 0, &visited, facts);

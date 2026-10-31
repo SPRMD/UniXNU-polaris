@@ -20,6 +20,22 @@ class PolarisPeripheralContractTests(unittest.TestCase):
         self.assertIn('polaris-peripheral-nfc-device-published", false', source)
         self.assertIn('PolarisTransportSelfTest::run()', source)
 
+    def test_wifi_count_cannot_be_inflated_by_bluetooth_nodes(self):
+        """The WiFi match set must be disjoint from the Bluetooth one.
+
+        The reference Polaris DTB has no node whose name contains "wcn" on the
+        WiFi side; bt_wcn3990 and the SLIMbus wcn3990 slave are both Bluetooth
+        resources, so "wcn" is not a valid WiFi token.
+        """
+        source = (ROOT / "drivers" / "PolarisPeripheralContracts" /
+                  "PolarisPeripheralContracts.cpp").read_text(encoding="utf-8")
+        wifi_line = next(line for line in source.splitlines()
+                         if "wifiNames[]" in line)
+        self.assertNotIn('"wcn"', wifi_line)
+        self.assertIn('"icnss"', wifi_line)
+        self.assertIn('"polaris-peripheral-subsystem-counts-disjoint", true', source)
+        self.assertIn('"polaris-peripheral-hardware-self-test-performed", false', source)
+
     def test_board_runtime_bundle_and_workflow_include_archive(self):
         board = (ROOT / "board.toml").read_text(encoding="utf-8")
         runtime = (ROOT / "drivers" / "PolarisRuntime" /

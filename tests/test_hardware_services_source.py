@@ -37,6 +37,25 @@ class PolarisHardwareServicesSourceTests(unittest.TestCase):
         self.assertIn("resource-only; no Darwin transport", source)
         self.assertIn("darwin-driver-ready", source)
 
+    def test_wifi_and_bluetooth_match_sets_are_disjoint(self):
+        """A Bluetooth node must never be counted as a WiFi resource.
+
+        In the reference Polaris DTB the only nodes containing the token "wcn"
+        are Bluetooth-side (bt_wcn3990 and the SLIMbus wcn3990 slave), so the
+        old "wcn" WiFi token inflated the WiFi count with Bluetooth nodes.
+        """
+        source = (DRIVER / "PolarisHardwareServices.cpp").read_text(encoding="utf-8")
+        wifi_line = next(line for line in source.splitlines()
+                         if "wifiNames[]" in line)
+        self.assertNotIn('"wcn"', wifi_line)
+        self.assertIn('"icnss"', wifi_line)
+        self.assertIn('"wlan"', wifi_line)
+        self.assertIn('"qcom,icnss"', source)
+        bluetooth_line = next(line for line in source.splitlines()
+                              if "bluetoothNames[]" in line)
+        self.assertIn('"wcn3990"', bluetooth_line)
+        self.assertIn('"qca,wcn3990"', source)
+
     def test_personality_is_limited_to_arm_io(self):
         plist = (DRIVER / "Info.plist").read_text(encoding="utf-8")
         self.assertIn("<string>IOPlatformDevice</string>", plist)

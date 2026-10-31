@@ -189,6 +189,30 @@ public:
       setProperty("polaris-a630-gpu-cx-misc-base", gpuRanges[2].address, 64);
       setProperty("polaris-a630-gpu-cx-misc-bytes", gpuRanges[2].size, 64);
     }
+    /* The remaining windows a backend needs, taken from their own DT nodes so
+     * nothing has to be re-derived from a range list or hard-coded twice. */
+    static const struct { const char *node; const char *key; } supporting[] = {
+      {"/soc/qcom,gcc@100000", "gcc"},
+      {"/soc/interrupt-controller@0xb220000", "pdc"},
+      {"/soc/qcom,sde_rscc@af20000", "rscc"},
+    };
+    unsigned supportingPublished = 0;
+    for (unsigned i = 0; i < sizeof(supporting) / sizeof(supporting[0]); ++i) {
+      IORegistryEntry *node = nodeAt(supporting[i].node);
+      Range ranges[4] = {};
+      const unsigned count = readRanges(node, ranges, 4);
+      if (count != 0) {
+        char key[64];
+        snprintf(key, sizeof(key), "polaris-a630-%s-base", supporting[i].key);
+        setProperty(key, ranges[0].address, 64);
+        snprintf(key, sizeof(key), "polaris-a630-%s-bytes", supporting[i].key);
+        setProperty(key, ranges[0].size, 64);
+        ++supportingPublished;
+      }
+      OSSafeReleaseNULL(node);
+    }
+    setProperty("polaris-a630-supporting-windows-published", supportingPublished, 32);
+
     /* Context-bank stream IDs come from the iommus tuples, never guessed.
      * gfx3d_user -> {phandle, 0}; gfx3d_secure -> {phandle, 2} and {phandle, 1}. */
     uint32_t sids[8] = {};
@@ -305,6 +329,13 @@ public:
                 "resource-missing; GPU backend withheld");
     setProperty("polaris-a630-resource-source",
                 "stock Polaris DT (qcom,sdm845-mtp); no live MMIO");
+    /* A complete record is one where every window a backend would need was
+     * actually found in the tree. Completeness is not readiness: the allow
+     * flags above are the gate and they stay closed regardless. */
+    const bool recordComplete = (gpuCount >= 3) && (gmuCount >= 2) &&
+                                (smmuCount >= 1) && (gpuccCount >= 1) &&
+                                (supportingPublished == 3) && sidsMatch;
+    setProperty("polaris-a630-resource-record-complete", recordComplete);
     setName("PolarisA630Probe");
     registerService();
     IOLog("PolarisA630Probe: gpu=%u gmu=%u smmu=%u; MMIO=0 writes=0 DMA=0\\n",

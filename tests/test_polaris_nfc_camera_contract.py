@@ -15,6 +15,33 @@ class PolarisNfcCameraContractTests(unittest.TestCase):
         self.assertIn('"polaris-nfc-i2c-writes-allowed"', source)
         self.assertIn('"polaris-nfc-darwin-driver-ready", false', source)
         self.assertIn("PolarisNfcReasonHardwareValidationRequired", policy)
+        # Address, IRQ and bus must be read from the DT, not assumed because the
+        # board compatible matched.
+        for parsed in (
+            'getProperty("reg")', 'getProperty("interrupts")',
+            "parentIsI2cController", "polaris_nfc_make_plan(evidence)",
+            '"polaris-nfc-plan-reason", plan.reason, 32',
+            '"polaris-nfc-resource-contract-valid"',
+            '"polaris-nfc-i2c-address-observed"',
+            '"polaris-nfc-irq-gpio-observed"',
+            '"polaris-nfc-i2c-address-matches-candidate"',
+            '"polaris-nfc-irq-gpio-matches-candidate"',
+        ):
+            self.assertIn(parsed, source)
+        # A pinctrl state node ("nfc", "nfc_int_active", ...) matches by name but
+        # is not the controller, so controller candidates are counted apart.
+        self.assertIn("countControllerCandidates", source)
+        self.assertIn("firstControllerCandidate", source)
+        self.assertIn("isControllerCandidate", source)
+        self.assertIn('"polaris-nfc-controller-candidate-nodes"', source)
+        self.assertIn("parentIsI2cController", source)
+        # A hardcoded "everything is present" evidence block must not exist.
+        for overstated in (
+            "evidence.bus_present = 1;",
+            "evidence.address_valid = 1;",
+            "evidence.irq_present = 1;",
+        ):
+            self.assertNotIn(overstated, source)
         for forbidden in (
             "IOI2C", "registerInterrupt", "IOInterruptEventSource",
             "write32", "write8", "loadFirmware", "IOMemoryDescriptor",
@@ -30,9 +57,30 @@ class PolarisNfcCameraContractTests(unittest.TestCase):
         self.assertIn('"sony,imx363"', source)
         self.assertIn('"polaris-camera-sensor-power-allowed"', source)
         self.assertIn('"polaris-camera-darwin-driver-ready", false', source)
-        for value in ("0x34", "0x0016", "0x0363", "csiphy", "csid"):
+        # The IMX363 candidate values must come from the shared EDK2 evidence
+        # header instead of being re-typed literals in the contract.
+        for value in ("POLARIS_IMX363_I2C_ADDRESS", "POLARIS_IMX363_ID_REGISTER",
+                      "POLARIS_IMX363_ID_MSB", "POLARIS_IMX363_ID_LSB",
+                      "csiphy", "csid"):
             self.assertIn(value, source)
+        for literal in ('"polaris-camera-imx363-cci-address-candidate", 0x34U',
+                        '"polaris-camera-imx363-id-register", 0x0016U',
+                        '"polaris-camera-imx363-id-candidate", 0x0363U'):
+            self.assertNotIn(literal, source)
         self.assertIn("PolarisCameraReasonHardwareValidationRequired", policy)
+        for reason in (
+            "PolarisCameraReasonMissingSensor",
+            "PolarisCameraReasonSensorIdentityRequired",
+            "PolarisCameraReasonInvalidSensorAddress",
+        ):
+            self.assertIn(reason, policy)
+        # The sensor identity must be scanned from the DT instead of assumed.
+        self.assertIn("scanSensorKind(provider, 0, &sensorKind)", source)
+        self.assertIn("evidence.sensor_kind = sensorKind;", source)
+        self.assertNotIn("evidence.sensor_kind = PolarisCameraSensorImx363;", source)
+        self.assertIn('"polaris-camera-plan-reason", plan.reason, 32', source)
+        self.assertIn('"polaris-camera-sensor-identity-confirmed", false', source)
+        self.assertIn('"polaris-camera-sensor-address-confirmed", false', source)
         for forbidden in (
             "IOI2C", "registerInterrupt", "IOInterruptEventSource",
             "write32", "write8", "loadFirmware", "IOMemoryDescriptor",

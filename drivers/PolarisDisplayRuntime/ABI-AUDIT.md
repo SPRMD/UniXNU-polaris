@@ -382,3 +382,69 @@ Legacy vtable/构造析构/父类链/实际子类 override 与 IOSurface 7 个 a
 的候选 slot（249/290/337 等）；但方法原型、字段所有权、锁定/完成语义、最终
 import/relocation 绑定和 GOP ownership handoff 仍未取得资格证据。不能据此宣称
 移动图形已工作或 adapter ready。
+
+## 本轮证据（2026-10-31，第二轮）：字段所有权与寄存器溯源
+
+本轮只做离线、可复现的主机侧证据，不连接手机、不改 Darwin 专有 C++、不生成私有绑定。
+abi/collect-local-evidence.py 新增 A64 立即数 load/store 解码器与直线式寄存器溯源，
+把上一轮遗留的「字段所属对象」缺口变成机器可判定的结论。adapter_ready 仍为 false。
+
+### 方法
+
+对每个被审计的 vtable slot，从其入口做直线式（straight-line）符号执行：跟踪 x0..x30
+与 sp 相对栈槽，记录每条带立即数字段偏移的 load/store 是基于哪个寄存器表达式。
+只解码 general-register load/store (immediate) 与 LDP/STP；寄存器偏移、literal-pool、
+SIMD/FP 形式一律不解码——这些访问被记为 unattributed，而不是靠位置猜测。
+条件分支只计数不跟进；调用后 x0 记为 call-return 标记而非 unknown，因此「经 helper
+返回指针访问」会被如实记为 call-return，不会被误算成 this。
+
+### 结论（本地字节）
+
+| reference 偏移 | 判定 | 依据 |
+| --- | --- | --- |
+| 0x1560 / 0x1568 / 0x1570 | proven-this-relative | AppleCLCD slot 290/337/346 以 `this` depth 0 直接读写 |
+| 0x16b0 / 0x16b4 | proven-this-relative | Legacy slot 249 与其 override 均按 4 字节读同一对象 |
+| 0xb90 / 0xb98 | proven-sub-object-of-this | 只能经 `this->0x1568`、再 `->0xb90` 到达，是链表遍历 |
+
+- 五个偏移 0x1560/0x1568/0x1570/0x16b0/0x16b4 全部落在 Legacy 的 6304 字节实例内
+  （最高 0x16b4 + 8 <= 6304），因此它们确实是 framebuffer 对象的成员，而不是
+  swap request 的成员。
+- 0xb90/0xb98 只通过遍历 `this->0x1568` 到达，符合 next/prev 链表形状；并且
+  0xb98 + 8 = 0xba0 = 2976，正好等于 IOMFBSwapIORequest 的 instance size。这**佐证**
+  参考记录把 0xb90/0xb98 读作 request 的尾部 next/prev 对，但**不证明** `this+0x1568`
+  所指对象的运行时类。该结论保持为 hypothesis。
+- 没有锁定证据：没有任何被溯源的 swap 路径方法出现配对的
+  IOLock/IORecursiveLock acquire/release（methods_with_lock_calls 为空）。
+  因此锁定与 completion 状态机仍未取得资格证据，不得据此改队列或报告 swap 成功。
+- IOSurface 七个 accessor 字段在 IOSurface 自己的 text 内均有字面写入点
+  （descriptor 34、format 9、width 13、height 19、stride 14、planes 14、allocation 7），
+  说明字段归 surface 对象所有；但这**不**证明写入何时完成、descriptor 是否为调用者
+  保留、或 getter 之后的 CPU 拷贝是否一致。
+
+### 仍然不能确证
+
+- 直线式溯源不解析控制流：一个字段可能只在某条分支上被访问，偏移是字面证据，
+  但不是「每次调用都会执行」的证据。
+- 方法原型（参数个数/类型/返回类型）仍不可恢复：两个 Apple kext 的 LC_SYMTAB 全为零。
+- 锁定、retain/release 配对、completion/fence 语义仍无证据。
+- 最终 import/relocation map 与 GOP ownership handoff 仍无本地字节证据。
+
+### 复现
+
+    python -B drivers/PolarisDisplayRuntime/abi/collect-local-evidence.py \
+      --output drivers/PolarisDisplayRuntime/abi/local-structural-evidence.json \
+      --expect-sha256 f18b4df865405f2a287b84977d7aca745e056d656d9fc9df1662970ce2969de7 \
+      --expect-uuid d6f6e0d2-fe60-38a0-9214-556b7faf8951
+    python -m unittest tests.test_audit_polaris_display_abi -v
+
+新增断言（tests/test_audit_polaris_display_abi.py）：解码器逐字用例、每个 hypothesis
+偏移都必须被归属、0x16b0/0x16b4 必须是 32-bit 且被 Legacy 与 override 同时读取、
+0xb90/0xb98 必须是链表遍历而非成员访问、request link 尺寸算术必须被记录且
+不得表述为「已证明类」、IOSurface 七个字段必须有本地写入点、锁定不得被声称。
+
+### 结论（不夸大）
+
+adapter_ready 仍为 false，--require-adapter-ready 仍 exit 2。本轮把「字段所有权」
+从假设推进到可复现的字节结论，并纠正了上一轮把 0xb90/0xb98 当作 framebuffer
+成员的说法；但方法原型、锁定/完成语义、最终 import 绑定与 GOP handoff 仍缺证据。
+不能据此宣称移动图形已工作或 adapter ready。

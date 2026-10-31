@@ -1,7 +1,7 @@
 {
   "adapter_ready": false,
   "auditor_sha256": "1a50f412383cfa8c295530c828cc4827c6d7844b4f491022ac75e3338f86f7d3",
-  "collector_sha256": "5a3b7cedcce912b77acfcc86dd6a1d23493cf11abf7fee020ac467e9c6007807",
+  "collector_sha256": "7778e4505d4a9451cb172ad471193d387ffa7c42e3fadfdf9845d4b70f321a9a",
   "evidence_completed": true,
   "family_class_map": {
     "classes": [
@@ -5592,6 +5592,77 @@
   },
   "iosurface_accessors": {
     "block_sha256": "6117454cb09b5e36100ee3b1d9b250adfd89fb90684154e059418dd974496c3f",
+    "field_write_sites": {
+      "conclusion": "each accessor field is written inside IOSurface text, so the field is owned by the surface object; that does not establish when the write completes, whether the descriptor is retained for the caller, or whether a CPU copy after the getter is coherent",
+      "per_field": {
+        "allocation": {
+          "first_store": "0xfffffff005b9b818",
+          "loads": 44,
+          "store_sizes": [
+            8
+          ],
+          "stores": 7
+        },
+        "descriptor": {
+          "first_store": "0xfffffff005b962f0",
+          "loads": 152,
+          "store_sizes": [
+            1,
+            2,
+            4,
+            8
+          ],
+          "stores": 34
+        },
+        "format": {
+          "first_store": "0xfffffff005b9b0f0",
+          "loads": 58,
+          "store_sizes": [
+            4,
+            8
+          ],
+          "stores": 9
+        },
+        "height": {
+          "first_store": "0xfffffff005b9803c",
+          "loads": 31,
+          "store_sizes": [
+            4,
+            8
+          ],
+          "stores": 19
+        },
+        "planes": {
+          "first_store": "0xfffffff005b9985c",
+          "loads": 68,
+          "store_sizes": [
+            4,
+            8
+          ],
+          "stores": 14
+        },
+        "stride": {
+          "first_store": "0xfffffff005b9b3b8",
+          "loads": 41,
+          "store_sizes": [
+            1,
+            4,
+            8
+          ],
+          "stores": 14
+        },
+        "width": {
+          "first_store": "0xfffffff005b96f88",
+          "loads": 44,
+          "store_sizes": [
+            1,
+            4,
+            8
+          ],
+          "stores": 13
+        }
+      }
+    },
     "leaves": [
       {
         "address": "0xfffffff005b9ead0",
@@ -5950,8 +6021,10 @@
     "No exported kext symbols: per-slot prototype names and demangled signatures cannot be recovered from this stock image.",
     "Constructor/destructor bodies are located structurally (vtable materialization, super-call chain) but their source-level prototypes and member layouts are not proven.",
     "IOSurface accessor names come from the pinned public reference; descriptor ownership, pixel-format values and CPU-completion semantics are not provable from local instruction bytes.",
-    "Swap pending/current lock, retention and completion state machine is not established; hypothesis field offsets are only partially consistent with local encodings.",
-    "Stock prelinked import tables are already bound; there is no relocation/import descriptor for a late-loaded adapter. A new adapter must obtain its bindings from the same prelink/kxld pipeline.",
+    "Register provenance attributes every reference hypothesis offset to an object: 0x1560, 0x1568, 0x1570, 0x16b0, 0x16b4 are read or written through this at depth 0, while 0xb90, 0xb98 are reached only by walking the pointer stored at this+0x1568 and then this->0x1568->0xb90. The reference next/prev reading is corroborated by that list-walk shape and by 0xb98+8 == the IOMFBSwapIORequest instance size, but the runtime class of the object at this+0x1568 is still unproven.",
+    "Straight-line tracing cannot resolve which branch executes, so a field recorded here may be touched only on a path this tool does not take; the offsets are proven to be literal accesses, not proven to execute on every call.",
+    "Swap locking, retention and completion remain unproven: no traced swap-path method performs a matched IOLock/IORecursiveLock acquire/release pair, and no method retains or releases a request object.",
+    "The traced methods are straight-line only. Conditional branches are counted but not taken, so an access guarded by a condition is recorded with its base register while the condition itself stays unproven.Stock prelinked import tables are already bound; there is no relocation/import descriptor for a late-loaded adapter. A new adapter must obtain its bindings from the same prelink/kxld pipeline.",
     "GOP ownership hand-off and the producer call into polaris_display_present have no stock-kernelcache evidence; the shipped provider graph is DT AppleARMIODevice/AppleCLCD.",
     "No runtime, hardware, panel, backlight or vblank evidence exists in this report."
   ],
@@ -6599,6 +6672,563 @@
         "vtable_vptr": "0xfffffff006f38570"
       }
     },
+    "field_ownership": {
+      "0x1560": {
+        "access_count": 18,
+        "other_base": [],
+        "sub_object": [],
+        "this_relative": [
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb3e0",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb680",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb6c0",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfbf8c",
+            "pc": "0xfffffff006bfbf9c",
+            "size": 8,
+            "slot": 295
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfbf8c",
+            "pc": "0xfffffff006bfbfbc",
+            "size": 8,
+            "slot": 295
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfbf8c",
+            "pc": "0xfffffff006bfbfdc",
+            "size": 8,
+            "slot": 295
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfbf8c",
+            "pc": "0xfffffff006bfc018",
+            "size": 8,
+            "slot": 295
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfbf8c",
+            "pc": "0xfffffff006bfc02c",
+            "size": 8,
+            "slot": 295
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfa478",
+            "pc": "0xfffffff006bfa528",
+            "size": 8,
+            "slot": 337
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfa478",
+            "pc": "0xfffffff006bfa720",
+            "size": 8,
+            "slot": 337
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf94f0",
+            "pc": "0xfffffff006bf9534",
+            "size": 8,
+            "slot": 339
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7128",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7158",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf716c",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7184",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7204",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf79a8",
+            "pc": "0xfffffff006bf7a30",
+            "size": 8,
+            "slot": 354
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf79a8",
+            "pc": "0xfffffff006bf7a68",
+            "size": 8,
+            "slot": 354
+          }
+        ],
+        "verdict": "proven-this-relative"
+      },
+      "0x1568": {
+        "access_count": 8,
+        "other_base": [],
+        "sub_object": [],
+        "this_relative": [
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb570",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb5c0",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb604",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf94f0",
+            "pc": "0xfffffff006bf9548",
+            "size": 8,
+            "slot": 339
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7144",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf717c",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7194",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf723c",
+            "size": 8,
+            "slot": 346
+          }
+        ],
+        "verdict": "proven-this-relative"
+      },
+      "0x1570": {
+        "access_count": 2,
+        "other_base": [],
+        "sub_object": [],
+        "this_relative": [
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7178",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71ec",
+            "size": 8,
+            "slot": 346
+          }
+        ],
+        "verdict": "proven-this-relative"
+      },
+      "0x16b0": {
+        "access_count": 3,
+        "other_base": [],
+        "sub_object": [],
+        "this_relative": [
+          {
+            "class_name": "IOMobileFramebufferLegacy",
+            "kind": "load",
+            "method": "0xfffffff00679fc8c",
+            "pc": "0xfffffff00679fcbc",
+            "size": 4,
+            "slot": 249
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006c078e4",
+            "pc": "0xfffffff006c078e4",
+            "size": 4,
+            "slot": 247
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006c078f4",
+            "pc": "0xfffffff006c078f8",
+            "size": 4,
+            "slot": 249
+          }
+        ],
+        "verdict": "proven-this-relative"
+      },
+      "0x16b4": {
+        "access_count": 3,
+        "other_base": [],
+        "sub_object": [],
+        "this_relative": [
+          {
+            "class_name": "IOMobileFramebufferLegacy",
+            "kind": "load",
+            "method": "0xfffffff00679fc8c",
+            "pc": "0xfffffff00679fce4",
+            "size": 4,
+            "slot": 249
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006c078ec",
+            "pc": "0xfffffff006c078ec",
+            "size": 4,
+            "slot": 248
+          },
+          {
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006c078f4",
+            "pc": "0xfffffff006c07904",
+            "size": 4,
+            "slot": 249
+          }
+        ],
+        "verdict": "proven-this-relative"
+      },
+      "0xb90": {
+        "access_count": 5,
+        "other_base": [],
+        "sub_object": [
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb648",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf94f0",
+            "pc": "0xfffffff006bf955c",
+            "size": 8,
+            "slot": 339
+          },
+          {
+            "chain": [
+              "0x1560"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7160",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1560"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7174",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71a8",
+            "size": 8,
+            "slot": 346
+          }
+        ],
+        "this_relative": [],
+        "verdict": "proven-sub-object-of-this"
+      },
+      "0xb98": {
+        "access_count": 12,
+        "other_base": [
+          {
+            "base": "unknown",
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7164",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "base": "unknown",
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf7180",
+            "size": 8,
+            "slot": 346
+          }
+        ],
+        "sub_object": [
+          {
+            "chain": [
+              "0x1568",
+              "0xb90"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb654",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb660",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "chain": [
+              "0x1568",
+              "0xb90"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb670",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bfb384",
+            "pc": "0xfffffff006bfb674",
+            "size": 8,
+            "slot": 290
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf714c",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1568",
+              "0xb90"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71b4",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71c0",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1568",
+              "0xb90"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "store",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71d0",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71d4",
+            "size": 8,
+            "slot": 346
+          },
+          {
+            "chain": [
+              "0x1568"
+            ],
+            "class_name": "AppleCLCD-subclass",
+            "kind": "load",
+            "method": "0xfffffff006bf710c",
+            "pc": "0xfffffff006bf71dc",
+            "size": 8,
+            "slot": 346
+          }
+        ],
+        "this_relative": [],
+        "verdict": "proven-sub-object-of-this"
+      }
+    },
+    "field_ownership_summary": {
+      "conclusion": "the reference offsets are confirmed as literal field offsets of the IOMobileFramebufferLegacy/AppleCLCD instance: 0x1560/0x1568/0x1570/0x16b0/0x16b4 are accessed through this at depth 0, and 0xb90/0xb98 are reached only by walking this->0x1568 and then 0xb90, which is a list traversal, not a member access of the framebuffer object. The reference reading of 0x1560/0x1568 as pending/current request pointers and of 0xb90/0xb98 as that request's next/prev links is corroborated by this shape and by the size arithmetic, but it remains a hypothesis: no local byte proves the runtime class of the object at this->0x1568",
+      "proven_sub_object_offsets": [
+        "0xb90",
+        "0xb98"
+      ],
+      "qualified_this_relative_offsets": [
+        "0x1560",
+        "0x1568",
+        "0x1570",
+        "0x16b0",
+        "0x16b4"
+      ],
+      "request_link_corroboration": {
+        "conclusion": "the two offsets are 8 bytes apart and the higher one ends exactly at the IOMFBSwapIORequest instance size, and both are reached by walking a pointer held in this object, which is the shape of a trailing next/prev pair reached from the framebuffer; the reference reading is corroborated by this shape without proving the runtime class of that object",
+        "link_offsets": [
+          "0xb90",
+          "0xb98"
+        ],
+        "link_spacing": 8,
+        "links_are_trailing_16_bytes": true,
+        "reached_through_this_field": [
+          "0x1560",
+          "0x1568"
+        ],
+        "request_instance_bytes": 2976,
+        "trailing_pair_end": "0xba0"
+      },
+      "size_bound": {
+        "all_offsets_inside_legacy_instance": true,
+        "highest_offset": "0x16b4",
+        "legacy_instance_bytes": 6304
+      },
+      "unqualified_offsets": []
+    },
+    "locking": {
+      "conclusion": "no traced swap-path method performs a matched IOLock/IORecursiveLock acquire/release pair; the lock and completion state machine therefore remains unproven from these bytes",
+      "methods_with_lock_calls": []
+    },
     "named_slot_cross_reference": {
       "249": {
         "hypothesis_offsets": {
@@ -6640,7 +7270,7 @@
         "overridden_by_shipped_subclass": true
       }
     },
-    "note": "hypothesis offsets are checked against literal field-encoded loads/stores only; GOT-relative loads are separated; no locking or completion proof is claimed",
+    "note": "hypothesis offsets are checked against literal field-encoded loads/stores only; GOT-relative loads are separated; each access is additionally attributed to the register it is based on. No locking, retention or completion proof is claimed",
     "reference_hypothesis_offsets": {
       "0x1560": {
         "attributed_methods": {
@@ -8715,6 +9345,4214 @@
         "sites": 91,
         "unattributed": 0
       }
-    }
+    },
+    "register_provenance": [
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff00678cb20",
+        "non_this_access_count": 2,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 22,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 184,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff006798184",
+        "non_this_access_count": 19,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 1,
+          "call_symbols": [
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass"
+          ],
+          "instructions": 78,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 188,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff0077785e0",
+        "reason": "slot target owner module is not resolved",
+        "slot": 213,
+        "traced": false
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff00679fc8c",
+        "non_this_access_count": 2,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 28,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 249,
+        "this_relative_fields": [
+          "0x16b0",
+          "0x16b4"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff00679278c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 6,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 288,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff006794030",
+        "non_this_access_count": 0,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 4,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 290,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff006795b88",
+        "non_this_access_count": 0,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 11,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006795ba4",
+          "terminated": true
+        },
+        "slot": 295,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff006795bb4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 7,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 296,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff00679ea5c",
+        "non_this_access_count": 40,
+        "owner": "com.apple.iokit.IOMobileGraphicsFamily:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 87,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 301,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "IOMobileFramebufferLegacy",
+        "method": "0xfffffff0077785e0",
+        "reason": "slot target owner module is not resolved",
+        "slot": 337,
+        "traced": false
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf398c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 3,
+          "call_symbols": [],
+          "instructions": 37,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 0,
+        "this_relative_fields": [
+          "0x0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf39d0",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 20,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 1,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf3a14",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 3,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 7,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf4424",
+        "non_this_access_count": 22,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 12,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 72,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 14,
+        "this_relative_fields": [
+          "0x18a8",
+          "0x18b0",
+          "0x18b8",
+          "0x18c0",
+          "0x18c8",
+          "0x18d0",
+          "0x1dc8",
+          "0x1dd0",
+          "0x1e88",
+          "0x1ec0",
+          "0x2110",
+          "0x2114"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf41ac",
+        "non_this_access_count": 19,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 9,
+          "call_count": 10,
+          "call_symbols": [
+            "_IOMallocTypeImpl",
+            "0xfffffff006770784",
+            "0xfffffff006770784",
+            "0xfffffff006770784",
+            "0xfffffff0067840b4",
+            "0xfffffff0067840b4",
+            "_IOLog"
+          ],
+          "instructions": 135,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf43b0",
+          "terminated": true
+        },
+        "slot": 21,
+        "this_relative_fields": [
+          "0x1dc8",
+          "0x1dd0",
+          "0x1e5c",
+          "0x1e88",
+          "0x1ec8",
+          "0x1edc",
+          "0x2058",
+          "0x2070",
+          "0x2098",
+          "0x20a0",
+          "0x20a8",
+          "0x20b0",
+          "0x2110",
+          "0x2120",
+          "0x2128",
+          "0x213c"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf46a4",
+        "non_this_access_count": 28,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 12,
+          "call_count": 9,
+          "call_symbols": [
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "0xfffffff00677d36c",
+            "0xfffffff00677b900",
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "_IOLog",
+            "0xfffffff00677d36c",
+            "_IOLog"
+          ],
+          "instructions": 145,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 44,
+        "this_relative_fields": [
+          "0x0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf599c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 6,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x2080",
+          "terminated": true
+        },
+        "slot": 81,
+        "this_relative_fields": [
+          "0x2080"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf59b4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 6,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x2080",
+          "terminated": true
+        },
+        "slot": 82,
+        "this_relative_fields": [
+          "0x2080"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf54d0",
+        "non_this_access_count": 5,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 2,
+          "call_symbols": [
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass"
+          ],
+          "instructions": 38,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 85,
+        "this_relative_fields": [
+          "0x1640"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf5568",
+        "non_this_access_count": 23,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 13,
+          "call_count": 10,
+          "call_symbols": [
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "0xfffffff00676c3f4",
+            "_IOLog",
+            "__ZN8OSString11withCStringEPKc",
+            "_exclaves_display_healthcheck_rate",
+            "_IOLog"
+          ],
+          "instructions": 144,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 86,
+        "this_relative_fields": [
+          "0x0",
+          "0x1640",
+          "0x18b8",
+          "0x1e88",
+          "0x2080"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf58c0",
+        "non_this_access_count": 10,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 9,
+          "call_count": 4,
+          "call_symbols": [
+            "0xfffffff006773c34",
+            "0xfffffff006773a30",
+            "0xfffffff006773c34",
+            "0xfffffff006773a30"
+          ],
+          "instructions": 61,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x2080",
+          "terminated": true
+        },
+        "slot": 87,
+        "this_relative_fields": [
+          "0x1610",
+          "0x1630",
+          "0x1dc0",
+          "0x2080",
+          "0x20a0",
+          "0x20b0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfb07c",
+        "non_this_access_count": 10,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "branch_instructions": 6,
+          "call_count": 1,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 67,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 117,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf776c",
+        "non_this_access_count": 4,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 36,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 155,
+        "this_relative_fields": [
+          "0x0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf9c88",
+        "non_this_access_count": 15,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 2,
+          "call_symbols": [
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "__ZN9IOService19getMatchingServicesEP12OSDictionary"
+          ],
+          "instructions": 43,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x2060",
+          "terminated": true
+        },
+        "slot": 168,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfc590",
+        "non_this_access_count": 18,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 9,
+          "call_count": 4,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006774148",
+            "0xfffffff006773d98",
+            "0xfffffff005b9ebb4"
+          ],
+          "instructions": 119,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 171,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfc5f8",
+        "non_this_access_count": 12,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 7,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006773d98",
+            "0xfffffff005b9ebb4"
+          ],
+          "instructions": 93,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 172,
+        "this_relative_fields": [
+          "0x128",
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078bc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 182,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf94cc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 5,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 183,
+        "this_relative_fields": [
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfe210",
+        "non_this_access_count": 5,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 5,
+          "call_symbols": [
+            "_IOLog",
+            "_kernel_debug",
+            "_IOLog",
+            "_kernel_debug"
+          ],
+          "instructions": 64,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfe2a8",
+          "terminated": true
+        },
+        "slot": 185,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfaa18",
+        "non_this_access_count": 3,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 4,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006774148"
+          ],
+          "instructions": 48,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 199,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfaa74",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 1,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 25,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 200,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf48f8",
+        "non_this_access_count": 1,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006773d98"
+          ],
+          "instructions": 45,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf4970",
+          "terminated": true
+        },
+        "slot": 201,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf49ec",
+        "non_this_access_count": 1,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 1,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 32,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 202,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf4a9c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006773d98"
+          ],
+          "instructions": 25,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf4aec",
+          "terminated": true
+        },
+        "slot": 203,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfb26c",
+        "non_this_access_count": 4,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 30,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfb2bc",
+          "terminated": true
+        },
+        "slot": 205,
+        "this_relative_fields": [
+          "0x1e88",
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfb2e4",
+        "non_this_access_count": 3,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 2,
+          "call_symbols": [
+            "_IOLog"
+          ],
+          "instructions": 40,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 206,
+        "this_relative_fields": [
+          "0x2058",
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf48e8",
+        "non_this_access_count": 4,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006773d98"
+          ],
+          "instructions": 49,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf4970",
+          "terminated": true
+        },
+        "slot": 207,
+        "this_relative_fields": [
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa954",
+        "non_this_access_count": 16,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 5,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 41,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x1e88->0x1e88",
+          "terminated": true
+        },
+        "slot": 211,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa964",
+        "non_this_access_count": 13,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 5,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 37,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x1e88",
+          "terminated": true
+        },
+        "slot": 212,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa8e8",
+        "non_this_access_count": 9,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 17,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x1e88->0x1e88",
+          "terminated": true
+        },
+        "slot": 213,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfea00",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 2,
+          "call_symbols": [
+            "_kernel_debug",
+            "_kernel_debug"
+          ],
+          "instructions": 56,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 223,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfeae0",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 3,
+          "call_symbols": [
+            "_kernel_debug",
+            "_kernel_debug"
+          ],
+          "instructions": 51,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfeb68",
+          "terminated": true
+        },
+        "slot": 224,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfebac",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 2,
+          "call_symbols": [
+            "_kernel_debug",
+            "_kernel_debug"
+          ],
+          "instructions": 56,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 225,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfec8c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 3,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 226,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfabf8",
+        "non_this_access_count": 6,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 7,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 74,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfacf4",
+          "terminated": true
+        },
+        "slot": 227,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf7900",
+        "non_this_access_count": 6,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff00678db9c",
+            "0xfffffff006784840"
+          ],
+          "instructions": 42,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf7990",
+          "terminated": true
+        },
+        "slot": 229,
+        "this_relative_fields": [
+          "0x0",
+          "0x1608"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa3e4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 0,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 10,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfa3fc",
+          "terminated": true
+        },
+        "slot": 232,
+        "this_relative_fields": [
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf7700",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 9,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 240,
+        "this_relative_fields": [
+          "0x1e88",
+          "0x1ee8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa38c",
+        "non_this_access_count": 9,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 3,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 32,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfa3fc",
+          "terminated": true
+        },
+        "slot": 241,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078c4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 244,
+        "this_relative_fields": [
+          "0x2054"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078cc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 3,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 245,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078d8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 3,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 246,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078e4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x16b0",
+          "terminated": true
+        },
+        "slot": 247,
+        "this_relative_fields": [
+          "0x16b0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078ec",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x16b4",
+          "terminated": true
+        },
+        "slot": 248,
+        "this_relative_fields": [
+          "0x16b4"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c078f4",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 7,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 249,
+        "this_relative_fields": [
+          "0x16b0",
+          "0x16b4"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfe908",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 1,
+          "call_symbols": [
+            "_IOLog"
+          ],
+          "instructions": 20,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfe944",
+          "terminated": true
+        },
+        "slot": 250,
+        "this_relative_fields": [
+          "0x1e60"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07910",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 251,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfc19c",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 11,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e60",
+          "terminated": true
+        },
+        "slot": 252,
+        "this_relative_fields": [
+          "0x1e60",
+          "0x96"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfc1c8",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 11,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e60",
+          "terminated": true
+        },
+        "slot": 253,
+        "this_relative_fields": [
+          "0x1e60",
+          "0x96"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07918",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 254,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07920",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 255,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07928",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 256,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07930",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 257,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07938",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 258,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07940",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 259,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07948",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 260,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07950",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 261,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07958",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 262,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c00910",
+        "non_this_access_count": 39,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 11,
+          "call_count": 4,
+          "call_symbols": [
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "__ZN15OSMetaClassBase12safeMetaCastEPKS_PK11OSMetaClass",
+            "_memcpy"
+          ],
+          "instructions": 119,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 263,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bff3f8",
+        "non_this_access_count": 8,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 39,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e60",
+          "terminated": true
+        },
+        "slot": 266,
+        "this_relative_fields": [
+          "0x1e60",
+          "0x1e88",
+          "0x1ee8",
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa1f8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 267,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf76d8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 4,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 268,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf76e8",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 6,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 269,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf7734",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 270,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf769c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 15,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 271,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfed4c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 6,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 272,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07960",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 1,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 273,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfab30",
+        "non_this_access_count": 7,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 34,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x1e88",
+          "terminated": true
+        },
+        "slot": 274,
+        "this_relative_fields": [
+          "0x1e60",
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07964",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 3,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 275,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfab28",
+        "non_this_access_count": 9,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 36,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x1e88->0x1e88",
+          "terminated": true
+        },
+        "slot": 276,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfaad8",
+        "non_this_access_count": 12,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 56,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 277,
+        "this_relative_fields": [
+          "0x0",
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfab94",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 9,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 278,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfabb8",
+        "non_this_access_count": 20,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 7,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 90,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfacf4",
+          "terminated": true
+        },
+        "slot": 279,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfabc8",
+        "non_this_access_count": 17,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 7,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 86,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfacf4",
+          "terminated": true
+        },
+        "slot": 280,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfabd8",
+        "non_this_access_count": 14,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 7,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 82,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfacf4",
+          "terminated": true
+        },
+        "slot": 281,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfac88",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            3,
+            4,
+            6,
+            7
+          ],
+          "branch_instructions": 5,
+          "call_count": 2,
+          "call_symbols": [],
+          "instructions": 38,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfacf4",
+          "terminated": true
+        },
+        "slot": 282,
+        "this_relative_fields": [
+          "0x1e88",
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfac78",
+        "non_this_access_count": 5,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            3,
+            4,
+            6,
+            7
+          ],
+          "branch_instructions": 5,
+          "call_count": 2,
+          "call_symbols": [],
+          "instructions": 42,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfacf4",
+          "terminated": true
+        },
+        "slot": 283,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa3a4",
+        "non_this_access_count": 6,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 26,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfa3fc",
+          "terminated": true
+        },
+        "slot": 284,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa3c4",
+        "non_this_access_count": 3,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 18,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfa3fc",
+          "terminated": true
+        },
+        "slot": 285,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfc410",
+        "non_this_access_count": 7,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 7,
+          "call_count": 1,
+          "call_symbols": [
+            "0xfffffff006774148"
+          ],
+          "instructions": 31,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 286,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf59cc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff006773d98"
+          ],
+          "instructions": 25,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf5a18",
+          "terminated": true
+        },
+        "slot": 288,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf6800",
+        "non_this_access_count": 12,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 11,
+          "call_count": 8,
+          "call_symbols": [
+            "_IOFreeTypeImpl",
+            "0xfffffff006772c4c",
+            "_IOFreeTypeImpl",
+            "0xfffffff006772c4c",
+            "_IOFreeTypeImpl"
+          ],
+          "instructions": 81,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf6930",
+          "terminated": true
+        },
+        "slot": 289,
+        "this_relative_fields": [
+          "0x16d4",
+          "0x1e60",
+          "0x1e68",
+          "0x1e70",
+          "0x1e88",
+          "0x1ec0",
+          "0x1ee8",
+          "0x2058",
+          "0x2088",
+          "0x2090"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfb384",
+        "non_this_access_count": 50,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            6,
+            7
+          ],
+          "branch_instructions": 40,
+          "call_count": 7,
+          "call_symbols": [
+            "_kernel_debug",
+            "_IOLog",
+            "_IOLog",
+            "0xfffffff006789d78",
+            "_kernel_debug",
+            "_kernel_debug"
+          ],
+          "instructions": 237,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfb71c",
+          "terminated": true
+        },
+        "slot": 290,
+        "this_relative_fields": [
+          "0x0",
+          "0x1560",
+          "0x1568",
+          "0x16d0",
+          "0x16d4",
+          "0x18e4",
+          "0x1e60",
+          "0x1e88",
+          "0x1edc",
+          "0x1ee8",
+          "0x2128"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07970",
+        "non_this_access_count": 1,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 9,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 292,
+        "this_relative_fields": [
+          "0x1e30"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfe4b0",
+        "non_this_access_count": 6,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 5,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 45,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1de8",
+          "terminated": true
+        },
+        "slot": 293,
+        "this_relative_fields": [
+          "0x1de8",
+          "0x1df0",
+          "0x1e28",
+          "0x1e2c",
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfbce0",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 1,
+          "call_symbols": [
+            "_OSIncrementAtomic"
+          ],
+          "instructions": 21,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x20a0",
+          "terminated": true
+        },
+        "slot": 294,
+        "this_relative_fields": [
+          "0x20a0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfbf8c",
+        "non_this_access_count": 9,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 8,
+          "call_count": 6,
+          "call_symbols": [],
+          "instructions": 67,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 295,
+        "this_relative_fields": [
+          "0x1560",
+          "0x1e54",
+          "0x1e58",
+          "0x1e88",
+          "0x1ee8",
+          "0x1f38",
+          "0x2080",
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfae28",
+        "non_this_access_count": 31,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 23,
+          "call_count": 8,
+          "call_symbols": [
+            "0xfffffff005b9ebac",
+            "0xfffffff005b9ebac",
+            "_IOLog",
+            "0xfffffff005b9ebf4",
+            "0xfffffff005b9ebf4"
+          ],
+          "instructions": 148,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfaffc",
+          "terminated": true
+        },
+        "slot": 296,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfad20",
+        "non_this_access_count": 9,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 6,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff005b9d2fc",
+            "0xfffffff005b9ebb4",
+            "_IOLog"
+          ],
+          "instructions": 66,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 297,
+        "this_relative_fields": [
+          "0x0",
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c07994",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 298,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf4b00",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 19,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 301,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c0799c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 302,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079a4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 1,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 304,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa8d8",
+        "non_this_access_count": 12,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 21,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "unknown",
+          "terminated": true
+        },
+        "slot": 305,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa8f8",
+        "non_this_access_count": 6,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 13,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88->0x1e88",
+          "terminated": true
+        },
+        "slot": 306,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa908",
+        "non_this_access_count": 3,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 9,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 307,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa92c",
+        "non_this_access_count": 3,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1
+          ],
+          "branch_instructions": 2,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 10,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 308,
+        "this_relative_fields": [
+          "0x0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa974",
+        "non_this_access_count": 10,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 5,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 33,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 310,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf4568",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff00677d36c",
+            "_IOLog"
+          ],
+          "instructions": 23,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf4584",
+          "terminated": true
+        },
+        "slot": 317,
+        "this_relative_fields": [
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf455c",
+        "non_this_access_count": 1,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff00677d36c",
+            "_IOLog"
+          ],
+          "instructions": 26,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf4584",
+          "terminated": true
+        },
+        "slot": 318,
+        "this_relative_fields": [
+          "0x0",
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfb1c4",
+        "non_this_access_count": 8,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            1
+          ],
+          "branch_instructions": 7,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 25,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 319,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfb230",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 1,
+          "call_count": 1,
+          "call_symbols": [],
+          "instructions": 15,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfb24c",
+          "terminated": true
+        },
+        "slot": 320,
+        "this_relative_fields": [
+          "0x2058"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf94bc",
+        "non_this_access_count": 3,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 9,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 321,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfc150",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 19,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 323,
+        "this_relative_fields": [
+          "0x1dd8",
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079a8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 324,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfe978",
+        "non_this_access_count": 4,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 22,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 325,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfec98",
+        "non_this_access_count": 4,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 23,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 326,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfecf4",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 8,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 327,
+        "this_relative_fields": [
+          "0x213c",
+          "0x2144"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfed14",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 4,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 328,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfed24",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 10,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 329,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfeff8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 6,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 330,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bff010",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 8,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 331,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfed64",
+        "non_this_access_count": 21,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 4,
+          "call_count": 5,
+          "call_symbols": [
+            "__ZN9OSBoolean11withBooleanEb",
+            "__ZN8OSNumber10withNumberEyj",
+            "__ZN8OSNumber10withNumberEyj",
+            "__ZN8OSNumber10withNumberEyj",
+            "__ZN9OSBoolean11withBooleanEb"
+          ],
+          "instructions": 165,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bfef98",
+          "terminated": true
+        },
+        "slot": 332,
+        "this_relative_fields": [
+          "0x0"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079b0",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 336,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfa478",
+        "non_this_access_count": 25,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 23,
+          "call_count": 7,
+          "call_symbols": [
+            "_IOLog",
+            "_IOLog",
+            "_memcpy",
+            "_IOLog",
+            "0xfffffff0067968b4"
+          ],
+          "instructions": 182,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 337,
+        "this_relative_fields": [
+          "0x1560",
+          "0x18e8",
+          "0x18ec",
+          "0x1e88",
+          "0x2080",
+          "0x2128"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079b8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 1,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 338,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf94f0",
+        "non_this_access_count": 10,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 8,
+          "call_count": 1,
+          "call_symbols": [
+            "0xfffffff00679d40c"
+          ],
+          "instructions": 59,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 339,
+        "this_relative_fields": [
+          "0x0",
+          "0x1560",
+          "0x1568",
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf6798",
+        "non_this_access_count": 15,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 12,
+          "call_count": 9,
+          "call_symbols": [
+            "_IOFreeTypeImpl",
+            "0xfffffff006772c4c",
+            "_IOFreeTypeImpl",
+            "0xfffffff006772c4c",
+            "_IOFreeTypeImpl"
+          ],
+          "instructions": 107,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf6930",
+          "terminated": true
+        },
+        "slot": 340,
+        "this_relative_fields": [
+          "0x16d4",
+          "0x1e54",
+          "0x1e60",
+          "0x1e68",
+          "0x1e70",
+          "0x1e88",
+          "0x1ec0",
+          "0x1ee8",
+          "0x2058",
+          "0x2088",
+          "0x2090"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079bc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 341,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079c4",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 342,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf792c",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 2,
+          "call_count": 2,
+          "call_symbols": [
+            "0xfffffff00678db9c",
+            "0xfffffff006784840"
+          ],
+          "instructions": 31,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf7990",
+          "terminated": true
+        },
+        "slot": 344,
+        "this_relative_fields": [
+          "0x16dc",
+          "0x16e0",
+          "0x1dc8"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079cc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 3,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x86",
+          "terminated": true
+        },
+        "slot": 345,
+        "this_relative_fields": [
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf710c",
+        "non_this_access_count": 15,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 11,
+          "call_count": 4,
+          "call_symbols": [
+            "0xfffffff0067a2538",
+            "0xfffffff006789d78",
+            "0xfffffff00678a96c"
+          ],
+          "instructions": 84,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf7238",
+          "terminated": true
+        },
+        "slot": 346,
+        "this_relative_fields": [
+          "0x1560",
+          "0x1568",
+          "0x1570",
+          "0x18ec",
+          "0x1e88",
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bfaad0",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 2,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 350,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf57e0",
+        "non_this_access_count": 2,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0
+          ],
+          "branch_instructions": 1,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 12,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this->0x1e88",
+          "terminated": true
+        },
+        "slot": 351,
+        "this_relative_fields": [
+          "0x1e88"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079d8",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 1,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 352,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006c079dc",
+        "non_this_access_count": 0,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [],
+          "branch_instructions": 0,
+          "call_count": 0,
+          "call_symbols": [],
+          "instructions": 1,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 353,
+        "this_relative_fields": [],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf79a8",
+        "non_this_access_count": 9,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 14,
+          "call_count": 4,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "_clock_interval_to_deadline",
+            "0xfffffff006773efc"
+          ],
+          "instructions": 79,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "this",
+          "terminated": true
+        },
+        "slot": 354,
+        "this_relative_fields": [
+          "0x0",
+          "0x1560",
+          "0x1608",
+          "0x16cc",
+          "0x16d0",
+          "0x1db8",
+          "0x1e88",
+          "0x86"
+        ],
+        "traced": true
+      },
+      {
+        "class_name": "AppleCLCD-subclass",
+        "method": "0xfffffff006bf78b4",
+        "non_this_access_count": 8,
+        "owner": "com.apple.driver.AppleMobileDispH9G:__TEXT_EXEC,__text",
+        "shape": {
+          "argument_registers_read": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "branch_instructions": 4,
+          "call_count": 3,
+          "call_symbols": [
+            "0xfffffff006774148",
+            "0xfffffff00678db9c",
+            "0xfffffff006784840"
+          ],
+          "instructions": 61,
+          "lock_balanced": true,
+          "lock_calls": {
+            "lock": 0,
+            "unlock": 0
+          },
+          "return_expression": "return-of-0xfffffff006bf7990",
+          "terminated": true
+        },
+        "slot": 355,
+        "this_relative_fields": [
+          "0x1608",
+          "0x1db8"
+        ],
+        "traced": true
+      }
+    ]
   }
 }

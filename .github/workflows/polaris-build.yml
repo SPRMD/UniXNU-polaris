@@ -480,6 +480,31 @@ jobs:
           python3 -m pip install --user --break-system-packages lzfse
           python3 -c 'import lzfse; print("lzfse", lzfse.__file__)'
 
+      - name: Verify downloaded stage inputs
+        run: |
+          # download-artifact@v4 can exit 0 after a truncated transfer of the
+          # multi-gigabyte kernel artifact (observed on run 41211788208: the
+          # step reported success but never logged "download completed", and
+          # out/kernel was empty). Fail loudly here instead of letting the
+          # next step die on a bare 'test' with no output.
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+          [ -d out/kernel ] || fail "out/kernel is missing: the platform-kernel-results artifact did not download"
+          [ -d out/efi ] || fail "out/efi is missing: the efi-results artifact did not download"
+          KERNEL=$(find out/kernel -type f -name kernel-prelinked.macho -print -quit)
+          [ -n "$KERNEL" ] || fail "kernel-prelinked.macho not found under out/kernel (artifact truncated?)"
+          [ -s "$KERNEL" ] || fail "kernel-prelinked.macho is empty"
+          for image in 044-76040-038.dmg 044-76034-038.dmg \
+                       044-76040-038.dmg.trustcache 044-76034-038.dmg.trustcache; do
+            found=$(find out/kernel -type f -name "$image" -print -quit)
+            [ -n "$found" ] || fail "$image not found under out/kernel (artifact truncated?)"
+            [ -s "$found" ] || fail "$image is empty"
+          done
+          EFI=$(find out/efi -type f -path '*/efi/Build/Out/AARCH64-DEBUG/UniXNU.efi' -print -quit)
+          [ -n "$EFI" ] || fail "UniXNU.efi not found under out/efi (artifact truncated?)"
+          echo "PASS: stage inputs present; kernel=$KERNEL efi=$EFI"
+          df -h /
+
       - name: Normalize build artifacts
         run: |
           # The iPadOS stage requires the separate prelinked image. The plain

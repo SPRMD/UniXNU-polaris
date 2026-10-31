@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "../PolarisTransportContracts/PolarisCciProtocol.h"
 #include "PolarisCameraPolicy.h"
 
 namespace {
@@ -92,6 +93,50 @@ static unsigned countKind(IORegistryEntry *entry, unsigned depth,
   return count;
 }
 
+/* The reference Polaris DTB only carries generic "qcom,cam-sensor" nodes: the
+ * sensor part number lives in the vendor sensormodule blobs, not in the DT.
+ * A matched node therefore does not prove which sensor is fitted, so the
+ * identity is only accepted when a node name or compatible actually names it. */
+static void scanSensorKind(IORegistryEntry *entry, unsigned depth,
+                           uint8_t *kind)
+{
+  if (entry == nullptr || depth > 24) return;
+  if (*kind != PolarisCameraSensorUnknown) return;
+  const char *name = entry->getName();
+  if (name != nullptr) {
+    uint8_t named = PolarisCameraSensorUnknown;
+    if (polaris_camera_sensor_name_kind(name, strlen(name), &named)) {
+      *kind = named;
+      return;
+    }
+  }
+  OSData *compatible = OSDynamicCast(OSData, entry->getProperty("compatible"));
+  if (compatible != nullptr && compatible->getBytesNoCopy() != nullptr) {
+    const char *bytes =
+        static_cast<const char *>(compatible->getBytesNoCopy());
+    const size_t length = compatible->getLength();
+    for (size_t offset = 0; offset < length;) {
+      size_t end = offset;
+      while (end < length && bytes[end] != '\0') ++end;
+      uint8_t named = PolarisCameraSensorUnknown;
+      if (end != offset &&
+          polaris_camera_sensor_name_kind(bytes + offset, end - offset,
+                                          &named)) {
+        *kind = named;
+        return;
+      }
+      offset = end < length ? end + 1 : length;
+    }
+  }
+  OSIterator *children = entry->getChildIterator(gIODTPlane);
+  if (children == nullptr) return;
+  while (IORegistryEntry *child =
+             OSDynamicCast(IORegistryEntry, children->getNextObject())) {
+    scanSensorKind(child, depth + 1, kind);
+  }
+  children->release();
+}
+
 } // namespace
 
 class PolarisCameraContract : public IOService {
@@ -137,8 +182,15 @@ public:
     evidence.csiphy_present = csiphy != 0;
     evidence.csid_present = csid != 0;
     evidence.sensor_candidate = sensors != 0;
-    evidence.sensor_kind = PolarisCameraSensorImx363;
-    evidence.address7 = 0x34;
+    uint8_t sensorKind = PolarisCameraSensorUnknown;
+    if (sensors != 0) scanSensorKind(provider, 0, &sensorKind);
+    evidence.sensor_kind = sensorKind;
+    /* The address comes from the existing EDK2 IMX363 evidence header, not a
+     * fresh literal.  It is only used for the address bound; the generic
+     * cam-sensor DT nodes carry no address and the identity is still
+     * unconfirmed, so the plan stops before this value could ever be treated
+     * as observed evidence. */
+    evidence.address7 = POLARIS_IMX363_I2C_ADDRESS;
     evidence.sensor_id_confirmed = 0;
     evidence.tuning_complete = 0;
     const PolarisCameraPlan plan = polaris_camera_make_plan(evidence);
@@ -146,13 +198,26 @@ public:
     setProperty("polaris-camera-contract-version", 1U, 32);
     setProperty("polaris-camera-sensor-candidates",
                 "Sony IMX363,OmniVision OV5675,Samsung S5K3M3");
-    setProperty("polaris-camera-imx363-cci-address-candidate", 0x34U, 32);
-    setProperty("polaris-camera-imx363-id-register", 0x0016U, 32);
-    setProperty("polaris-camera-imx363-id-candidate", 0x0363U, 32);
+    setProperty("polaris-camera-imx363-cci-address-candidate",
+                (unsigned)POLARIS_IMX363_I2C_ADDRESS, 32);
+    setProperty("polaris-camera-imx363-id-register",
+                (unsigned)POLARIS_IMX363_ID_REGISTER, 32);
+    setProperty("polaris-camera-imx363-id-candidate",
+                ((unsigned)POLARIS_IMX363_ID_MSB << 8) |
+                    (unsigned)POLARIS_IMX363_ID_LSB,
+                32);
+    setProperty("polaris-camera-imx363-probe-hz",
+                (unsigned)POLARIS_IMX363_PROBE_HZ, 32);
     setProperty("polaris-camera-cci-nodes", cci, 32);
     setProperty("polaris-camera-csiphy-nodes", csiphy, 32);
     setProperty("polaris-camera-csid-nodes", csid, 32);
     setProperty("polaris-camera-sensor-nodes", sensors, 32);
+    setProperty("polaris-camera-sensor-kind", sensorKind, 32);
+    setProperty("polaris-camera-sensor-identity-confirmed", false);
+    /* The 0x34 address belongs to the IMX363 candidate only; the generic
+     * "qcom,cam-sensor" DT nodes do not carry an I2C address, so this value is
+     * published as a candidate and never as an observed address. */
+    setProperty("polaris-camera-sensor-address-confirmed", false);
     setProperty("polaris-camera-resource-contract-valid",
                 plan.resource_contract_valid, 32);
     setProperty("polaris-camera-plan-reason", plan.reason, 32);

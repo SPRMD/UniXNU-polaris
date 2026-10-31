@@ -35,7 +35,12 @@ enum Subsystem : unsigned {
 };
 
 struct Fact {
+  /* "nodes" counts every name/compatible match (pinctrl state children,
+   * thermal zones and reserved-memory regions included).  "devices" counts
+   * only matches that carry a non-empty "reg" and are not reserved-memory
+   * children, so a controller count cannot be inflated by related nodes. */
   unsigned nodes;
+  unsigned devices;
   unsigned reg;
   unsigned interrupts;
 };
@@ -94,8 +99,12 @@ static bool boardIsPolaris()
 
 static bool matches(IORegistryEntry *entry, Subsystem subsystem)
 {
-  static const char *const wifiNames[] = {"icnss", "wifi", "wlan", "wcn"};
-  static const char *const wifiCompat[] = {"qcom,icnss", "qcom,wcn3990", "qcom,wlan"};
+  /* "wcn" is deliberately absent: in the reference Polaris DTB the only
+   * nodes carrying that token are the Bluetooth side (bt_wcn3990 and the
+   * SLIMbus wcn3990 slave), so matching it made the WiFi count include
+   * Bluetooth nodes.  The real WLAN controller is qcom,icnss. */
+  static const char *const wifiNames[] = {"icnss", "wifi", "wlan"};
+  static const char *const wifiCompat[] = {"qcom,icnss", "qcom,wlan"};
   static const char *const bluetoothNames[] = {"bluetooth", "bt", "wcn3990"};
   static const char *const bluetoothCompat[] = {"qca,wcn3990", "qcom,wcn3990", "qcom,bluetooth"};
   static const char *const nfcNames[] = {"nfc", "nq", "pn5", "pn54"};
@@ -136,6 +145,21 @@ static bool matches(IORegistryEntry *entry, Subsystem subsystem)
   return false;
 }
 
+/* A node that carries a non-empty "reg" and is not a reserved-memory child is
+ * a device node.  Everything else that matched by name (pinctrl state children,
+ * thermal zones, LED stubs, SMMU context banks) is a related node, not a
+ * controller, so it must not inflate the controller count. */
+static bool looksLikeDeviceNode(IORegistryEntry *entry)
+{
+  if (entry == nullptr || !hasProperty(entry, "reg")) return false;
+  IORegistryEntry *parent = entry->getParentEntry(gIODTPlane);
+  if (parent != nullptr) {
+    const char *name = parent->getName();
+    if (name != nullptr && strcmp(name, "reserved-memory") == 0) return false;
+  }
+  return true;
+}
+
 static void walk(IORegistryEntry *entry, unsigned depth, unsigned *visited,
                  Fact facts[kCount])
 {
@@ -145,6 +169,7 @@ static void walk(IORegistryEntry *entry, unsigned depth, unsigned *visited,
     if (!matches(entry, static_cast<Subsystem>(subsystem))) continue;
     Fact &fact = facts[subsystem];
     ++fact.nodes;
+    if (looksLikeDeviceNode(entry)) ++fact.devices;
     fact.reg += hasProperty(entry, "reg") ? 1U : 0U;
     fact.interrupts += hasProperty(entry, "interrupts") ? 1U : 0U;
   }
@@ -234,16 +259,28 @@ public:
                 "polaris-wireless-runtime=1; polaris-nfc-runtime=1; polaris-camera-runtime=1");
     setProperty("polaris-peripheral-status",
                 "resource-and-protocol-contract; transport ownership required");
+    /* "*-node-count" is every related DT node; "*-device-node-count" is the
+     * controller-candidate subset.  The reference DTB has 9 WiFi matches but
+     * only one of them (qcom,icnss@18800000) is a controller. */
     setProperty("polaris-peripheral-wifi-node-count", facts[kWifi].nodes, 32);
+    setProperty("polaris-peripheral-wifi-device-node-count", facts[kWifi].devices, 32);
     setProperty("polaris-peripheral-wifi-reg-count", facts[kWifi].reg, 32);
     setProperty("polaris-peripheral-wifi-interrupt-count", facts[kWifi].interrupts, 32);
     setProperty("polaris-peripheral-bluetooth-node-count", facts[kBluetooth].nodes, 32);
+    /* The reference DTB has no Bluetooth node with a "reg": the controller
+     * lives behind UART/SLIMbus, so this count is legitimately 0. */
+    setProperty("polaris-peripheral-bluetooth-device-node-count", facts[kBluetooth].devices, 32);
     setProperty("polaris-peripheral-bluetooth-reg-count", facts[kBluetooth].reg, 32);
     setProperty("polaris-peripheral-bluetooth-interrupt-count", facts[kBluetooth].interrupts, 32);
+    /* WiFi and Bluetooth are counted from disjoint match sets so neither
+     * count can be inflated by the other subsystem's nodes. */
+    setProperty("polaris-peripheral-subsystem-counts-disjoint", true);
     setProperty("polaris-peripheral-nfc-node-count", facts[kNfc].nodes, 32);
+    setProperty("polaris-peripheral-nfc-device-node-count", facts[kNfc].devices, 32);
     setProperty("polaris-peripheral-nfc-reg-count", facts[kNfc].reg, 32);
     setProperty("polaris-peripheral-nfc-interrupt-count", facts[kNfc].interrupts, 32);
     setProperty("polaris-peripheral-camera-node-count", facts[kCamera].nodes, 32);
+    setProperty("polaris-peripheral-camera-device-node-count", facts[kCamera].devices, 32);
     setProperty("polaris-peripheral-camera-reg-count", facts[kCamera].reg, 32);
     setProperty("polaris-peripheral-camera-interrupt-count", facts[kCamera].interrupts, 32);
 
@@ -252,6 +289,10 @@ public:
                 selfTest.failed == 0 && selfTest.passed == PolarisTransportSelfTest::kAll);
     setProperty("polaris-peripheral-protocol-self-test-mask", selfTest.passed, 32);
     setProperty("polaris-peripheral-protocol-self-test-failures", selfTest.failed, 32);
+    setProperty("polaris-peripheral-protocol-self-test-scope",
+                "QCA H4/NCI/CCI/WLFW codec vectors only; no hardware I/O");
+    /* A passing codec vector says nothing about the attached hardware. */
+    setProperty("polaris-peripheral-hardware-self-test-performed", false);
     setName("PolarisPeripheralContracts");
     registerService();
     IOLog("PolarisPeripheralContracts: nodes=%u wifi=%u bt=%u nfc=%u camera=%u; I/O=0\n",

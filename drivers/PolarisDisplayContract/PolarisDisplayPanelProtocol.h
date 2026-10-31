@@ -25,6 +25,14 @@ enum PolarisDisplayPanelReason {
     PolarisDisplayPanelReasonInvalidGeometry = 3,
     PolarisDisplayPanelReasonPanelNotSelected = 4,
     PolarisDisplayPanelReasonHardwareValidationRequired = 5,
+    /* A panel candidate exists but no timing geometry was read from the DT.
+     * Deliberately distinct from InvalidGeometry so "not parsed yet" is never
+     * reported as "contradictory".  Appended, so existing values do not move. */
+    PolarisDisplayPanelReasonGeometryUnconfirmed = 6,
+    /* The DT does not identify one panel: either no dsi-display label matched a
+     * known panel build, or several distinct panel builds are present and
+     * nothing says which one is fitted. */
+    PolarisDisplayPanelReasonPanelIdentityRequired = 7,
 };
 
 typedef struct {
@@ -85,8 +93,18 @@ polaris_display_panel_make_plan(PolarisDisplayPanelEvidence evidence)
         plan.reason = PolarisDisplayPanelReasonNoPanelCandidate;
         return plan;
     }
+    if (evidence.panel_kind == PolarisDisplayPanelUnknown) {
+        plan.reason = PolarisDisplayPanelReasonPanelIdentityRequired;
+        return plan;
+    }
+    if (evidence.width == 0 || evidence.height == 0 || evidence.lanes == 0) {
+        /* Nothing about the panel timing has been read from the DT, so the
+         * contract may not assert 1080x2160/4-lane geometry yet. */
+        plan.reason = PolarisDisplayPanelReasonGeometryUnconfirmed;
+        return plan;
+    }
     if (evidence.width != 1080 || evidence.height != 2160 ||
-        evidence.lanes != 4 || evidence.panel_kind == PolarisDisplayPanelUnknown) {
+        evidence.lanes != 4) {
         plan.reason = PolarisDisplayPanelReasonInvalidGeometry;
         return plan;
     }
