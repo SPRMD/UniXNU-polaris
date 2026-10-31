@@ -228,6 +228,18 @@ def write_guarded_flash_ps1(path: Path) -> None:
             if ($manifest.inputs.darwin_root.present -and -not $darwinPath) {
                 Write-Error 'Manifest declares a darwin root image but it is missing.'; exit 11
             }
+            # The darwin root image needs a GPT partition that stock Polaris does
+            # not ship. Probe for it instead of letting fastboot flash fail with an
+            # opaque 'partition not found' after the checksum pass.
+            if ($darwinPath) {
+                $probe = (& fastboot.exe getvar partition-size:darwin 2>&1 | Out-String)
+                if ($probe -notmatch 'partition-size:\s*darwin:\s*0x[0-9a-fA-F]+') {
+                    Write-Error ("The darwin root image cannot be installed: this device has no 'darwin' partition. " +
+                        "Stock Polaris exposes 85 partitions and none of them is named darwin. " +
+                        "Re-partition the phone first (see research/polaris-partition-plan.md) or rebuild the package without --darwin-root.")
+                    exit 12
+                }
+            }
             if ($darwinPath) {
                 Write-Host 'Flashing the qualified darwin root image...'
                 & fastboot.exe flash darwin $darwinPath
@@ -301,6 +313,12 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
         blockers.append("no userdata image was supplied")
     if darwin_root is not None and not darwin_root.is_file():
         blockers.append("the supplied darwin root image is missing")
+    if darwin_root is not None and darwin_root.is_file():
+        # Stock Polaris ships 85 GPT partitions and none is named darwin, so the
+        # root image has nowhere to land until the phone is re-partitioned.
+        blockers.append(
+            "the darwin root image needs a darwin GPT partition, which stock Polaris does not have"
+        )
     if not contract_report["all_required_subsystems_verified"]:
         missing = sorted(set(contract_report["required_for_flash"]) - set(contract_report["verified"]))
         blockers.append("required hardware drivers are not verified: " + ", ".join(missing))
@@ -408,7 +426,7 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
         "installer": {
             "generated": True,
             "commands": ([
-                *(["fastboot flash darwin <darwin-root>"] if darwin_root and darwin_root.is_file() else []),
+                *(["fastboot flash darwin <darwin-root>   # requires a darwin GPT partition; stock Polaris has none"] if darwin_root and darwin_root.is_file() else []),
                 "fastboot flash userdata <userdata>", "fastboot boot <firmware>"
             ] if flashable else []),
             "guard": "manifest.flashable must be true and exactly one polaris fastboot device must be present",

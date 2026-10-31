@@ -308,7 +308,7 @@ def main() -> int:
         ],
         "notes": [
             "This directory is assembled without adb, fastboot or device access.",
-            "darwin-root.img targets the separate darwin partition; userdata retains the ESP.",
+            "darwin-root.img targets a separate darwin partition; stock Polaris has no such partition, so this stage cannot be installed until the phone is re-partitioned.",
             "Do not change flashable to true without an independent temporary-boot report.",
         ],
     }

@@ -59,6 +59,33 @@ class PolarisPackageBuilderTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'ESP kernel does not match'):
                 CHECK.verify_manifest(output)
 
+    def test_darwin_root_requires_a_real_darwin_partition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            esp = root / 'esp'
+            payload = esp / 'EFI/UniXNU/Payloads'
+            payload.mkdir(parents=True)
+            kernel = root / 'kernel.macho'
+            kernel.write_bytes(b'kernel')
+            (payload / 'kernel.macho').write_bytes(b'kernel')
+            esp_image = root / 'esp.img'
+            esp_image.write_bytes(b'fat')
+            darwin = root / 'darwin.img'
+            darwin.write_bytes(b'SHNGROOT' + bytes(4088))
+            output = root / 'package'
+            manifest = MODULE.build_package(esp, esp_image, kernel, output,
+                                             userdata=esp_image, darwin_root=darwin)
+            # Stock Polaris has no darwin partition, so the package must say so
+            # instead of promising a flash that the bootloader will reject.
+            self.assertTrue(any('darwin GPT partition' in b for b in manifest['blockers']))
+            script = (output / 'flash.ps1').read_text(encoding='utf-8')
+            # The installer probes before it writes anything.
+            self.assertIn('partition-size:darwin', script)
+            self.assertIn('exit 12', script)
+            probe = script.index('partition-size:darwin')
+            flash = script.index('flash darwin')
+            self.assertLess(probe, flash, 'the partition probe must run before the write')
+
     def test_package_paths_reject_windows_absolute_and_traversal_forms(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
