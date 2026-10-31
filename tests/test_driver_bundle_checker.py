@@ -23,11 +23,12 @@ MAKE_SPEC.loader.exec_module(MAKE)
 
 class PolarisDriverBundleCheckerTests(unittest.TestCase):
     def test_checker_accepts_current_metadata_bundle(self):
-        bundle = ROOT / "out" / "bundle-current"
-        self.assertTrue(bundle.is_dir())
-        manifest = MODULE.verify_manifest(bundle, ROOT)
-        self.assertFalse(manifest["policy"]["flashable"])
-        self.assertGreater(MODULE.verify_sums(bundle), 0)
+        with tempfile.TemporaryDirectory() as directory:
+            bundle = Path(directory) / "bundle"
+            MAKE.build_bundle(bundle, None, False)
+            manifest = MODULE.verify_manifest(bundle, ROOT)
+            self.assertFalse(manifest["policy"]["flashable"])
+            self.assertGreater(MODULE.verify_sums(bundle), 0)
 
     def test_checker_rejects_tampered_checksum_or_gate(self):
         with tempfile.TemporaryDirectory() as directory:
