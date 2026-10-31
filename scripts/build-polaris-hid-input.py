@@ -23,12 +23,31 @@ import sys
 BOARD_ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--build-root', type=Path,
-                    help='assembled UniXNU tree containing build/xnu and kits/XnuPrelink')
+                    help='assembled UniXNU tree containing build/xnu and the pinned prelink kit')
 args = parser.parse_args()
 BUILD_ROOT = args.build_root.resolve() if args.build_root else BOARD_ROOT
 OUT = BUILD_ROOT / 'build/polaris-hid-input'
 OUT.mkdir(parents=True, exist_ok=True)
-sys.path.insert(0, str(BUILD_ROOT / 'kits/XnuPrelink'))
+
+# The kit directory name belongs to the pinned upstream tree, which renamed it
+# from kits/XnuPrelink to kits/NativePrelink. Resolve it by content so a rename
+# fails with the checked paths instead of a bare ModuleNotFoundError.
+PREKLINK_KIT_CANDIDATES = ('kits/NativePrelink', 'kits/XnuPrelink')
+
+
+def prelink_kit(root: Path) -> Path:
+    checked = []
+    for relative in PREKLINK_KIT_CANDIDATES:
+        candidate = root / relative
+        checked.append(candidate)
+        if ((candidate / 'native_prelink.py').is_file() or
+                (candidate / 'native_prelink/__init__.py').is_file()):
+            return candidate
+    raise SystemExit('PolarisHidInput: no native_prelink kit in ' + str(root) +
+                     '; checked ' + ', '.join(str(path) for path in checked))
+
+
+sys.path.insert(0, str(prelink_kit(BUILD_ROOT)))
 from native_prelink import macho
 
 
