@@ -9,7 +9,8 @@ __pycache__/
 /research/external/
 # Downloaded Actions diagnostics and local CI simulations are evidence only.
 /.ci-sim-*/
-/platform-kernel-results-*/
+/platform-kernel-results-*
 /*-job-*.log
 /darwin-job-*.log
 /host-job-*.log
+/job-*.log

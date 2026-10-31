@@ -33,6 +33,11 @@ def load_module(name, path):
     return module
 
 
+def probe_requested(payload, no_probe, probe_extra):
+    """Diagnostic text patching is opt-in and must not block the base image."""
+    return not no_probe and (bool(payload.get('panic_screen', False)) or bool(probe_extra))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--kernel', type=Path, required=True,
@@ -98,11 +103,12 @@ def main():
         target = out / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
-    # Patch the ESP COPY of the kernel (never the artifact) with the boot-progress
-    # probes: stage bars for the early MMU milestones plus the on-screen panic
-    # funnel. With no serial console on this phone these are the only early-boot
-    # signals; the timer heartbeat covers the IOKit stage.
-    if not args.no_probe:
+    # Patch the ESP COPY of the kernel (never the artifact) with the
+    # boot-progress probes only when the board explicitly requests the panic
+    # screen. The diagnostic patch needs a verified zero text cave; a changed
+    # kernel layout must not make the ordinary package fail merely because
+    # that diagnostic-only address is unavailable.
+    if probe_requested(payload, args.no_probe, args.probe_extra):
         import shlex
         import subprocess as sp
         probe = ROOT / 'scripts/patch-xnu-entry-probe.py'
