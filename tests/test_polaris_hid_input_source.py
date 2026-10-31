@@ -26,6 +26,7 @@ class PolarisHidInputSourceTests(unittest.TestCase):
         self.assertIn("polaris_buttons_set_sink", source)
         self.assertIn("polaris_hid_device_size != 208", probe)
         self.assertIn("polaris_hid_touch_start", probe)
+        self.assertIn('extern "C" kmod_info_t g_kernel_kmod_info', probe)
 
     def test_hid_is_only_selected_for_ipados_stage(self):
         config = (ROOT / "configs" / "polaris_ipados17_defconfig").read_text(encoding="utf-8")

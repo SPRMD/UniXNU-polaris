@@ -4,8 +4,10 @@
 #include <cstring>
 
 #include "../drivers/PolarisTransportContracts/PolarisCciProtocol.h"
+#include "../drivers/PolarisTransportContracts/PolarisH4Protocol.h"
 #include "../drivers/PolarisTransportContracts/PolarisNci.h"
 #include "../drivers/PolarisTransportContracts/PolarisPmicProtocol.h"
+#include "../drivers/PolarisTransportContracts/PolarisProtocolSelfTest.h"
 #include "../drivers/PolarisTransportContracts/PolarisQcaProtocol.h"
 #include "../drivers/PolarisTransportContracts/PolarisWlfwProtocol.h"
 
@@ -67,6 +69,64 @@ static void testWlfw()
   assert(PolarisWlfw::bdfAccepted(accepted, sizeof(accepted)));
 }
 
+static void testH4Framing()
+{
+  const uint8_t parameter[] = {0x19};
+  uint8_t command[8] = {};
+  assert(PolarisH4::command(0xfc00, parameter, sizeof(parameter), command,
+                            sizeof(command)) == 5);
+  assert(command[0] == PolarisH4::kCommand && command[1] == 0x00 &&
+         command[2] == 0xfc && command[3] == 1 && command[4] == 0x19);
+  PolarisH4::Reader reader = {};
+  reader.reset();
+  const uint8_t event[] = {0x04, 0xff, 0x00};
+  int result = 0;
+  for (uint8_t byte : event) result = reader.feed(byte);
+  assert(result == 1 && PolarisH4::isEvent(reader));
+  assert(reader.feed(0) == -1);
+}
+
+static void testQcaFirmwareSession()
+{
+  uint8_t request[PolarisH4::kMaxPacket] = {};
+  PolarisH4::QcaFirmwareSession session;
+  assert(session.begin(request, 4) == 0);
+  assert(session.state() == PolarisH4::QcaFirmwareSession::Idle);
+  assert(session.begin(request, sizeof(request)) == 5);
+  assert(session.state() == PolarisH4::QcaFirmwareSession::AwaitVersion);
+  const uint8_t versionEvent[] = {4, 0xff, 14, 0, 2, 1, 2, 3, 4,
+                                  5, 6, 7, 8, 9, 10, 11, 12};
+  assert(session.acceptVersion(versionEvent, sizeof(versionEvent)));
+  assert(session.state() == PolarisH4::QcaFirmwareSession::ReadyForSegment);
+  const uint8_t file[PolarisQca::kMaxSegment + 1] = {};
+  assert(session.startFile(sizeof(file)));
+  assert(session.segments() == 2 && session.segment() == 0);
+  assert(session.nextSegment(file, sizeof(file), request, sizeof(request)) ==
+         PolarisQca::kMaxSegment + 6);
+  assert(session.state() == PolarisH4::QcaFirmwareSession::AwaitSegment);
+  assert(request[4] == 0x1e && request[5] == PolarisQca::kMaxSegment);
+  const uint8_t accepted[] = {4, 0xff, 3, 0, 4, 0};
+  assert(session.acceptSegmentAck(accepted, sizeof(accepted)));
+  assert(session.state() == PolarisH4::QcaFirmwareSession::ReadyForSegment);
+  assert(session.nextSegment(file, sizeof(file), request, sizeof(request)) == 7);
+  assert(request[5] == 1 && request[6] == 0);
+  assert(session.acceptSegmentAck(accepted, sizeof(accepted)));
+  assert(session.state() == PolarisH4::QcaFirmwareSession::Complete);
+  assert(session.nextSegment(file, sizeof(file), request, sizeof(request)) == 0);
+
+  PolarisH4::QcaFirmwareSession failed;
+  assert(failed.begin(request, sizeof(request)) == 5);
+  const uint8_t malformedVersion[] = {4, 0xff, 0};
+  assert(!failed.acceptVersion(malformedVersion, sizeof(malformedVersion)));
+  assert(failed.state() == PolarisH4::QcaFirmwareSession::Failed);
+
+  PolarisH4::QcaFirmwareSession oversized;
+  assert(oversized.begin(request, sizeof(request)) == 5);
+  assert(oversized.acceptVersion(versionEvent, sizeof(versionEvent)));
+  assert(!oversized.startFile(PolarisH4::QcaFirmwareSession::kMaxFileBytes + 1));
+  assert(oversized.state() == PolarisH4::QcaFirmwareSession::Failed);
+}
+
 static void testPmic()
 {
   const uint8_t early[] = {1, 0x51, 0x15};
@@ -83,12 +143,22 @@ static void testPmic()
   assert(power && up && down);
 }
 
+static void testIntegratedSelfTest()
+{
+  const PolarisTransportSelfTest::Result result = PolarisTransportSelfTest::run();
+  assert(result.passed == PolarisTransportSelfTest::kAll);
+  assert(result.failed == 0);
+}
+
 int main()
 {
   testQca();
   testNci();
   testCci();
   testWlfw();
+  testH4Framing();
+  testQcaFirmwareSession();
   testPmic();
+  testIntegratedSelfTest();
   return 0;
 }

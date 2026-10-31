@@ -94,14 +94,24 @@
         "sha256": "ddc192ef7d2e968dad0e79ed18e2ee8102813107e41ec7783ff64af576945e00"
       },
       {
-        "bytes": 6426,
-        "path": "drivers/PolarisA630Probe/PolarisA630Probe.cpp",
-        "sha256": "c93af3b4c91bc2ad75db88902e9265f3fdd565a9910b753d088ba562f7dff60e"
+        "bytes": 1236,
+        "path": "drivers/PolarisA630Probe/PolarisA630Board.h",
+        "sha256": "c6c6b83519dff687d514824682cd9aa7b91d326d33a400f49e35337b52c53d00"
       },
       {
-        "bytes": 1056,
+        "bytes": 3357,
+        "path": "drivers/PolarisA630Probe/PolarisA630Policy.h",
+        "sha256": "d39ca55323b11b963c8ad5885747b997c9fa7d97fa03422608d03193eabad6cb"
+      },
+      {
+        "bytes": 9691,
+        "path": "drivers/PolarisA630Probe/PolarisA630Probe.cpp",
+        "sha256": "c09728cd4c6906c35f3b0ffe0b0cf185d864877c5181dc6df27239977d47d1a2"
+      },
+      {
+        "bytes": 1665,
         "path": "drivers/PolarisA630Probe/README.md",
-        "sha256": "36df4a61514494726182fed0b10e63c1ef4b6301d229acebaf14af39c58a9488"
+        "sha256": "17c607aa19c5f43c47fbf16c0acb7b54329ccb3d6665575f1a3f8ba04b2f3213"
       },
       {
         "bytes": 5901,
@@ -144,9 +154,9 @@
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "bytes": 13984,
+        "bytes": 14345,
         "path": "drivers/PolarisProtocols/polaris_protocols.py",
-        "sha256": "97a31bacac2419cf9295f4dc0007a181c7e0e028307acd1024dd1ba57e87ee45"
+        "sha256": "d6e74e537008cd403222bbcf31925c26762f235067c5589bd7c5c7226372c126"
       },
       {
         "bytes": 1081,
@@ -204,6 +214,11 @@
         "sha256": "949e0b4ba48268e5aea7b310a964a1490fcc9920fe2dc8dceb28a41b25e3d323"
       },
       {
+        "bytes": 5339,
+        "path": "drivers/PolarisTransportContracts/PolarisH4Protocol.h",
+        "sha256": "dc9ac75934109c3eda9bc7ffbafeba1145244dd02fa41e994089c6bfc22b16f5"
+      },
+      {
         "bytes": 2617,
         "path": "drivers/PolarisTransportContracts/PolarisNci.h",
         "sha256": "6e63b7e04e02bcb701a39bc73cd70fa3fb3041bd7c83c5bb9983f716bf36de03"
@@ -214,14 +229,19 @@
         "sha256": "749a3fe9940cfd2bf715657bf645c03568caa51bf6a114a70f7d8cdb9f0d1029"
       },
       {
+        "bytes": 5774,
+        "path": "drivers/PolarisTransportContracts/PolarisProtocolSelfTest.h",
+        "sha256": "8f779cb5448a56768cb123552fda66acef87c7b8f5631b35524c8a725ad72265"
+      },
+      {
         "bytes": 2540,
         "path": "drivers/PolarisTransportContracts/PolarisQcaProtocol.h",
         "sha256": "1681fd60c7bfcada4382949830c1856468ce5d8b8b00e02d6a579a971909e717"
       },
       {
-        "bytes": 3499,
+        "bytes": 4759,
         "path": "drivers/PolarisTransportContracts/PolarisTransportContracts.cpp",
-        "sha256": "8a7347422a6e355b0e9522c6b73b0950a5b379d351fe8ad62c4008e3286ad019"
+        "sha256": "7b7bb510518d7279313445926f94d180be6a54d29760a6ad7522fb4191dd20ae"
       },
       {
         "bytes": 2267,
@@ -229,24 +249,99 @@
         "sha256": "5f3d87a5cc88bb483b81e7854945f0e1f75ec57b4f442ff8f1c784cb2ee5fc82"
       },
       {
-        "bytes": 874,
+        "bytes": 1287,
         "path": "drivers/PolarisTransportContracts/README.md",
-        "sha256": "372c810ba026d5795d71095620cf3c5414093939de8c8477f3ce6f11625e14e3"
+        "sha256": "a4d571a95d3f0516a10c96025672b0aaca3b04668f1be879d616593a6f4d75be"
       },
       {
-        "bytes": 376,
+        "bytes": 927,
+        "path": "drivers/PolarisPeripheralContracts/Info.plist",
+        "sha256": "4534a6274af0e26f7f07cdbad46b2e235f67fe03b4601242432e24e61b4b89f4"
+      },
+      {
+        "bytes": 10238,
+        "path": "drivers/PolarisPeripheralContracts/PolarisPeripheralContracts.cpp",
+        "sha256": "bf5c4628cf1bdf43417830d8c52e6f9d9181f1abca1a018ca9d21a75c96f6cef"
+      },
+      {
+        "bytes": 847,
+        "path": "drivers/PolarisPeripheralContracts/README.md",
+        "sha256": "edd5958d299dcc7c3ced6cd8ba09d4a20966621cdc74401112eb89163ab1b5ce"
+      },
+      {
+        "bytes": 902,
+        "path": "drivers/PolarisNfcContract/Info.plist",
+        "sha256": "6abfeb63ee7b54e133b58c369066ee5c648d94e89a9bbf88f05c4a761c6de0ae"
+      },
+      {
+        "bytes": 5095,
+        "path": "drivers/PolarisNfcContract/PolarisNfcContract.cpp",
+        "sha256": "a0f9fbeab619d2820fea07adb67bfa34a226ff9bbe042ab8a1343e926c6f3465"
+      },
+      {
+        "bytes": 2964,
+        "path": "drivers/PolarisNfcContract/PolarisNfcPolicy.h",
+        "sha256": "61b2d7106546415e219afb4d945c59266db98480d61dcc69890a0b4c73b4a32d"
+      },
+      {
+        "bytes": 624,
+        "path": "drivers/PolarisNfcContract/README.md",
+        "sha256": "7f33b5f8c71f335d3883cf98939160d600b7615758aa528da73c07203582c775"
+      },
+      {
+        "bytes": 915,
+        "path": "drivers/PolarisCameraContract/Info.plist",
+        "sha256": "a982493f9f32896ef5b3145dda40a2cc3e1e1f40da17c186800022dcaa3b4647"
+      },
+      {
+        "bytes": 6946,
+        "path": "drivers/PolarisCameraContract/PolarisCameraContract.cpp",
+        "sha256": "ca16fd9c8df75cea4d7859affeae0eae4120c12d54e9d48eb34e60f4c77313b2"
+      },
+      {
+        "bytes": 3743,
+        "path": "drivers/PolarisCameraContract/PolarisCameraPolicy.h",
+        "sha256": "7656a4fd865673bcbf6740f9af16c8e25c8f21a71b7f42739c43adf6590b8e07"
+      },
+      {
+        "bytes": 615,
+        "path": "drivers/PolarisCameraContract/README.md",
+        "sha256": "b7f569546c4da5798a4f2ce55463e5b05ceeb2ae98527d1c6bffb21faf2b4a2a"
+      },
+      {
+        "bytes": 913,
+        "path": "drivers/PolarisDisplayContract/Info.plist",
+        "sha256": "13dc2a47783716688fadd3b799942edacd04d269f21f9d3a6bbc290dbcd97f33"
+      },
+      {
+        "bytes": 3189,
+        "path": "drivers/PolarisDisplayContract/PolarisDisplayContract.cpp",
+        "sha256": "424db8cac41560918b3ee11da74c7c836dddd1f658387589d737215ba3569b86"
+      },
+      {
+        "bytes": 3548,
+        "path": "drivers/PolarisDisplayContract/PolarisDisplayPanelProtocol.h",
+        "sha256": "7136a123aa9a969b32725bf7041a9a44a305afb58670362445906c62158edd4b"
+      },
+      {
+        "bytes": 522,
+        "path": "drivers/PolarisDisplayContract/README.md",
+        "sha256": "18755fb0176cf552409ab2de96ac4f0ab610a1b67e29cccd0569167f8801fda0"
+      },
+      {
+        "bytes": 544,
         "path": "drivers/PolarisRuntime/Info.plist",
-        "sha256": "ac90654170de538c139d2dc1980a7999ef6d0a0793295e10357793c4146e3c83"
+        "sha256": "1f76a0e4353b335ed3abf6e7c8c9a83bd9fd722dc866612737384d6914621c9b"
       },
       {
-        "bytes": 5437,
+        "bytes": 7092,
         "path": "drivers/PolarisRuntime/PolarisRuntime.cpp",
-        "sha256": "44cb23fe857f0fecbb0769498e431dac95bd7905dc7bb52c29358a7b99e9bc03"
+        "sha256": "64d39b2d3296e74161f92d0d47765197dac1a35b973a20b8d27588a511b6ee90"
       },
       {
-        "bytes": 844,
+        "bytes": 1209,
         "path": "drivers/PolarisRuntime/README.md",
-        "sha256": "d7a4640fcfb00ec3678afb7d502ac657b472aebe7646777c984e63e672b8865b"
+        "sha256": "31334ad16ed6391624bd5ed54771ea1f1b34ea44429934dc39462017ef1e8fc8"
       },
       {
         "bytes": 384,
@@ -254,19 +349,50 @@
         "sha256": "1b87e01855fde07be4c22fd0db13193bb8b2b4dddd2c79e5da8bb1cc6bf1e3d4"
       },
       {
-        "bytes": 17941,
+        "bytes": 19573,
         "path": "drivers/PolarisPmicRuntime/PolarisPmicRuntime.cpp",
-        "sha256": "622588103c7bc6584b0b447cfee871dbed31ead0e548d1565e102377f2942bbd"
+        "sha256": "4adb410dca39211b24d182cde5acb6ae12589029c18d0c042dd728ac3e18af5b"
       },
       {
         "bytes": 906,
         "path": "drivers/PolarisPmicRuntime/README.md",
         "sha256": "c0c669971bf3eb2e9196aa20f2545dfe0bc5ca0bda48febc90d7088861158eed"
+      },
+      {
+        "bytes": 622,
+        "path": "drivers/PolarisHidInput/Info.plist",
+        "sha256": "ad40309ca345a9be2998fd6ac813f1ba245e8e7dca6a12716f00c3684d60c343"
+      },
+      {
+        "bytes": 2681,
+        "path": "drivers/PolarisHidInput/LICENSE",
+        "sha256": "fc56b096347b83da4a300f97ad6182484941bbeff8becf91914b7fdc203d5a9f"
+      },
+      {
+        "bytes": 5309,
+        "path": "drivers/PolarisHidInput/OriginalHidDeviceABI.h",
+        "sha256": "7ee0c185fab877a0a114896bf3ec6d055b8c0d3806c27f2697d4225360e57bab"
+      },
+      {
+        "bytes": 20920,
+        "path": "drivers/PolarisHidInput/PolarisHidInput.cpp",
+        "sha256": "367155ef6bd22e71939767ff5734d289826a6ca771a6c1c8c7bed7317759b8aa"
+      },
+      {
+        "bytes": 7732,
+        "path": "drivers/PolarisHidInput/PolarisHidProbe.cpp",
+        "sha256": "0a37af3b64689d9b2822889349856683abe1ada9a048c11a98f4bf5250f722d8"
+      },
+      {
+        "bytes": 1036,
+        "path": "drivers/PolarisHidInput/README.md",
+        "sha256": "fc5e8c063360361c99b5c9ab8278bbc4dda4f016f1434ea6549c62cb88e62c67"
       }
     ]
   },
-  "generated_at": "2026-10-30T22:31:30.710559+00:00",
+  "generated_at": "2026-10-31T04:30:16.686632+00:00",
   "inputs": {
+    "a630_resources": true,
     "driver_matrix": true,
     "hardware_contract": true,
     "vendor_binaries_copied": false,

@@ -23,7 +23,11 @@ archives = [
   # polaris-touch-runtime=1 diagnostics only, disabled by default.
   "build-polaris-touch-runtime.py",
   "build-arm-driver.py PolarisTransportContracts",
+  "build-arm-driver.py PolarisPeripheralContracts",
+  "build-arm-driver.py PolarisNfcContract",
+  "build-arm-driver.py PolarisCameraContract",
   "build-arm-driver.py PolarisA630Probe",
+  "build-arm-driver.py PolarisDisplayContract",
   "build-arm-driver.py PolarisRuntime",
   "build-arm-driver.py ArmCpu",
   "build-arm-driver.py ShengUfs",
@@ -48,7 +52,8 @@ panic_screen = false
 # their transport and recovery paths.
 kernel_args = ["-v", "serial=0", "debug=0x14e", "kt_fixed_zones=120", "cpus=1", "armcpu-self-ipi=1",
   "polaris-board-probe=1", "polaris-hw-probe=1", "polaris-pmic-input=1",
-  "polaris-runtime=1", "polaris-rmi4-touch=1", "polaris-transport-probe=1", "polaris-a630-probe=1"]
+  "polaris-runtime=1", "polaris-rmi4-touch=1", "polaris-transport-probe=1", "polaris-peripheral-probe=1", "polaris-nfc-probe=1", "polaris-camera-probe=1", "polaris-a630-probe=1",
+  "polaris-display-probe=1"]
 
 [payload.adt]
 tool = "scripts/make-polaris-adt.py"

@@ -1,8 +1,19 @@
+import importlib.util
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_esp_module():
+    spec = importlib.util.spec_from_file_location(
+        "make_polaris_ios_esp", ROOT / "scripts" / "make-ios-esp.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
 
 class PolarisRuntimeSourceTests(unittest.TestCase):
@@ -16,10 +27,19 @@ class PolarisRuntimeSourceTests(unittest.TestCase):
             '"PolarisPmicInput"',
             '"PolarisSynapticsTouch"',
             '"PolarisTransportContracts"',
+            '"PolarisNfcContract"',
+            '"PolarisCameraContract"',
+            '"PolarisDisplayContract"',
             '"PolarisA630Probe"',
         ):
             self.assertIn(name, source)
         self.assertIn('polaris_pmic_runtime_static_init', source)
+        self.assertIn('polaris_peripheral_contracts_static_init', source)
+        self.assertIn('polaris_nfc_contract_static_init', source)
+        self.assertIn('polaris_camera_contract_static_init', source)
+        self.assertIn('polaris_display_contract_static_init', source)
+        self.assertIn('"PolarisPeripheralContracts"', source)
+        self.assertIn('polaris-peripheral-probe', source)
         self.assertIn('"PolarisKeysRuntime"', source)
         self.assertIn('"PolarisBatteryRuntime"', source)
 
@@ -29,8 +49,17 @@ class PolarisRuntimeSourceTests(unittest.TestCase):
         self.assertIn("build-arm-driver.py PolarisRuntime", board)
         self.assertIn("polaris-runtime=1", board)
         self.assertIn("polaris-runtime=1", loader)
-        self.assertNotIn("polariskeys=1", loader)
-        self.assertNotIn("polarisbattery=1", loader)
+        self.assertIn("polaris-nfc-probe=1", loader)
+        self.assertIn("polaris-camera-probe=1", loader)
+        esp = load_esp_module()
+        self.assertNotIn("polaris-touch-hid=1", esp.render_toml(False))
+        self.assertNotIn("polariskeys=1", esp.render_toml(False))
+        self.assertNotIn("polarisbattery=1", esp.render_toml(False))
+        self.assertIn("polaris-touch-hid=1", esp.render_toml(True))
+        self.assertIn("polariskeys=1", esp.render_toml(True))
+        self.assertIn("polarisbattery=1", esp.render_toml(True))
+        self.assertNotIn("polaris-nfc-runtime=1", esp.render_toml(False))
+        self.assertNotIn("polaris-camera-runtime=1", esp.render_toml(False))
 
 
 if __name__ == "__main__":

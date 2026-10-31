@@ -26,6 +26,12 @@ class StatusManifestTests(unittest.TestCase):
         self.assertFalse(contract["policy"]["android_binaries_are_darwin_drivers"])
         self.assertTrue(contract["policy"]["required_for_flash"])
         self.assertTrue(all(not item["enabled"] for item in contract["subsystems"].values()))
+        for name, item in contract["subsystems"].items():
+            for evidence in item.get("evidence", []):
+                self.assertTrue(
+                    (ROOT / evidence).is_file(),
+                    f"{name} evidence is outside the repository or missing: {evidence}",
+                )
 
     def test_package_builder_contains_no_unconditional_flash_state(self):
         source = (ROOT / "scripts" / "make-polaris-package.py").read_text(

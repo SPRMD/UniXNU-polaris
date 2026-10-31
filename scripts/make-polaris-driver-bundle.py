@@ -31,6 +31,10 @@ DRIVER_DIRS = (
     "PolarisSynapticsTouch",
     "PolarisTouch",
     "PolarisTransportContracts",
+    "PolarisPeripheralContracts",
+    "PolarisNfcContract",
+    "PolarisCameraContract",
+    "PolarisDisplayContract",
     "PolarisRuntime",
     "PolarisPmicRuntime",
     "PolarisHidInput",
@@ -43,6 +47,7 @@ FIRMWARE_NAMES = {
     "a630_zap.b00",
     "a630_zap.b01",
     "a630_zap.b02",
+    "a630_zap.elf",
     "bdwlan.bin",
     "wlanmdsp.mbn",
     "crbtfw20.tlv",
@@ -53,8 +58,15 @@ FIRMWARE_NAMES = {
     "com.qti.sensormodule.imx363.bin",
     "com.qti.tuned.semco_imx363.bin",
     "camera_icp.elf",
+    "camera_icp_aaaaaa.elf",
     "camera_icp.mbn",
 }
+
+# Android vendor partitions are commonly unpacked on a case-insensitive file
+# system, while the bundle is also generated on Linux CI.  Keep the canonical
+# names above for the manifest, but match extracted filenames case-insensitively
+# so files such as ``CAMERA_ICP.elf`` are not silently omitted from provenance.
+FIRMWARE_NAMES_CASEFOLD = {name.casefold() for name in FIRMWARE_NAMES}
 
 
 def sha256(path: Path) -> str:
@@ -99,7 +111,11 @@ def vendor_inventory(vendor_root: Path | None, out: Path, copy_vendor: bool) -> 
     if destination is not None:
         destination.mkdir(parents=True, exist_ok=True)
     entries: list[dict[str, Any]] = []
-    for path in sorted(p for p in vendor_root.rglob("*") if p.is_file() and p.name in FIRMWARE_NAMES):
+    copied_names: set[str] = set()
+    for path in sorted(
+        p for p in vendor_root.rglob("*")
+        if p.is_file() and p.name.casefold() in FIRMWARE_NAMES_CASEFOLD
+    ):
         record: dict[str, Any] = {
             "name": path.name,
             "source": relative(path, vendor_root),
@@ -109,7 +125,18 @@ def vendor_inventory(vendor_root: Path | None, out: Path, copy_vendor: bool) -> 
             "darwin_driver": False,
         }
         if destination is not None:
-            target = destination / path.name
+            target_name = path.name
+            # A vendor tree can contain the same basename in multiple
+            # partitions/directories (for example crnv20.bin).  Preserve all
+            # evidence files instead of silently overwriting an earlier copy.
+            if target_name.casefold() in copied_names:
+                target_name = f"{sha256(path)[:12]}-{path.name}"
+                suffix = 1
+                while target_name.casefold() in copied_names:
+                    target_name = f"{sha256(path)[:12]}-{suffix}-{path.name}"
+                    suffix += 1
+            copied_names.add(target_name.casefold())
+            target = destination / target_name
             shutil.copy2(path, target)
             record["path"] = target.relative_to(out).as_posix()
             record["copied"] = True
@@ -124,6 +151,7 @@ def build_bundle(output: Path, vendor_root: Path | None, copy_vendor: bool) -> d
     output.mkdir(parents=True)
     hardware_contract = ROOT / "research" / "polaris-hardware-contract.json"
     driver_matrix = ROOT / "research" / "polaris-driver-matrix.json"
+    a630_resources = ROOT / "research" / "polaris-a630-resources.json"
     woa_evidence = ROOT / "research" / "polaris-woa-evidence.json"
     manifest: dict[str, Any] = {
         "schema": 1,
@@ -134,6 +162,7 @@ def build_bundle(output: Path, vendor_root: Path | None, copy_vendor: bool) -> d
         "inputs": {
             "hardware_contract": hardware_contract.is_file(),
             "driver_matrix": driver_matrix.is_file(),
+            "a630_resources": a630_resources.is_file(),
             "woa_evidence": woa_evidence.is_file(),
             "vendor_root_supplied": vendor_root is not None and vendor_root.is_dir(),
             "vendor_binaries_copied": bool(copy_vendor),
@@ -160,6 +189,8 @@ def build_bundle(output: Path, vendor_root: Path | None, copy_vendor: bool) -> d
         shutil.copy2(hardware_contract, output / hardware_contract.name)
     if driver_matrix.is_file():
         shutil.copy2(driver_matrix, output / driver_matrix.name)
+    if a630_resources.is_file():
+        shutil.copy2(a630_resources, output / a630_resources.name)
     if woa_evidence.is_file():
         shutil.copy2(woa_evidence, output / woa_evidence.name)
     (output / "README.txt").write_text(

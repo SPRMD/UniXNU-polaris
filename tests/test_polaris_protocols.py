@@ -17,6 +17,7 @@ from drivers.PolarisProtocols.polaris_protocols import (
     permitted_spmi_read,
     qca_segment_request,
     qca_version_request,
+    h4_command,
     spmi_read_command,
     wlfw_bdf_accepted,
     wlfw_bdf_request,
@@ -26,6 +27,8 @@ from drivers.PolarisProtocols.polaris_protocols import (
 class PolarisProtocolTests(unittest.TestCase):
     def test_qca_version_and_h4_reader(self):
         self.assertEqual(qca_version_request(), bytes((1, 0, 0xFC, 1, 0x19)))
+        self.assertEqual(h4_command(0xFC00, (0x19,)),
+                         bytes((1, 0, 0xFC, 1, 0x19)))
         event = bytes((4, 0xFF, 14, 0, 2)) + (0x12345678).to_bytes(4, "little")
         event += (0x3456).to_bytes(2, "little") + (0x789A).to_bytes(2, "little")
         event += (0xABCDEF01).to_bytes(4, "little")
@@ -42,6 +45,10 @@ class PolarisProtocolTests(unittest.TestCase):
         self.assertEqual(len(qca_segment_request(bytes(243))), 249)
         with self.assertRaises(ProtocolError):
             qca_segment_request(bytes(244))
+        with self.assertRaises(ProtocolError):
+            h4_command(0x10000)
+        with self.assertRaises(ProtocolError):
+            h4_command(0xFC00, bytes(256))
         request = wlfw_bdf_request(bytes(range(32)), 0)
         self.assertEqual(request[:4], bytes((1, 1, 0, 1)))
         self.assertEqual(request[-4:], bytes((0x14, 1, 0, 1)))

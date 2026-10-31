@@ -35,6 +35,28 @@ def digest(path: Path) -> str:
     return h.hexdigest()
 
 
+def rewrite_package_sums(package: Path) -> None:
+    """Refresh the package checksum list after adding stage evidence files."""
+    entries: list[str] = []
+    for path in sorted(package.rglob("*")):
+        if path.is_file() and path.name != "SHA256SUMS":
+            entries.append(f"{digest(path)}  {path.relative_to(package).as_posix()}")
+    (package / "SHA256SUMS").write_text("\n".join(entries) + "\n", encoding="ascii")
+
+
+def require_distinct_images(os_path: Path, system_os_path: Path) -> None:
+    """Reject accidentally reusing the OS image as SystemOS.
+
+    The iPadOS restore manifest names these as separate APFS volumes.  Keeping
+    this check here makes a workflow typo fail before any extraction or
+    userdata assembly, even when both paths happen to exist.
+    """
+    if os_path.resolve() == system_os_path.resolve():
+        raise SystemExit("OS and SystemOS inputs must be different files")
+    if digest(os_path) == digest(system_os_path):
+        raise SystemExit("OS and SystemOS inputs must have different content")
+
+
 def require_raw_apfs(path: Path) -> dict[str, int]:
     with path.open("rb") as stream:
         header = stream.read(48)
@@ -80,6 +102,21 @@ def normalize_apfs_input(path: Path, workdir: Path) -> tuple[Path, dict[str, int
         return raw, require_raw_apfs(raw)
 
 
+def require_distinct_apfs_images(os_image: Path, system_os_image: Path) -> None:
+    """Reject an accidental OS/SystemOS alias or duplicate image.
+
+    iPadOS keeps the platform OS volume and the SystemOS cryptex in separate
+    APFS containers.  Passing the same member for both inputs can still make
+    an apparently well-formed SHNGROOT image, so fail before any userdata
+    assembly when the normalized files alias or have identical contents.
+    """
+    if os_image.resolve() == system_os_image.resolve():
+        raise SystemExit("OS and SystemOS inputs must be different APFS images")
+    if (os_image.stat().st_size == system_os_image.stat().st_size and
+            digest(os_image) == digest(system_os_image)):
+        raise SystemExit("OS and SystemOS inputs have identical contents")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--kernel", type=Path, required=True,
@@ -100,13 +137,26 @@ def main() -> int:
                         help="output directory for the stage")
     parser.add_argument("--package", type=Path,
                         help="optional guarded package directory")
+    parser.add_argument("--driver-bundle", type=Path,
+                        help="optional local source/firmware provenance bundle")
+    parser.add_argument("--input-hash-report", type=Path,
+                        help="optional SHA-256 report from check-ios-stage-inputs.py")
     args = parser.parse_args()
 
+    if args.driver_bundle and not args.driver_bundle.exists():
+        parser.error(f"driver bundle not found: {args.driver_bundle}")
+    if args.input_hash_report and not args.input_hash_report.is_file():
+        parser.error(f"input hash report not found: {args.input_hash_report}")
     paths = [args.kernel, args.adt, args.efi, args.static_trust, args.system_trust,
              args.os, args.system_os]
+    if args.driver_bundle:
+        paths.append(args.driver_bundle)
+    if args.input_hash_report:
+        paths.append(args.input_hash_report)
     missing = [str(path) for path in paths if not path.exists()]
     if missing:
         parser.error("missing input(s): " + ", ".join(missing))
+    require_distinct_images(args.os, args.system_os)
     out = args.out.resolve()
     if out.exists():
         shutil.rmtree(out)
@@ -115,6 +165,7 @@ def main() -> int:
     os_image, os_geometry = normalize_apfs_input(args.os, out / "raw-inputs")
     system_os_image, system_os_geometry = normalize_apfs_input(
         args.system_os, out / "raw-inputs")
+    require_distinct_apfs_images(os_image, system_os_image)
 
     trust = out / "trust.bundle"
     run("make-trust-bundle.py", ["--static", str(args.static_trust),
@@ -124,7 +175,8 @@ def main() -> int:
     esp_image = out / "esp.img"
     run("make-ios-esp.py", ["--kernel", str(args.kernel), "--adt", str(args.adt),
                              "--trust", str(trust), "--efi", str(args.efi),
-                             "--out", str(esp_image), "--tree", str(esp_tree)])
+                             "--out", str(esp_image), "--tree", str(esp_tree),
+                             "--ipados-stage"])
 
     darwin_root = out / "darwin-root.img"
     run("make-userdata-linux.py", ["--os", str(os_image), "--system-os", str(system_os_image),
@@ -168,6 +220,19 @@ def main() -> int:
             "Do not change flashable to true without an independent temporary-boot report.",
         ],
     }
+    if args.input_hash_report:
+        try:
+            hash_report = json.loads(args.input_hash_report.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            parser.error(f"invalid input hash report: {error}")
+        if hash_report.get("verified") is not True:
+            parser.error("input hash report is not marked verified")
+        shutil.copy2(args.input_hash_report, out / "ios-input-hashes.json")
+        manifest["inputs"]["ios_hash_report"] = {
+            "path": "ios-input-hashes.json",
+            "bytes": (out / "ios-input-hashes.json").stat().st_size,
+            "sha256": digest(out / "ios-input-hashes.json"),
+        }
     (out / "ios-stage-manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -175,11 +240,17 @@ def main() -> int:
         package = args.package.resolve()
         if package.exists():
             shutil.rmtree(package)
-        run("make-polaris-package.py", ["--esp", str(esp_tree), "--esp-image", str(esp_image),
-                                         "--kernel", str(args.kernel), "--darwin-root",
-                                         str(darwin_root), "--out", str(package)])
+        package_args = ["--esp", str(esp_tree), "--esp-image", str(esp_image),
+                        "--kernel", str(args.kernel), "--darwin-root",
+                        str(darwin_root), "--out", str(package)]
+        if args.driver_bundle:
+            package_args.extend(["--driver-bundle", str(args.driver_bundle)])
+        run("make-polaris-package.py", package_args)
+        if args.input_hash_report:
+            shutil.copy2(out / "ios-input-hashes.json", package / "ios-input-hashes.json")
         (package / "ios-stage-manifest.json").write_text(
             json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        rewrite_package_sums(package)
     print(f"assembled experimental Polaris iOS stage: {out}")
     print("flashable=false; no phone access performed")
     return 0

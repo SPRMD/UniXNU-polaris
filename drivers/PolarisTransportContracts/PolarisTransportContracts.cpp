@@ -12,6 +12,7 @@
 
 #include "PolarisCciProtocol.h"
 #include "PolarisNci.h"
+#include "PolarisProtocolSelfTest.h"
 #include "PolarisQcaProtocol.h"
 #include "PolarisPmicProtocol.h"
 #include "PolarisWlfwProtocol.h"
@@ -19,6 +20,8 @@
 extern "C" {
 volatile uint32_t polaris_transport_contract_started = 0;
 volatile uint32_t polaris_transport_contract_io = 0;
+volatile uint32_t polaris_transport_self_test_passed = 0;
+volatile uint32_t polaris_transport_self_test_failed = 0;
 }
 
 namespace {
@@ -92,10 +95,20 @@ public:
                 "polaris-wireless-runtime=1");
     setProperty("polaris-transport-darwin-driver-ready", false);
     setProperty("polaris-transport-runtime-gate", "polaris-transport-probe=1");
+    const PolarisTransportSelfTest::Result selfTest = PolarisTransportSelfTest::run();
+    polaris_transport_self_test_passed = selfTest.passed;
+    polaris_transport_self_test_failed = selfTest.failed;
+    setProperty("polaris-transport-self-test-mask", selfTest.passed, 32);
+    setProperty("polaris-transport-self-test-failures", selfTest.failed, 32);
+    setProperty("polaris-transport-self-test-passed",
+                selfTest.failed == 0 && selfTest.passed == PolarisTransportSelfTest::kAll);
+    setProperty("polaris-transport-self-test-scope",
+                "QCA H4/NCI/CCI/WLFW codec vectors only; no hardware I/O");
     setName("PolarisTransportContracts");
     registerService();
     polaris_transport_contract_started = 1;
-    IOLog("PolarisTransportContracts: protocol cores published; I/O=0\n");
+    IOLog("PolarisTransportContracts: protocol cores published; selftest=%#x failures=%#x; I/O=0\n",
+          selfTest.passed, selfTest.failed);
     return true;
   }
 };

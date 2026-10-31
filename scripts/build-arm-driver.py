@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs', 'PolarisBoardProbe', 'PolarisHardwareServices', 'PolarisPmicInput', 'PolarisPmicRuntime', 'PolarisSynapticsTouch', 'PolarisTransportContracts', 'PolarisA630Probe', 'PolarisRuntime', 'NativeMobileDisplay'])
+    parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs', 'PolarisBoardProbe', 'PolarisHardwareServices', 'PolarisPmicInput', 'PolarisPmicRuntime', 'PolarisSynapticsTouch', 'PolarisTransportContracts', 'PolarisPeripheralContracts', 'PolarisNfcContract', 'PolarisCameraContract', 'PolarisA630Probe', 'PolarisDisplayContract', 'PolarisRuntime', 'NativeMobileDisplay'])
     args = parser.parse_args()
     output_names = {
         'ArmCpu': ('armcpu', 'ArmCpu', 'ArmCpu'),
@@ -29,7 +29,11 @@ def main():
         'PolarisPmicRuntime': ('polaris-pmic-runtime', 'PolarisPmicRuntime', 'PolarisPmicRuntime'),
         'PolarisSynapticsTouch': ('polaris-synaptics-touch', 'PolarisSynapticsTouch', 'PolarisSynapticsTouch'),
         'PolarisTransportContracts': ('polaris-transport-contracts', 'PolarisTransportContracts', 'PolarisTransportContracts'),
+        'PolarisPeripheralContracts': ('polaris-peripheral-contracts', 'PolarisPeripheralContracts', 'PolarisPeripheralContracts'),
+        'PolarisNfcContract': ('polaris-nfc-contract', 'PolarisNfcContract', 'PolarisNfcContract'),
+        'PolarisCameraContract': ('polaris-camera-contract', 'PolarisCameraContract', 'PolarisCameraContract'),
         'PolarisA630Probe': ('polaris-a630-probe', 'PolarisA630Probe', 'PolarisA630Probe'),
+        'PolarisDisplayContract': ('polaris-display-contract', 'PolarisDisplayContract', 'PolarisDisplayContract'),
         'PolarisRuntime': ('polaris-runtime', 'PolarisRuntime', 'PolarisRuntime'),
         # The Darwin 23 link script consumes the late display archive. The
         # Polaris stage only uses the read-only GOP metadata adapter; it does

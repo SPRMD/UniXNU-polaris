@@ -118,29 +118,93 @@ def write_guarded_flash_ps1(path: Path) -> None:
             $ErrorActionPreference = 'Stop'
             $root = Split-Path -Parent $MyInvocation.MyCommand.Path
             $manifest = Get-Content -Raw -LiteralPath (Join-Path $root 'manifest.json') | ConvertFrom-Json
+            $sumsPath = Join-Path $root 'SHA256SUMS'
+            if (-not (Test-Path -LiteralPath $sumsPath -PathType Leaf)) {
+                Write-Error 'Missing SHA256SUMS; refusing to flash.'
+                exit 2
+            }
+            foreach ($line in Get-Content -LiteralPath $sumsPath) {
+                if ([string]::IsNullOrWhiteSpace($line)) { continue }
+                if ($line -notmatch '^(?<hash>[0-9a-fA-F]{64})  (?<relative>.+)$') {
+                    Write-Error "Invalid SHA256SUMS line: $line"
+                    exit 2
+                }
+                $relative = $Matches.relative
+                if ([IO.Path]::IsPathRooted($relative) -or $relative -match '(^|[\\/])\.\.([\\/]|$)') {
+                    Write-Error "Unsafe checksum path: $relative"
+                    exit 2
+                }
+                $target = Join-Path $root ($relative -replace '/', [IO.Path]::DirectorySeparatorChar)
+                if (-not (Test-Path -LiteralPath $target -PathType Leaf)) {
+                    Write-Error "Checksum target is missing: $relative"
+                    exit 2
+                }
+                $actual = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+                if ($actual -ne $Matches.hash.ToLowerInvariant()) {
+                    Write-Error "SHA-256 mismatch: $relative"
+                    exit 2
+                }
+            }
+            # SHA256SUMS protects the package file set; the manifest input
+            # records protect the files that the installer is about to use.
+            # Check both independently before looking for a device.
+            if ($null -eq $manifest.inputs) {
+                Write-Error 'Manifest has no inputs object; refusing to flash.'
+                exit 2
+            }
+            foreach ($property in $manifest.inputs.PSObject.Properties) {
+                $fact = $property.Value
+                if ($null -eq $fact -or -not [bool]$fact.present) { continue }
+                $relative = [string]$fact.path
+                if ([string]::IsNullOrWhiteSpace($relative) -or
+                    [IO.Path]::IsPathRooted($relative) -or
+                    $relative -match '(^|[\\/])\.\.([\\/]|$)' -or
+                    $relative -match '^[A-Za-z]:') {
+                    Write-Error "Unsafe manifest input path: $relative"
+                    exit 2
+                }
+                $target = Join-Path $root ($relative -replace '/', [IO.Path]::DirectorySeparatorChar)
+                if (-not (Test-Path -LiteralPath $target)) {
+                    Write-Error "Manifest input is missing: $($property.Name) -> $relative"
+                    exit 2
+                }
+                if ($fact.sha256 -and (Test-Path -LiteralPath $target -PathType Leaf)) {
+                    $actual = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
+                    if ($actual -ne ([string]$fact.sha256).ToLowerInvariant()) {
+                        Write-Error "Manifest input SHA-256 mismatch: $($property.Name)"
+                        exit 2
+                    }
+                }
+            }
+            Write-Host 'SHA-256 package verification passed.'
+            if ($null -eq $manifest.safe_to_flash -or
+                [bool]$manifest.safe_to_flash -ne [bool]$manifest.flashable) {
+                Write-Error 'Manifest flash gates are inconsistent; refusing to flash.'
+                exit 3
+            }
             if (-not [bool]$manifest.flashable) {
                 Write-Error 'This package is evidence-only and is not flashable. Review manifest.json for the open gates.'
-                exit 3
+                exit 4
             }
             if (-not (Get-Command fastboot.exe -ErrorAction SilentlyContinue)) {
                 Write-Error 'fastboot.exe was not found in PATH.'
-                exit 4
+                exit 5
             }
             $device = @( & fastboot.exe devices 2>$null | Where-Object { $_ -match '\S+\s+fastboot' } )
             if ($device.Count -ne 1) {
                 Write-Error "Expected exactly one fastboot device; found $($device.Count)."
-                exit 5
+                exit 6
             }
             $product = (& fastboot.exe getvar product 2>&1 | Out-String)
             if ($product -notmatch 'product:\s*polaris') {
                 Write-Error 'Connected device is not polaris.'
-                exit 6
+                exit 7
             }
             $userdata = $manifest.inputs.userdata.path
-            if (-not $userdata) { Write-Error 'Manifest has no userdata image.'; exit 7 }
+            if (-not $userdata) { Write-Error 'Manifest has no userdata image.'; exit 8 }
             $userdataPath = Join-Path $root $userdata
             if (-not (Test-Path -LiteralPath $userdataPath -PathType Leaf)) {
-                Write-Error "Missing userdata image: $userdataPath"; exit 8
+                Write-Error "Missing userdata image: $userdataPath"; exit 9
             }
             $firmwarePath = $null
             if ($manifest.inputs.firmware.path) {
@@ -153,7 +217,7 @@ def write_guarded_flash_ps1(path: Path) -> None:
                         Select-Object -First 1 -ExpandProperty FullName
                 }
             }
-            if (-not $firmwarePath) { Write-Error 'Manifest has no boot firmware image.'; exit 9 }
+            if (-not $firmwarePath) { Write-Error 'Manifest has no boot firmware image.'; exit 10 }
             $darwinPath = $null
             if ($manifest.inputs.darwin_root.path) {
                 $candidate = Join-Path $root $manifest.inputs.darwin_root.path
@@ -162,7 +226,7 @@ def write_guarded_flash_ps1(path: Path) -> None:
                 }
             }
             if ($manifest.inputs.darwin_root.present -and -not $darwinPath) {
-                Write-Error 'Manifest declares a darwin root image but it is missing.'; exit 10
+                Write-Error 'Manifest declares a darwin root image but it is missing.'; exit 11
             }
             if ($darwinPath) {
                 Write-Host 'Flashing the qualified darwin root image...'
@@ -248,11 +312,14 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
                 validation_report.get("board") == "xiaomi,polaris"
                 and validation_report.get("hardware_tested") is True
                 and validation_report.get("temporary_boot") is True
+                and validation_report.get("userland_booted") is True
             )
         except (OSError, json.JSONDecodeError):
             blockers.append("device validation report is not valid JSON")
     if device_validation and device_validation.is_file() and not validation_ok:
         blockers.append("device validation report does not attest a temporary Polaris boot")
+        if validation_report is not None and validation_report.get("userland_booted") is not True:
+            blockers.append("device validation report does not attest a userland boot")
 
     flashable = not blockers
     if output.exists():
@@ -265,9 +332,14 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
     if report.is_file():
         shutil.copy2(report, output / "kernel.json")
     firmware_target: Path | None = None
+    firmware_provenance_target: Path | None = None
     if firmware and firmware.is_file():
         firmware_target = output / firmware.name
         shutil.copy2(firmware, firmware_target)
+        provenance_path = firmware.with_name("firmware-provenance.json")
+        if provenance_path.is_file():
+            firmware_provenance_target = output / provenance_path.name
+            shutil.copy2(provenance_path, firmware_provenance_target)
     elif firmware and firmware.is_dir():
         firmware_target = output / "firmware"
         copy_tree(firmware, firmware_target)
@@ -295,12 +367,20 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
         "target": "UniXNU Darwin 23 / iPadOS 17 ABI research",
         "flashable": flashable,
         "safe_to_flash": flashable,
+        "hardware_tested": bool(validation_report and
+                                 validation_report.get("hardware_tested") is True),
+        "temporary_boot_tested": bool(validation_report and
+                                       validation_report.get("temporary_boot") is True),
+        "userland_tested": bool(validation_report and
+                                 validation_report.get("userland_booted") is True),
         "device_access": {"adb": False, "fastboot": False, "partition_writes": False},
         "inputs": {
             "esp": file_fact(output / "esp", package_root=output),
             "esp_image": file_fact(output / "esp.img", package_root=output),
             "kernel": file_fact(output / "kernel.macho", package_root=output),
             "firmware": file_fact(firmware_target, package_root=output) if firmware_target else {"present": False},
+            "firmware_provenance": file_fact(firmware_provenance_target, package_root=output)
+            if firmware_provenance_target else {"present": False},
             "userdata": file_fact(output / userdata.name, package_root=output) if userdata and userdata.is_file() else {"present": False},
             "darwin_root": file_fact(output / darwin_root.name, package_root=output) if darwin_root and darwin_root.is_file() else {"present": False},
         },
@@ -330,17 +410,17 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
     write_guarded_flash_cmd(output / "flash.cmd")
     write_guarded_flash_ps1(output / "flash.ps1")
 
-    entries: list[str] = []
-    for path in sorted(output.rglob("*")):
-        if path.is_file() and path.name != "SHA256SUMS":
-            entries.append(f"{sha256(path)}  {path.relative_to(output).as_posix()}")
-    (output / "SHA256SUMS").write_text("\n".join(entries) + "\n", encoding="ascii")
     (output / "README.txt").write_text(
         "This is a guarded Polaris UniXNU package.\n"
         f"flashable={str(flashable).lower()}\n"
         "Run flash.cmd only after reviewing manifest.json; the current build refuses to flash when any gate is open.\n",
         encoding="utf-8",
     )
+    entries: list[str] = []
+    for path in sorted(output.rglob("*")):
+        if path.is_file() and path.name != "SHA256SUMS":
+            entries.append(f"{sha256(path)}  {path.relative_to(output).as_posix()}")
+    (output / "SHA256SUMS").write_text("\n".join(entries) + "\n", encoding="ascii")
     return manifest
 
 

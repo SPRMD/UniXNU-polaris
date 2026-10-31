@@ -14,6 +14,17 @@ The repository now has a host-only assembly path for the experimental iPadOS
    the separate `darwin` partition while the ESP remains in `userdata`.
 5. `build-ios-stage.py` joins those outputs and can pass them to
    `make-polaris-package.py`.
+6. `check-polaris-package.py --package <dir>` independently verifies every
+   packaged file against `SHA256SUMS` and cross-checks the guarded manifest.
+7. `check-polaris-driver-bundle.py --bundle <dir> --source-root <repo>` verifies
+   the source inventory, copied firmware evidence and the bundle's closed
+   flash and hardware gates.
+
+The iPadOS ESP entry requests `polaris-touch-hid=1`, `polariskeys=1` and
+`polarisbattery=1` explicitly. The ordinary platform ESP does not request
+those experimental services; each service remains fail-closed at runtime.
+The stage workflow also carries a metadata-only Polaris driver bundle into
+the guarded package so its source hashes and open gates travel with the image.
 
 Every generated package remains `flashable=false` until an independent
 temporary-boot report proves that the exact kernel, ADT, UFS root handoff and

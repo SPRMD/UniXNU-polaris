@@ -69,9 +69,13 @@ jobs:
           python3 scripts/make-polaris-driver-bundle.py \
             --out out/host-tests/polaris-driver-bundle \
             --vendor-root out/WOA-Drivers
+          python3 scripts/check-polaris-driver-bundle.py \
+            --bundle out/host-tests/polaris-driver-bundle \
+            --source-root .
 
       - name: Run repository checks
         run: |
+          python3 scripts/check-workflow-routing.py
           python3 -m unittest discover -s tests -v
           python3 scripts/check-host.py
           python3 scripts/check-polaris-driver-contract.py \
@@ -89,6 +93,22 @@ jobs:
             tests/polaris_pmic_input_test.cpp \
             -o out/host-tests/polaris_pmic_input_test
           out/host-tests/polaris_pmic_input_test
+          clang -std=c11 -Wall -Wextra -Werror \
+            tests/polaris_a630_policy_test.c \
+            -o out/host-tests/polaris_a630_policy_test
+          out/host-tests/polaris_a630_policy_test
+          clang -std=c11 -Wall -Wextra -Werror \
+            tests/polaris_display_panel_test.c \
+            -o out/host-tests/polaris_display_panel_test
+          out/host-tests/polaris_display_panel_test
+          clang -std=c11 -Wall -Wextra -Werror \
+            tests/polaris_nfc_policy_test.c \
+            -o out/host-tests/polaris_nfc_policy_test
+          out/host-tests/polaris_nfc_policy_test
+          clang -std=c11 -Wall -Wextra -Werror \
+            tests/polaris_camera_policy_test.c \
+            -o out/host-tests/polaris_camera_policy_test
+          out/host-tests/polaris_camera_policy_test
           clang -std=c11 -Wall -Wextra -Werror \
             tests/polaris_geni_i2c_host.c \
             drivers/PolarisGeniI2c/PolarisGeniI2c.c \
@@ -205,7 +225,11 @@ jobs:
             out/native/polaris/build/polaris-synaptics-touch/
             out/native/polaris/build/polaris-touch-runtime/
             out/native/polaris/build/polaris-transport-contracts/
+            out/native/polaris/build/polaris-peripheral-contracts/
+            out/native/polaris/build/polaris-nfc-contract/
+            out/native/polaris/build/polaris-camera-contract/
             out/native/polaris/build/polaris-a630-probe/
+            out/native/polaris/build/polaris-display-contract/
             out/native/polaris/build/polaris-runtime/
             out/native/polaris/tree/build/gop-framebuffer/
             out/native/ipsw/
@@ -304,6 +328,11 @@ jobs:
           name: polaris-firmware
           path: out/firmware
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: host-reports
+          path: out/host
+
       - name: Install packaging and QEMU tools
         run: |
           sudo apt-get update
@@ -311,7 +340,9 @@ jobs:
 
       - name: Validate kernel and assemble ESP directory
         run: |
-          KERNEL=$(find out/kernel -type f -name kernel-prelinked.macho -print -quit)
+          # The ordinary platform package consumes the plain source kernel.
+          # The iPadOS-stage job below selects kernel-prelinked.macho instead.
+          KERNEL=$(find out/kernel -type f -name kernel.macho -print -quit)
           test -n "$KERNEL"
           cp "$KERNEL" out/kernel.macho
           cp "${KERNEL%.macho}.json" out/kernel.json
@@ -337,8 +368,11 @@ jobs:
             --esp-image esp.img \
             --kernel out/kernel.macho \
             --firmware out/firmware \
+            --driver-bundle out/host/polaris-driver-bundle \
             --out out/polaris-one-click
+          python3 scripts/check-polaris-package.py --package out/polaris-one-click
           test "$(python3 -c 'import json; print(json.load(open("out/polaris-one-click/manifest.json"))["flashable"])')" = "False"
+          (cd out/polaris-one-click && sha256sum -c SHA256SUMS)
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -381,6 +415,11 @@ jobs:
           name: polaris-firmware
           path: out/firmware
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: host-reports
+          path: out/host
+
       - name: Install iOS-stage tools
         run: |
           sudo apt-get update
@@ -389,7 +428,10 @@ jobs:
 
       - name: Normalize build artifacts
         run: |
-          KERNEL=$(find out/kernel -type f -name kernel.macho -print -quit)
+          # The iPadOS stage requires the separate prelinked image. The plain
+          # source kernel intentionally lacks the original iPadOS components
+          # and is rejected by build-ios-stage.py.
+          KERNEL=$(find out/kernel -type f -name kernel-prelinked.macho -print -quit)
           test -n "$KERNEL"
           mkdir -p out/ios-inputs
           cp "$KERNEL" out/ios-inputs/kernel.macho
@@ -404,6 +446,12 @@ jobs:
           test -f out/ios-inputs/044-76034-038.dmg
           test -f out/ios-inputs/044-76040-038.dmg.trustcache
           test -f out/ios-inputs/044-76034-038.dmg.trustcache
+          python3 scripts/check-ios-stage-inputs.py \
+            --root out/kernel \
+            --output out/ios-inputs/ipsw-inputs.json
+          python3 scripts/check-ios-stage-inputs.py \
+            --root out/ios-inputs \
+            --output out/ios-inputs/ios-input-hashes.json
 
       - name: Generate Polaris iPad identity ADT
         run: |
@@ -423,13 +471,18 @@ jobs:
             --os out/ios-inputs/044-76040-038.dmg \
             --system-os out/ios-inputs/044-76034-038.dmg \
             --out out/ios-stage \
-            --package out/polaris-ios-one-click
+            --package out/polaris-ios-one-click \
+            --driver-bundle out/host/polaris-driver-bundle \
+            --input-hash-report out/ios-inputs/ios-input-hashes.json
+          python3 scripts/check-polaris-package.py --package out/polaris-ios-one-click
           test "$(python3 -c 'import json; print(json.load(open("out/polaris-ios-one-click/manifest.json"))["flashable"])')" = "False"
+          (cd out/polaris-ios-one-click && sha256sum -c SHA256SUMS)
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: polaris-ios-stage
           path: |
+            out/ios-inputs/ipsw-inputs.json
             out/ios-stage/
             out/polaris-ios-one-click/

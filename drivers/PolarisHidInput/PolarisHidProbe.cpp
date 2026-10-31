@@ -23,7 +23,7 @@
 
 extern "C" kern_return_t kernel_thread_start(void (*)(void *, wait_result_t), void *, thread_t *);
 extern "C" void thread_deallocate(thread_t);
-extern kmod_info_t g_kernel_kmod_info;
+extern "C" kmod_info_t g_kernel_kmod_info;
 extern "C" void polaris_hid_static_init(void) __asm__("__GLOBAL__sub_I_PolarisHidInput.cpp");
 extern "C" IOService *polaris_hid_input_allocate(void);
 extern "C" IOService *polaris_hid_touch_allocate(void);

@@ -23,6 +23,14 @@ extern "C" void polaris_synaptics_touch_static_init(void)
     __asm__("__GLOBAL__sub_I_PolarisSynapticsTouch.cpp");
 extern "C" void polaris_transport_contracts_static_init(void)
     __asm__("__GLOBAL__sub_I_PolarisTransportContracts.cpp");
+extern "C" void polaris_peripheral_contracts_static_init(void)
+    __asm__("__GLOBAL__sub_I_PolarisPeripheralContracts.cpp");
+extern "C" void polaris_nfc_contract_static_init(void)
+    __asm__("__GLOBAL__sub_I_PolarisNfcContract.cpp");
+extern "C" void polaris_camera_contract_static_init(void)
+    __asm__("__GLOBAL__sub_I_PolarisCameraContract.cpp");
+extern "C" void polaris_display_contract_static_init(void)
+    __asm__("__GLOBAL__sub_I_PolarisDisplayContract.cpp");
 extern "C" void polaris_a630_probe_static_init(void)
     __asm__("__GLOBAL__sub_I_PolarisA630Probe.cpp");
 // The iPadOS-stage HID bridge is built only when XNU_POLARIS_HID_INPUT is
@@ -76,6 +84,10 @@ static bool initLinkedClasses(void)
   polaris_pmic_runtime_static_init();
   polaris_synaptics_touch_static_init();
   polaris_transport_contracts_static_init();
+  polaris_peripheral_contracts_static_init();
+  polaris_nfc_contract_static_init();
+  polaris_camera_contract_static_init();
+  polaris_display_contract_static_init();
   polaris_a630_probe_static_init();
   if (OSMetaClass::postModLoad(handle) != kOSReturnSuccess) return false;
   gMetaInitialized = true;
@@ -113,6 +125,13 @@ static bool startService(const char *className, IOService *provider)
   return true;
 }
 
+static bool bootArgEnabled(const char *name)
+{
+  unsigned enabled = 0;
+  return name != nullptr &&
+         PE_parse_boot_argn(name, &enabled, sizeof(enabled)) && enabled == 1;
+}
+
 } // namespace
 
 extern "C" void polaris_runtime_start(IOService *platform)
@@ -144,6 +163,15 @@ extern "C" void polaris_runtime_start(IOService *platform)
   optional = 0;
   if (PE_parse_boot_argn("polarisbattery", &optional, sizeof(optional)) && optional == 1)
     (void)startService("PolarisBatteryRuntime", provider);
+  optional = 0;
+  if (PE_parse_boot_argn("polaris-peripheral-probe", &optional, sizeof(optional)) && optional == 1)
+    (void)startService("PolarisPeripheralContracts", provider);
+  if (bootArgEnabled("polaris-nfc-probe"))
+    (void)startService("PolarisNfcContract", provider);
+  if (bootArgEnabled("polaris-camera-probe"))
+    (void)startService("PolarisCameraContract", provider);
+  if (bootArgEnabled("polaris-display-probe"))
+    (void)startService("PolarisDisplayContract", provider);
   if (&polaris_hid_touch_start) polaris_hid_touch_start();
   if (provider != platformService) provider->release();
   IOLog("PolarisRuntime: started=%u failed=%u\n",

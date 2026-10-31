@@ -28,8 +28,23 @@ id = "ios"
 title = "polaris: iPadOS 17 userland"
 type = "xnu"
 path = "Payloads/kernel.macho"
-args = "-v serial=0 debug=0x14e kt_fixed_zones=120 cpus=1 native-ufs-root=1 polaris-runtime=1 polaris-board-probe=1 polaris-hw-probe=1 polaris-pmic-input=1 polaris-rmi4-touch=1 polaris-transport-probe=1 polaris-a630-probe=1 -no_slto_panic"
+args = "-v serial=0 debug=0x14e kt_fixed_zones=120 cpus=1 native-ufs-root=1 polaris-runtime=1 polaris-board-probe=1 polaris-hw-probe=1 polaris-pmic-input=1 polaris-rmi4-touch=1 polaris-transport-probe=1 polaris-peripheral-probe=1 polaris-nfc-probe=1 polaris-camera-probe=1 polaris-a630-probe=1 polaris-display-probe=1 -no_slto_panic"
 '''
+
+
+def render_toml(ipados_stage: bool) -> str:
+    """Render the boot entry, enabling experimental input only for iPadOS.
+
+    The ordinary platform image remains a read-only bring-up profile. The
+    iPadOS stage has the pinned IOHID bridge and the revision-gated PMIC
+    services linked, so it may request them explicitly; each service still
+    fails closed if its runtime contract is absent.
+    """
+    if not ipados_stage:
+        return TOML
+    extra = " polaris-touch-hid=1 polariskeys=1 polarisbattery=1"
+    return TOML.replace("polaris-display-probe=1 -no_slto_panic",
+                        "polaris-display-probe=1" + extra + " -no_slto_panic")
 
 
 def main():
@@ -41,6 +56,8 @@ def main():
     parser.add_argument('--out', type=Path, default=ROOT / 'out/ios-esp/ios-esp.img')
     parser.add_argument('--tree', type=Path,
                         help='optional directory copy of the exact FAT tree used for the image')
+    parser.add_argument('--ipados-stage', action='store_true',
+                        help='request the experimental HID, key and battery services')
     args = parser.parse_args()
 
     efi = args.efi.resolve()
@@ -78,7 +95,7 @@ def main():
             target = tree / name
             target.parent.mkdir(parents=True, exist_ok=True)
             if path is None:
-                target.write_text(TOML, encoding='utf-8')
+                target.write_text(render_toml(args.ipados_stage), encoding='utf-8')
             else:
                 shutil.copyfile(path, target)
     subprocess.run(['truncate', '-s', '256M', str(out)], check=True)
@@ -95,7 +112,8 @@ def main():
     for name, path in files.items():
         target = f'::{name}'
         if path is None:
-            subprocess.run(['mcopy', '-i', str(out), '-', target], input=TOML.encode(), check=True)
+            subprocess.run(['mcopy', '-i', str(out), '-', target],
+                           input=render_toml(args.ipados_stage).encode(), check=True)
         else:
             subprocess.run(['mcopy', '-i', str(out), str(path), target], check=True)
     listing = subprocess.run(['mdir', '-i', str(out), '-/', '::'], capture_output=True, text=True, check=True).stdout
@@ -104,6 +122,8 @@ def main():
               'kernel_sha256': hashlib.sha256(args.kernel.read_bytes()).hexdigest(),
               'trust_sha256': hashlib.sha256(args.trust.read_bytes()).hexdigest(),
               'tree': str(tree) if tree else None,
+              'boot_profile': 'ipados-stage' if args.ipados_stage else 'platform',
+              'experimental_input_services': bool(args.ipados_stage),
               'flash_command': f'fastboot flash <esp-partition> {out}'}
     out.with_suffix('.json').write_text(json.dumps(report, indent=2) + '\n')
     print('done:', out)

@@ -150,7 +150,11 @@ def main():
         ctx.tree / 'build/polaris-synaptics-touch/libPolarisSynapticsTouch.a',
         ctx.tree / 'build/polaris-touch-runtime/libPolarisTouchRuntime.a',
         ctx.tree / 'build/polaris-transport-contracts/libPolarisTransportContracts.a',
+        ctx.tree / 'build/polaris-peripheral-contracts/libPolarisPeripheralContracts.a',
+        ctx.tree / 'build/polaris-nfc-contract/libPolarisNfcContract.a',
+        ctx.tree / 'build/polaris-camera-contract/libPolarisCameraContract.a',
         ctx.tree / 'build/polaris-a630-probe/libPolarisA630Probe.a',
+        ctx.tree / 'build/polaris-display-contract/libPolarisDisplayContract.a',
         ctx.tree / 'build/polaris-runtime/libPolarisRuntime.a',
     ]
     if hid_enabled:

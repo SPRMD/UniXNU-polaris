@@ -13,6 +13,8 @@
 #include <pexpert/pexpert.h>
 #include <stdint.h>
 #include <string.h>
+#include "PolarisA630Board.h"
+#include "PolarisA630Policy.h"
 
 namespace {
 
@@ -44,6 +46,18 @@ static uint32_t be32(const uint8_t *p)
 {
   return (uint32_t(p[0]) << 24) | (uint32_t(p[1]) << 16) |
          (uint32_t(p[2]) << 8) | uint32_t(p[3]);
+}
+
+static bool readBe32Property(IORegistryEntry *entry, const char *name,
+                             uint32_t *value)
+{
+  if (entry == nullptr || name == nullptr || value == nullptr) return false;
+  OSData *data = OSDynamicCast(OSData, entry->getProperty(name));
+  if (data == nullptr || data->getBytesNoCopy() == nullptr ||
+      data->getLength() < sizeof(uint32_t)) return false;
+  const uint8_t *bytes = static_cast<const uint8_t *>(data->getBytesNoCopy());
+  *value = be32(bytes + data->getLength() - sizeof(uint32_t));
+  return true;
 }
 
 static unsigned readRanges(IORegistryEntry *entry, Range *out, unsigned capacity)
@@ -128,13 +142,69 @@ public:
     IORegistryEntry *gpu = nodeAt("/soc/qcom,kgsl-3d0@5000000");
     IORegistryEntry *gmu = nodeAt("/soc/qcom,gmu");
     IORegistryEntry *smmu = nodeAt("/soc/arm,smmu-kgsl@5040000");
-    Range ranges[4] = {};
-    unsigned gpuCount = readRanges(gpu, ranges, 4);
-    publishRange(this, "gpu", ranges, gpuCount);
-    unsigned gmuCount = readRanges(gmu, ranges, 4);
-    publishRange(this, "gmu", ranges, gmuCount);
-    unsigned smmuCount = readRanges(smmu, ranges, 4);
-    publishRange(this, "smmu", ranges, smmuCount);
+    Range gpuRanges[4] = {};
+    Range gmuRanges[4] = {};
+    Range smmuRanges[4] = {};
+    unsigned gpuCount = readRanges(gpu, gpuRanges, 4);
+    publishRange(this, "gpu", gpuRanges, gpuCount);
+    unsigned gmuCount = readRanges(gmu, gmuRanges, 4);
+    publishRange(this, "gmu", gmuRanges, gmuCount);
+    unsigned smmuCount = readRanges(smmu, smmuRanges, 4);
+    publishRange(this, "smmu", smmuRanges, smmuCount);
+
+    uint32_t dtChipId = 0;
+    uint32_t dtHighestBankBit = 0;
+    const bool dtChipIdPresent = readBe32Property(gpu, "qcom,chipid", &dtChipId);
+    const bool dtHighestBankBitPresent =
+        readBe32Property(gpu, "qcom,highest-bank-bit", &dtHighestBankBit);
+    setProperty("polaris-a630-dt-chip-id-present", dtChipIdPresent);
+    if (dtChipIdPresent) setProperty("polaris-a630-dt-chip-id", dtChipId, 32);
+    setProperty("polaris-a630-dt-highest-bank-bit-present",
+                dtHighestBankBitPresent);
+    if (dtHighestBankBitPresent)
+      setProperty("polaris-a630-dt-highest-bank-bit", dtHighestBankBit, 32);
+    setProperty("polaris-a630-gpu-irq-spi-candidate",
+                POLARIS_A630_GPU_IRQ_SPI, 32);
+    setProperty("polaris-a630-gmu-hfi-irq-spi-candidate",
+                POLARIS_A630_GMU_HFI_IRQ_SPI, 32);
+    setProperty("polaris-a630-gmu-irq-spi-candidate",
+                POLARIS_A630_GMU_IRQ_SPI, 32);
+    setProperty("polaris-a630-smmu-global-irq0-spi-candidate",
+                POLARIS_A630_SMMU_GLOBAL_IRQ0_SPI, 32);
+    setProperty("polaris-a630-smmu-global-irq1-spi-candidate",
+                POLARIS_A630_SMMU_GLOBAL_IRQ1_SPI, 32);
+
+    PolarisA630Evidence evidence = {};
+    evidence.board_matches = 1;
+    evidence.gpu_present = (gpu != nullptr && gpuCount != 0);
+    evidence.gmu_present = (gmu != nullptr && gmuCount != 0);
+    evidence.smmu_present = (smmu != nullptr && smmuCount != 0);
+    if (gpuCount != 0) {
+      evidence.gpu.address = gpuRanges[0].address;
+      evidence.gpu.size = gpuRanges[0].size;
+    }
+    if (gmuCount != 0) {
+      evidence.gmu.address = gmuRanges[0].address;
+      evidence.gmu.size = gmuRanges[0].size;
+    }
+    if (smmuCount != 0) {
+      evidence.smmu.address = smmuRanges[0].address;
+      evidence.smmu.size = smmuRanges[0].size;
+    }
+    /* The probe never reads a live chip ID or loads private firmware. */
+    /* A DT qcom,chipid is static evidence, not a live GPU identity read. */
+    evidence.chip_id = dtChipId;
+    evidence.chip_id_confirmed = 0;
+    evidence.firmware_complete = 0;
+    PolarisA630Plan plan = polaris_a630_make_plan(evidence);
+    setProperty("polaris-a630-resource-contract-valid",
+                plan.resource_contract_valid, 32);
+    setProperty("polaris-a630-hardware-writes-allowed",
+                plan.hardware_writes_allowed, 32);
+    setProperty("polaris-a630-firmware-load-allowed",
+                plan.firmware_load_allowed, 32);
+    setProperty("polaris-a630-dma-allowed", plan.dma_allowed, 32);
+    setProperty("polaris-a630-plan-reason", plan.reason, 32);
 
     setProperty("polaris-a630-contract-version", 1U, 32);
     setProperty("polaris-a630-family", "Adreno 630 / A630v2");

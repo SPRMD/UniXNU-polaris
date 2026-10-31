@@ -12,4 +12,9 @@ starts a service on a non-Polaris device and never enables a hardware backend
 that has not supplied its own boot-argument gate. The services currently
 publish board and protocol contracts only; this start path does not make
 touch, buttons, battery, Wi-Fi, Bluetooth, NFC, camera, GPU, or display I/O
-work by itself.
+work by itself. `PolarisPeripheralContracts` is separately gated by
+`polaris-peripheral-probe=1` and only publishes WCN/NCI/CCI resource facts and
+codec self-test results. `PolarisNfcContract`, `PolarisCameraContract` and
+`PolarisDisplayContract` are started only when their corresponding
+`polaris-*-probe=1` argument is present; their runtime write/transport gates
+remain closed.

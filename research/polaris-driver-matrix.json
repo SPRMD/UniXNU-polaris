@@ -29,7 +29,7 @@
       "status": "firmware-handoff-only",
       "enabled_by_default": true,
       "userland_ready": false,
-      "evidence": "DarwinBoot consumes UEFI GOP; no polaris Darwin 23 display driver"
+      "evidence": "DarwinBoot consumes UEFI GOP; PolarisDisplayContract now records panel candidates and geometry, but no polaris Darwin 23 display provider exists"
     },
     "touch": {
       "status": "runtime-experimental",
@@ -47,25 +47,25 @@
       "status": "not-implemented",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "WCN3998 power, WLFW and transport sequence is not wired into UniXNU"
+      "evidence": "PolarisTransportContracts now includes bounded WLFW and H4 codec cores; no Darwin UART/ICNSS transport, power sequence, firmware download or network data path is enabled"
     },
     "bluetooth_wcn3998": {
       "status": "not-implemented",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "WCN3998 UART/firmware transport is not wired into UniXNU"
+      "evidence": "PolarisTransportContracts now includes bounded H4 command/event/ACL framing; no Darwin UART baud setup, firmware/NVM download, HCI transport or BlueTool bridge is enabled"
     },
     "camera": {
-      "status": "not-implemented",
+      "status": "candidate",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "CCI/CSIPHY/CSID/PMIC and sensor bring-up are not implemented"
+      "evidence": "PolarisCameraContract and PolarisPeripheralContracts publish CCI/CSIPHY/CSID and IMX363 probe facts, but sensor power, CSI and ISP bring-up are not implemented"
     },
     "nfc": {
-      "status": "not-implemented",
+      "status": "candidate",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "NCI transport and secure-element integration are not implemented"
+      "evidence": "PolarisNfcContract and PolarisPeripheralContracts publish PN54x/NCI resource facts, but I2C/GPIO transport and secure-element integration are not implemented"
     },
     "buttons": {
       "status": "runtime-experimental",

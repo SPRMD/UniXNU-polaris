@@ -30,31 +30,46 @@
       "enabled": false,
       "hardware": "Qualcomm PMIC GPIO/key input",
       "darwin_driver": "PolarisPmicRuntime",
-      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
+      "evidence": [
+        "drivers/PolarisPmicRuntime/README.md",
+        "research/polaris-woa-evidence.json"
+      ],
       "blocker": "Read-only PM8998 PON/GPIO6 polling is implemented behind polariskeys=1, but no temporary Darwin 23 boot or qualified IOHID sink has passed."
     },
     "display": {
       "status": "candidate",
       "enabled": false,
       "hardware": "JDI NT35596S / Qualcomm MDSS",
-      "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/MIX2S_6_128_HARDWARE_CN.md"],
-      "blocker": "A GOP display proves firmware output only; it does not prove a Darwin display provider."
+      "darwin_driver": "PolarisDisplayContract",
+      "evidence": [
+        "drivers/GopFramebuffer/README.md",
+        "drivers/PolarisDisplayContract/README.md",
+        "drivers/PolarisDisplayContract/PolarisDisplayPanelProtocol.h",
+        "research/WOA_POLARIS_FACTS.md"
+      ],
+      "blocker": "PolarisDisplayContract validates only candidate panel names and 1080x2160/4-lane geometry; it does not provide a Darwin display provider or authorize DSI/backlight/GPU writes."
     },
     "touch": {
-      "status": "candidate",
+      "status": "runtime-experimental",
       "enabled": false,
       "hardware": "Synaptics RMI4 touch controller over I2C (old chain: S3330; WOA/EDK2 path: S3708)",
-      "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
-      "blocker": "A gated PolarisHidInput bridge now connects the RMI4 seqlock to the pinned iPadOS 17.7.11 IOHID ABI, but the macOS prelink build, temporary Darwin boot and real input-event log are still open."
+      "darwin_driver": "PolarisHidInput",
+      "evidence": [
+        "drivers/PolarisHidInput/README.md",
+        "drivers/PolarisHidInput/PolarisHidInput.cpp",
+        "research/polaris-woa-evidence.json"
+      ],
+      "blocker": "The bridge is gated behind polaris-touch-hid and has not yet passed the macOS/Xcode ABI link, a temporary Darwin boot, or a real input-event trace on this Polaris."
     },
     "battery": {
       "status": "runtime-experimental",
       "enabled": false,
       "hardware": "PMI8998 fuel gauge / power supply",
       "darwin_driver": "PolarisPmicRuntime",
-      "evidence": ["../polaris_ios16_driver_research/reports/LOCKSCREEN_POWER_ANALYSIS_CN.md"],
+      "evidence": [
+        "drivers/PolarisPmicRuntime/README.md",
+        "research/polaris-woa-evidence.json"
+      ],
       "blocker": "Revision-gated read-only fuel-gauge sampling is implemented behind polarisbattery=1, but charger state, userland publication and temporary Darwin 23 validation remain open."
     },
     "gpu": {
@@ -62,40 +77,64 @@
       "enabled": false,
       "hardware": "Adreno 630",
       "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
-      "blocker": "UniXNU Adreno740 is for a different GPU family and is not enabled on Polaris."
+      "evidence": [
+        "drivers/PolarisA630Probe/README.md",
+        "drivers/PolarisA630Probe/PolarisA630Policy.h",
+        "research/polaris-linux-facts.json"
+      ],
+      "blocker": "The A630 resource policy is fail-closed and no Darwin GPU backend has passed temporary Polaris boot validation."
     },
     "wifi": {
       "status": "candidate",
       "enabled": false,
       "hardware": "Qualcomm WCN3998",
       "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/WIRELESS_FDT_AUDIT.json"],
-      "blocker": "The candidate DT resources do not establish a Darwin WCN3998 transport or firmware contract."
+      "evidence": [
+        "drivers/PolarisTransportContracts/README.md",
+        "drivers/PolarisPeripheralContracts/README.md",
+        "research/polaris-woa-evidence.json"
+      ],
+      "blocker": "Bounded WLFW and H4 codec cores are present, but candidate DT resources still do not establish a Darwin WCN3998 transport, power sequence, firmware download or network data path."
     },
     "bluetooth": {
       "status": "candidate",
       "enabled": false,
       "hardware": "WCN3998 UART",
       "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/WIRELESS_FDT_AUDIT.json"],
-      "blocker": "Android Bluetooth HAL libraries cannot be loaded as Darwin kernel or userland drivers."
+      "evidence": [
+        "drivers/PolarisTransportContracts/README.md",
+        "drivers/PolarisPeripheralContracts/README.md",
+        "research/polaris-woa-evidence.json"
+      ],
+      "blocker": "Bounded H4 framing is present, but Android Bluetooth HAL libraries cannot replace a Darwin UART/HCI transport, firmware/NVM download and BlueTool bridge."
     },
     "nfc": {
       "status": "candidate",
       "enabled": false,
       "hardware": "PN54X/NCI, candidate I2C address 0x28",
-      "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/NFC_FDT_AUDIT.json"],
-      "blocker": "The I2C address and GPIOs are candidates only; no runtime transaction has been verified."
+      "darwin_driver": "PolarisNfcContract",
+      "evidence": [
+        "drivers/PolarisTransportContracts/README.md",
+        "drivers/PolarisPeripheralContracts/README.md",
+        "drivers/PolarisNfcContract/README.md",
+        "drivers/PolarisNfcContract/PolarisNfcPolicy.h",
+        "research/polaris-woa-evidence.json"
+      ],
+      "blocker": "PolarisNfcContract records SE3/0x28/GPIO63 and remains read-only; no NCI transaction, IRQ ownership, firmware load or secure-element integration has been verified."
     },
     "camera": {
       "status": "candidate",
       "enabled": false,
       "hardware": "IMX363 / OV5675 / S5K3M3 candidates",
-      "darwin_driver": null,
-      "evidence": ["../polaris_ios16_driver_research/reports/driver_matrix.json"],
-      "blocker": "Android CAMX libraries and tuning blobs are not a Darwin camera stack."
+      "darwin_driver": "PolarisCameraContract",
+      "evidence": [
+        "drivers/PolarisTransportContracts/README.md",
+        "drivers/PolarisPeripheralContracts/README.md",
+        "drivers/PolarisCameraContract/README.md",
+        "drivers/PolarisCameraContract/PolarisCameraPolicy.h",
+        "research/polaris-woa-evidence.json"
+      ],
+      "blocker": "PolarisCameraContract records CCI/CSIPHY/CSID and IMX363 ID facts but performs no sensor power, CCI read, CSI DMA, ISP or tuning load; temporary Darwin validation is still required."
     },
     "fingerprint": {
       "status": "disabled",

@@ -50,14 +50,23 @@ class QcaVersion:
 def qca_version_request() -> bytes:
     """Return the H4 vendor version request used by WCN3990 research."""
 
-    return bytes((0x01, 0x00, 0xFC, 0x01, 0x19))
+    return h4_command(0xFC00, (0x19,))
+
+
+def h4_command(opcode: int, params: Sequence[int] = ()) -> bytes:
+    """Encode one bounded H4 command packet without opening a UART."""
+
+    if not isinstance(opcode, int) or not 0 <= opcode <= 0xFFFF:
+        raise ProtocolError("H4 opcode is outside the 16-bit range")
+    payload = _bytes(params, maximum=0xFF)
+    return bytes((0x01, opcode & 0xFF, opcode >> 8, len(payload))) + payload
 
 
 def qca_segment_request(data: Sequence[int]) -> bytes:
     payload = _bytes(data, maximum=243)
     if not payload:
         raise ProtocolError("QCA firmware segment must not be empty")
-    return bytes((0x01, 0x00, 0xFC, len(payload) + 2, 0x1E, len(payload))) + payload
+    return h4_command(0xFC00, (0x1E, len(payload), *payload))
 
 
 def parse_qca_version_event(event: Sequence[int]) -> QcaVersion:

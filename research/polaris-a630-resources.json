@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "board": "xiaomi,polaris",
+  "soc": "qcom,sdm845",
+  "source_policy": "static DT evidence only; no live MMIO or GPU identity read",
+  "sources": [
+    {
+      "kind": "linux-dts",
+      "path": "polaris_ios16_driver_research/refs/WSL2-Linux-Kernel-linux-msft-wsl-6.18.y/arch/arm64/boot/dts/qcom/sdm845.dtsi",
+      "compatible": ["qcom,adreno-630.2", "qcom,adreno-gmu-630.2"]
+    },
+    {
+      "kind": "miui-dt-report",
+      "path": "polaris_ios16_driver_research/reports/polaris_dt.json",
+      "compatible": ["qcom,kgsl-3d0", "qcom,gpu-gmu", "qcom,smmu-v2"]
+    }
+  ],
+  "gpu": {
+    "node": "/soc/qcom,kgsl-3d0@5000000",
+    "base": "0x05000000",
+    "bytes": "0x00040000",
+    "cx_mem_base": "0x0509e000",
+    "cx_mem_bytes": "0x00001000",
+    "chip_id_candidates": ["0x06030000", "0x06030001"],
+    "irq_spi": 300
+  },
+  "gmu": {
+    "linux_node": "/soc/gmu@506a000",
+    "miui_node": "/soc/qcom,gmu",
+    "base": "0x0506a000",
+    "bytes": "0x00030000",
+    "irq_spi": {"hfi": 304, "gmu": 305},
+    "additional_dt_windows": [
+      {"base": "0x0b280000", "bytes": "0x00010000", "source": "linux-dts"},
+      {"base": "0x0b480000", "bytes": "0x00010000", "source": "linux-dts"},
+      {"base": "0x0b200000", "bytes": "0x00300000", "source": "miui-dt-report"}
+    ]
+  },
+  "smmu": {
+    "node": "/soc/arm,smmu-kgsl@5040000",
+    "base": "0x05040000",
+    "bytes": "0x00010000",
+    "global_irq_spi": [229, 231],
+    "context_irq_spi": [364, 365, 366, 367, 368, 369, 370, 371]
+  },
+  "gpucc": {
+    "node": "/soc/qcom,gpucc@5090000",
+    "base": "0x05090000",
+    "bytes": "0x00009000"
+  },
+  "runtime": {
+    "mmio_allowed": false,
+    "firmware_load_allowed": false,
+    "dma_allowed": false,
+    "darwin_driver_ready": false,
+    "hardware_tested": false
+  }
+}

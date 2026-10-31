@@ -17,3 +17,13 @@ The service is disabled unless the command line contains
 closed.  The Polaris candidate trees report chip IDs `0x06030000` and
 `0x06030001`; the probe records both as candidates and deliberately does not
 claim that either revision was read from the live GPU.
+
+`PolarisA630Policy.h` provides the side-effect-free host and Darwin decision
+model used by the probe. It can mark resource evidence internally consistent,
+but its plan always keeps MMIO writes, firmware loading, DMA and SMMU
+programming disabled until an independent temporary-boot report exists.
+
+`PolarisA630Board.h` and `research/polaris-a630-resources.json` record the
+SDM845 GPU, GMU, SMMU and interrupt candidates from the local Linux DTS and
+MIUI device-tree report. A `qcom,chipid` value read from the DT is published as
+static evidence only; it is never treated as a live GPU identity confirmation.
