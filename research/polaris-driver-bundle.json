@@ -185,8 +185,8 @@
       },
       {
         "path": "drivers/PolarisA630Probe/PolarisA630Board.h",
-        "bytes": 4140,
-        "sha256": "5704d2171dbf4d161b4a826e43e92d8364fe3d6cdd035462cfa473b0cc7c4abf"
+        "bytes": 4285,
+        "sha256": "3d137c00a98a6ab74c5277043cd8b669c4a52cac1b01fa7fd08e6838c50a70c0"
       },
       {
         "path": "drivers/PolarisA630Probe/PolarisA630Policy.h",

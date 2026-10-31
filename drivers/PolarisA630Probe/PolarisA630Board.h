@@ -46,7 +46,9 @@
 #define POLARIS_A630_GMU_IRQ_INTID            (POLARIS_A630_GMU_IRQ_SPI + 32U)
 #define POLARIS_A630_SMMU_GLOBAL_IRQ0_SPI     229U
 #define POLARIS_A630_SMMU_GLOBAL_IRQ1_SPI     231U
-/* Ten hardware context-bank interrupts, in DT order 364..371 plus the pair. */
+/* Eight per-context-bank interrupts, DT order 364..371. The node declares ten
+ * interrupt entries in total; the other two are the global faults handled by
+ * the SMMU_GLOBAL_IRQ pair above, not additional context banks. */
 #define POLARIS_A630_SMMU_CONTEXT_IRQ_FIRST_SPI 364U
 #define POLARIS_A630_SMMU_CONTEXT_IRQ_COUNT     8U
 
