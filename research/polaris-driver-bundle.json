@@ -249,9 +249,9 @@
         "sha256": "7b7bb510518d7279313445926f94d180be6a54d29760a6ad7522fb4191dd20ae"
       },
       {
-        "bytes": 2267,
+        "bytes": 2449,
         "path": "drivers/PolarisTransportContracts/PolarisWlfwProtocol.h",
-        "sha256": "5f3d87a5cc88bb483b81e7854945f0e1f75ec57b4f442ff8f1c784cb2ee5fc82"
+        "sha256": "9446cbbfe002d2d9a5f55a062ea1e82c248918b036303225179a2f22670007a0"
       },
       {
         "bytes": 1287,
