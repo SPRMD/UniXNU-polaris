@@ -87,7 +87,7 @@ class PolarisSynapticsTouch : public IOService {
 public:
   IOService *probe(IOService *provider, SInt32 *score) override
   {
-    ++polaris_rmi4_touch_probe_calls;
+    polaris_rmi4_touch_probe_calls = polaris_rmi4_touch_probe_calls + 1;
     unsigned stage = 0;
     unsigned runtime = 0;
     const bool runtimeRequested =

@@ -179,14 +179,14 @@
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "bytes": 6542,
+        "bytes": 6577,
         "path": "drivers/PolarisSynapticsTouch/PolarisSynapticsTouch.cpp",
-        "sha256": "9c982b79ccd839c108848ba8896329c9677790d6348c4df1bd5c7f1ccfa37cdb"
+        "sha256": "10ef7281ea53d32746b349c735a4637f22156f5414ed2610ecc847835e1e31e5"
       },
       {
-        "bytes": 12393,
+        "bytes": 12467,
         "path": "drivers/PolarisSynapticsTouch/PolarisTouchRuntime.c",
-        "sha256": "dcfedfea17848058c0da8fd19e1d789aedeb49e8c1df64ce9bb852609f3ebb39"
+        "sha256": "eec8a9e77a985f7f90d67d4c1299ebd29b4b3707a485c3b06678672b31256f4c"
       },
       {
         "bytes": 1594,
@@ -339,9 +339,9 @@
         "sha256": "1f76a0e4353b335ed3abf6e7c8c9a83bd9fd722dc866612737384d6914621c9b"
       },
       {
-        "bytes": 7092,
+        "bytes": 7237,
         "path": "drivers/PolarisRuntime/PolarisRuntime.cpp",
-        "sha256": "64d39b2d3296e74161f92d0d47765197dac1a35b973a20b8d27588a511b6ee90"
+        "sha256": "3a6f87ec4a55deb9539ae6c2841b4a60c44981aa7b1e3b4ece5c4db6e5d65a96"
       },
       {
         "bytes": 1209,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T07:44:17.932705+00:00",
+  "generated_at": "2026-10-31T07:45:25.673780+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,

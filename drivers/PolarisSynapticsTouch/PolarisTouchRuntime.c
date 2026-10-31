@@ -246,7 +246,7 @@ static void
 publish_contacts(void)
 {
 	unsigned count = 0;
-	polaris_touch_seq++;
+	polaris_touch_seq = polaris_touch_seq + 1;
 	__asm__ volatile("dmb ish" ::: "memory");
 	for (unsigned slot = 0; slot < POLARIS_TOUCH_MAX_SLOTS; ++slot) {
 		if (!contact_down[slot]) continue;
@@ -257,8 +257,8 @@ publish_contacts(void)
 	}
 	polaris_touch_count = count;
 	__asm__ volatile("dmb ish" ::: "memory");
-	polaris_touch_seq++;
-	polaris_touch_hid_reports++;
+	polaris_touch_seq = polaris_touch_seq + 1;
+	polaris_touch_hid_reports = polaris_touch_hid_reports + 1;
 	void (*sink)(void *) = polaris_touch_sink;
 	if (sink) sink(polaris_touch_sink_context);
 }

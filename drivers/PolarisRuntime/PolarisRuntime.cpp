@@ -116,12 +116,12 @@ static bool startService(const char *className, IOService *provider)
     } else if (object != nullptr) {
       object->release();
     }
-    ++polaris_runtime_services_failed;
+    polaris_runtime_services_failed = polaris_runtime_services_failed + 1;
     return false;
   }
   service->registerService(kIOServiceSynchronous);
   service->release();
-  ++polaris_runtime_services_started;
+  polaris_runtime_services_started = polaris_runtime_services_started + 1;
   return true;
 }
 
@@ -143,13 +143,13 @@ extern "C" void polaris_runtime_start(IOService *platform)
   }
   polaris_runtime_started = 1;
   if (!initLinkedClasses()) {
-    ++polaris_runtime_services_failed;
+    polaris_runtime_services_failed = polaris_runtime_services_failed + 1;
     return;
   }
   IOService *platformService = platform != nullptr ? platform : IOService::getPlatform();
   IOService *provider = findArmIo(platformService);
   if (provider == nullptr) {
-    ++polaris_runtime_services_failed;
+    polaris_runtime_services_failed = polaris_runtime_services_failed + 1;
     return;
   }
   static const char *const classes[] = {
