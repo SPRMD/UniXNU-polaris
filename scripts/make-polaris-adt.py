@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import struct
 import zlib
+import uuid
 
 # Upper DDR bank above every Qualcomm XPU carve-out. polaris ships 6 or 8 GiB;
 # 6 GiB ends at 0x1_80000000 and leaves 0x7cc00000 after the top reservation,
@@ -77,7 +78,8 @@ def empty_nvram_proxy():
 
 
 def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000,
-          seed=None, include_ufs=False):
+          seed=None, include_ufs=False, ipad_identity=False, trust_cache=False,
+          root_match_volume_uuid=None):
     if cpu_count not in range(1, 9):
         raise ValueError('cpu count must be 1..8')
     if dram_size not in (DRAM_SIZE_6, DRAM_SIZE_8):
@@ -115,8 +117,16 @@ def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000,
             ('reg', u64(0x01D84000 - ARMIO_BASE, 0x2500)),
             ('interrupts', u32(0) + u32(265) + u32(0)),
         ]))
+    root_matching = []
+    if root_match_volume_uuid is not None:
+        volume = str(uuid.UUID(root_match_volume_uuid)).upper()
+        root_matching = [('root-matching', (
+            '<dict><key>IOProviderClass</key><string>IOMedia</string>'
+            '<key>IOPropertyMatch</key><dict><key>UUID</key><string>' + volume +
+            '</string></dict></dict>\0').encode())]
     return node('device-tree', [
-        ('model', b'polaris-platform-bringup\0'),
+        ('model', b'iPad7,1\0' if ipad_identity else b'polaris-platform-bringup\0'),
+        *([('target-type', b'J120\0')] if ipad_identity else []),
         ('compatible', b'xiaomi,polaris\0qcom,sdm845\0'),
         ('#address-cells', u32(2)), ('#size-cells', u32(2)),
     ], [
@@ -127,7 +137,9 @@ def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000,
             ('darwinboot-memory-range', u64(DRAM_BASE, dram_size)),
             ('crypto-hash-method', b'sha2-384\0'),
             *empty_nvram_proxy(),
-        ], [node('memory-map'), node('manifest-properties')]),
+            *root_matching,
+        ], [node('memory-map', [('TrustCache', bytes(16))] if trust_cache else []),
+            node('manifest-properties')]),
         node('cpus', [('#address-cells', u32(1)), ('#size-cells', u32(0))], cpus),
         node('psci', [('compatible', b'arm,psci-1.0\0'), ('method', b'smc\0')]),
         node('defaults', [('sleep-disabled', u32(1))]), node('options'),
@@ -152,13 +164,21 @@ def main():
     parser.add_argument('--psci-method', choices=['smc'], default='smc')
     parser.add_argument('--include-ufs', action='store_true',
                         help='include the optional qcom,sdm845-ufshc node for a storage-probe payload')
+    parser.add_argument('--ipad-identity', action='store_true',
+                        help='select iPad7,1 kernel identity while retaining Polaris compatibility')
+    parser.add_argument('--trust-cache', action='store_true',
+                        help='reserve the loader mapping; requires a kernel.macho.trustcache sidecar')
+    parser.add_argument('--root-match-volume-uuid',
+                        help='verified APFS root volume UUID, not the partition or container UUID')
     args = parser.parse_args()
     try:
         regs = [int(value, 0) for value in args.cpu_regs.split(',')]
         if not regs or regs != [core << 8 for core in range(len(regs))]:
             raise ValueError('--cpu-regs must be the initial polaris affinity prefix')
         blob = build(cpu_count=len(regs), dram_size=DRAM_SIZE_6 if args.ram == 6 else DRAM_SIZE_8,
-                     owned_memory_size=args.owned_memory_size, include_ufs=args.include_ufs)
+                     owned_memory_size=args.owned_memory_size, include_ufs=args.include_ufs,
+                     ipad_identity=args.ipad_identity, trust_cache=args.trust_cache,
+                     root_match_volume_uuid=args.root_match_volume_uuid)
     except ValueError as error:
         parser.error(str(error))
     args.output.parent.mkdir(parents=True, exist_ok=True)

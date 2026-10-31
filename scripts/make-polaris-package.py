@@ -267,6 +267,12 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
     firmware = firmware.resolve() if firmware else None
     userdata = userdata.resolve() if userdata else None
     darwin_root = darwin_root.resolve() if darwin_root else None
+    # Polaris keeps the boot FAT in userdata and SHNGROOT in darwin. Reuse
+    # the exact ESP image instead of requiring an unrelated userdata root.
+    if darwin_root is not None:
+        if userdata is not None and (not userdata.is_file() or sha256(userdata) != sha256(esp_image)):
+            raise ValueError("split darwin root requires userdata to be the ESP image")
+        userdata = esp_image
     device_validation = device_validation.resolve() if device_validation else None
     driver_bundle = driver_bundle.resolve() if driver_bundle else None
 
@@ -292,7 +298,7 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
                 or firmware_provenance.get("hardware_tested") is not True):
             blockers.append("firmware provenance does not attest a hardware-tested polaris image")
     if userdata is None or not userdata.is_file():
-        blockers.append("no qualified SHNGROOT userdata image was supplied")
+        blockers.append("no userdata image was supplied")
     if darwin_root is not None and not darwin_root.is_file():
         blockers.append("the supplied darwin root image is missing")
     if not contract_report["all_required_subsystems_verified"]:
@@ -334,7 +340,8 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
     firmware_target: Path | None = None
     firmware_provenance_target: Path | None = None
     if firmware and firmware.is_file():
-        firmware_target = output / firmware.name
+        firmware_target = output / "firmware" / firmware.name
+        firmware_target.parent.mkdir(parents=True)
         shutil.copy2(firmware, firmware_target)
         provenance_path = firmware.with_name("firmware-provenance.json")
         if provenance_path.is_file():
@@ -343,10 +350,11 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
     elif firmware and firmware.is_dir():
         firmware_target = output / "firmware"
         copy_tree(firmware, firmware_target)
-    if userdata and userdata.is_file():
-        shutil.copy2(userdata, output / userdata.name)
+    userdata_target = output / ("esp.img" if darwin_root is not None else "userdata.img")
+    if userdata and userdata.is_file() and userdata_target != output / "esp.img":
+        shutil.copy2(userdata, userdata_target)
     if darwin_root and darwin_root.is_file():
-        shutil.copy2(darwin_root, output / darwin_root.name)
+        shutil.copy2(darwin_root, output / "darwin-root.img")
     shutil.copy2(ROOT / "research" / "polaris-hardware-contract.json", output / "polaris-hardware-contract.json")
     shutil.copy2(ROOT / "research" / "polaris-driver-matrix.json", output / "polaris-driver-matrix.json")
     woa_evidence = ROOT / "research" / "polaris-woa-evidence.json"
@@ -381,8 +389,8 @@ def build_package(esp: Path, esp_image: Path, kernel: Path, output: Path,
             "firmware": file_fact(firmware_target, package_root=output) if firmware_target else {"present": False},
             "firmware_provenance": file_fact(firmware_provenance_target, package_root=output)
             if firmware_provenance_target else {"present": False},
-            "userdata": file_fact(output / userdata.name, package_root=output) if userdata and userdata.is_file() else {"present": False},
-            "darwin_root": file_fact(output / darwin_root.name, package_root=output) if darwin_root and darwin_root.is_file() else {"present": False},
+            "userdata": file_fact(userdata_target, package_root=output) if userdata and userdata.is_file() else {"present": False},
+            "darwin_root": file_fact(output / "darwin-root.img", package_root=output) if darwin_root and darwin_root.is_file() else {"present": False},
         },
         "kernel": kfacts,
         "driver_contract": contract_report,

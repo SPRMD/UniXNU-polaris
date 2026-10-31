@@ -9,7 +9,7 @@
  * active-low reset line.  The code only runs after the caller supplies
  * polaris-touch-runtime=1 (or the historical polaristouchhid=1 argument).
  *
- * The transport publishes a bounded contact seqlock.  A future IOHID sink can
+ * The transport publishes a bounded contact seqlock.  The Polaris HID sink can
  * subscribe with polaris_touch_runtime_set_sink(); no Android or Windows
  * binary is loaded here.  Every failure restores the two I2C pads and stops.
  */
@@ -52,7 +52,8 @@ volatile int polaris_touch_y[POLARIS_TOUCH_MAX_SLOTS];
 
 static void (*polaris_touch_sink)(void *);
 static void *polaris_touch_sink_context;
-static volatile bool polaris_touch_started;
+static bool polaris_touch_started;
+static unsigned polaris_touch_sink_busy;
 static volatile uint32_t *gpio;
 static volatile uint32_t *reset_gpio;
 static uint32_t saved_sda_cfg;
@@ -63,12 +64,39 @@ static bool contact_down[POLARIS_TOUCH_MAX_SLOTS];
 static int contact_x[POLARIS_TOUCH_MAX_SLOTS];
 static int contact_y[POLARIS_TOUCH_MAX_SLOTS];
 
+/* Thread context only. The sink must only enqueue work, never wait for the
+ * HID work loop or call set_sink recursively. Unregister drains any callback
+ * before its owner can release the timer/work loop. */
+static void
+sink_lock(void)
+{
+	while (__atomic_exchange_n(&polaris_touch_sink_busy, 1u, __ATOMIC_ACQUIRE))
+		IOSleep(1);
+}
+
+static void
+sink_unlock(void)
+{
+	__atomic_store_n(&polaris_touch_sink_busy, 0u, __ATOMIC_RELEASE);
+}
+
 void
 polaris_touch_runtime_set_sink(void (*sink)(void *), void *context)
 {
+	sink_lock();
 	polaris_touch_sink_context = context;
-	__asm__ volatile("dmb ish" ::: "memory");
 	polaris_touch_sink = sink;
+	/* Replay a frame published before HID registered, including all-up. */
+	if (sink) sink(context);
+	sink_unlock();
+}
+
+static void
+notify_sink(void)
+{
+	sink_lock();
+	if (polaris_touch_sink) polaris_touch_sink(polaris_touch_sink_context);
+	sink_unlock();
 }
 
 static uint32_t
@@ -246,21 +274,19 @@ static void
 publish_contacts(void)
 {
 	unsigned count = 0;
-	polaris_touch_seq = polaris_touch_seq + 1;
+	__atomic_add_fetch(&polaris_touch_seq, 1u, __ATOMIC_SEQ_CST);
 	__asm__ volatile("dmb ish" ::: "memory");
 	for (unsigned slot = 0; slot < POLARIS_TOUCH_MAX_SLOTS; ++slot) {
 		if (!contact_down[slot]) continue;
-		polaris_touch_ids[count] = (int)slot;
-		polaris_touch_x[count] = contact_x[slot];
-		polaris_touch_y[count] = contact_y[slot];
+		__atomic_store_n(&polaris_touch_ids[count], (int)slot, __ATOMIC_RELAXED);
+		__atomic_store_n(&polaris_touch_x[count], contact_x[slot], __ATOMIC_RELAXED);
+		__atomic_store_n(&polaris_touch_y[count], contact_y[slot], __ATOMIC_RELAXED);
 		if (++count == POLARIS_TOUCH_MAX_SLOTS) break;
 	}
-	polaris_touch_count = count;
+	__atomic_store_n(&polaris_touch_count, count, __ATOMIC_RELAXED);
 	__asm__ volatile("dmb ish" ::: "memory");
-	polaris_touch_seq = polaris_touch_seq + 1;
-	polaris_touch_hid_reports = polaris_touch_hid_reports + 1;
-	void (*sink)(void *) = polaris_touch_sink;
-	if (sink) sink(polaris_touch_sink_context);
+	__atomic_add_fetch(&polaris_touch_seq, 1u, __ATOMIC_SEQ_CST);
+	notify_sink();
 }
 
 static void
@@ -269,7 +295,6 @@ release_contacts(void)
 	for (unsigned slot = 0; slot < POLARIS_TOUCH_MAX_SLOTS; ++slot) {
 		contact_down[slot] = false;
 	}
-	polaris_touch_count = 0;
 	publish_contacts();
 }
 
@@ -320,6 +345,7 @@ touch_thread(void *parameter, int wait_result)
 	uint8_t f12[6] = {0};
 	uint8_t raw[POLARIS_TOUCH_MAX_SLOTS * POLARIS_TOUCH_FRAME_BYTES] = {0};
 	unsigned slots = 1;
+	unsigned consecutive_errors = 0;
 
 	gpio = (volatile uint32_t *)ml_io_map(TLMM_NORTH_PA, GPIO_MAP_SIZE);
 	reset_gpio = (volatile uint32_t *)ml_io_map(TLMM_NORTH_PA + RESET_CFG,
@@ -404,18 +430,21 @@ touch_thread(void *parameter, int wait_result)
 					contact_y[slot] = y;
 				}
 			}
-		} else {
-			polaris_touch_runtime_state[5]++;
 		}
 		if (!valid) {
+			polaris_touch_runtime_state[5]++;
+			++consecutive_errors;
 			release_contacts();
-			if (polaris_touch_runtime_state[5] >= 8) {
+			if (consecutive_errors >= 8) {
 				printf("POLARIS TOUCH: repeated invalid frames; stopping\n");
 				break;
 			}
-		} else if (changed) {
-			polaris_touch_runtime_state[3]++;
-			publish_contacts();
+		} else {
+			consecutive_errors = 0;
+			if (changed) {
+				polaris_touch_runtime_state[3]++;
+				publish_contacts();
+			}
 		}
 		IOSleep(20);
 	}
@@ -435,15 +464,14 @@ polaris_touch_runtime_start(void)
 	    sizeof(enabled)) == 0 || enabled != 1) {
 		return 0;
 	}
-	if (polaris_touch_started) return 1;
-	polaris_touch_started = true;
+	if (__atomic_exchange_n(&polaris_touch_started, true, __ATOMIC_ACQ_REL)) return 1;
 	void *thread = 0;
 	int result = kernel_thread_start(touch_thread, 0, &thread);
 	if (result == 0) {
 		if (thread) thread_deallocate(thread);
 		return 1;
 	}
-	polaris_touch_started = false;
+	__atomic_store_n(&polaris_touch_started, false, __ATOMIC_RELEASE);
 	printf("POLARIS TOUCH: thread start failed %d\n", result);
 	return 0;
 }

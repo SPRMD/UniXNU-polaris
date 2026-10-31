@@ -125,9 +125,20 @@ def verify_manifest(root: Path) -> dict:
         expected = fact.get("sha256")
         if expected and path.is_file() and digest(path).lower() != str(expected).lower():
             raise ValueError(f"manifest input hash mismatch: {name}")
-    # An evidence-only package must never describe device access or a true
-    # installer command set.  A future qualified package can satisfy these
-    # checks with the independent validation report required by the builder.
+    if inputs.get("darwin_root", {}).get("present"):
+        # The installer writes these two images to different GPT partitions.
+        # A complete checksum list alone cannot detect swapped storage roles.
+        esp = inputs.get("esp_image", {})
+        userdata = inputs.get("userdata", {})
+        if not esp.get("present") or not userdata.get("present"):
+            raise ValueError("split darwin root requires an ESP userdata image")
+        if digest(safe_member(root, esp["path"])) != digest(safe_member(root, userdata["path"])):
+            raise ValueError("split darwin root userdata does not match the ESP image")
+    payload_kernel = root / "esp/EFI/UniXNU/Payloads/kernel.macho"
+    if payload_kernel.is_file() and inputs.get("kernel", {}).get("present"):
+        if digest(payload_kernel) != digest(safe_member(root, inputs["kernel"]["path"])):
+            raise ValueError("ESP kernel does not match the packaged kernel")
+    # Evidence-only packages must not claim device access or installer commands.
     if not manifest["flashable"]:
         access = manifest.get("device_access", {})
         if any(bool(access.get(key)) for key in ("adb", "fastboot", "partition_writes")):

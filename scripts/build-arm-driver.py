@@ -13,10 +13,44 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def rewrite_compile_command(record, source, destination):
+    """Replace input/output and remove warning flags without orphaning -Xclang."""
+    command = []
+    arguments = record['arguments']
+    index = 0
+    while index < len(arguments):
+        value = arguments[index]
+        if value in ('-o', '-Xclang'):
+            if index + 1 >= len(arguments):
+                raise ValueError(f'missing argument after {value}')
+            following = arguments[index + 1]
+            if value == '-o':
+                command.extend(['-o', str(destination)])
+            elif not is_warning_flag(following):
+                command.extend([value, following])
+            index += 2
+            continue
+        if value == record['file']:
+            command.append(str(source))
+        elif not is_warning_flag(value):
+            command.append(value)
+        index += 1
+    return command
+
+
+def is_warning_flag(value):
+    # Preserve driver forwarding flags: -Wl, -Wa, and -Wp, are not warnings.
+    return value.startswith('-W') and not value.startswith(('-Wl,', '-Wa,', '-Wp,'))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs', 'PolarisBoardProbe', 'PolarisHardwareServices', 'PolarisPmicInput', 'PolarisPmicRuntime', 'PolarisSynapticsTouch', 'PolarisTransportContracts', 'PolarisPeripheralContracts', 'PolarisNfcContract', 'PolarisCameraContract', 'PolarisA630Probe', 'PolarisDisplayContract', 'PolarisRuntime', 'NativeMobileDisplay'])
+    parser.add_argument('--ufs-block-runtime', action='store_true',
+                        help='compile experimental read-only LUN backend (still boot-arg gated)')
     args = parser.parse_args()
+    if args.ufs_block_runtime and args.component != 'ShengUfs':
+        parser.error('--ufs-block-runtime applies only to ShengUfs')
     output_names = {
         'ArmCpu': ('armcpu', 'ArmCpu', 'ArmCpu'),
         'ArmDTPlatform': ('armdt-platform', 'ArmDTPlatform', 'ArmDTPlatform'),
@@ -48,26 +82,17 @@ def main():
     source = source_dir / (source_name + '.cpp')
     destination = out / (args.component + '.o')
     out.mkdir(parents=True, exist_ok=True)
-    command = []
-    arguments = record['arguments']
-    index = 0
-    while index < len(arguments):
-        value = arguments[index]
-        if value == record['file']:
-            command.append(str(source))
-        elif value == '-o':
-            command.extend(['-o', str(destination)])
-            index += 1
-        elif value == '-Xclang' and arguments[index + 1].startswith('-W'):
-            index += 1
-        elif not value.startswith('-W'):
-            command.append(value)
-        index += 1
+    command = rewrite_compile_command(record, source, destination)
     command.extend(['-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter',
                     '-Wno-c99-designator', '-Wno-reorder-init-list',
                     '-Wno-deprecated-enum-enum-conversion',
                     '-I', str(ROOT / '.cache/xnu-work/osfmk'),
                     '-I', str(source.parent)])
+    if args.component == 'ShengUfs' and args.ufs_block_runtime:
+        # Standalone archive builds must also refresh/check the pinned ABI.
+        subprocess.run(['python3', str(ROOT / 'scripts/prepare-storage-headers.py')], check=True)
+        command.extend(['-I', str(ROOT / 'build/storage-abi/include'),
+                        '-DPOLARIS_UFS_BLOCK_RUNTIME=1', '-mgeneral-regs-only'])
     (out / 'compile-command.json').write_text(json.dumps(command, indent=2) + '\n')
     result = subprocess.run(command, cwd=record['directory'], capture_output=True, text=True)
     (out / 'compile.log').write_text(result.stdout + result.stderr)

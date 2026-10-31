@@ -32,6 +32,7 @@ archives = [
   "build-arm-driver.py ArmCpu",
   "build-arm-driver.py ShengUfs",
   "build-arm-driver.py NativeMobileDisplay",
+  "build-polaris-display.py",
   "build-libpthread-kernel.py",
   "build-mockfs-fixture.py",
 ]

@@ -221,20 +221,20 @@ jobs:
           path: |
             out/native/polaris/kernel/
             out/native/polaris/logs/
-            out/native/polaris/build/polaris-board-probe/
-            out/native/polaris/build/polaris-hardware-services/
-            out/native/polaris/build/polaris-pmic-input/
-            out/native/polaris/build/polaris-pmic-runtime/
-            out/native/polaris/build/polaris-hid-input/
-            out/native/polaris/build/polaris-synaptics-touch/
-            out/native/polaris/build/polaris-touch-runtime/
-            out/native/polaris/build/polaris-transport-contracts/
-            out/native/polaris/build/polaris-peripheral-contracts/
-            out/native/polaris/build/polaris-nfc-contract/
-            out/native/polaris/build/polaris-camera-contract/
-            out/native/polaris/build/polaris-a630-probe/
-            out/native/polaris/build/polaris-display-contract/
-            out/native/polaris/build/polaris-runtime/
+            out/native/polaris/tree/build/polaris-board-probe/
+            out/native/polaris/tree/build/polaris-hardware-services/
+            out/native/polaris/tree/build/polaris-pmic-input/
+            out/native/polaris/tree/build/polaris-pmic-runtime/
+            out/native/polaris/tree/build/polaris-hid-input/
+            out/native/polaris/tree/build/polaris-synaptics-touch/
+            out/native/polaris/tree/build/polaris-touch-runtime/
+            out/native/polaris/tree/build/polaris-transport-contracts/
+            out/native/polaris/tree/build/polaris-peripheral-contracts/
+            out/native/polaris/tree/build/polaris-nfc-contract/
+            out/native/polaris/tree/build/polaris-camera-contract/
+            out/native/polaris/tree/build/polaris-a630-probe/
+            out/native/polaris/tree/build/polaris-display-contract/
+            out/native/polaris/tree/build/polaris-runtime/
             out/native/polaris/tree/build/gop-framebuffer/
             out/native/ipsw/
             out/native-buildtree.tgz
@@ -274,18 +274,27 @@ jobs:
       - name: Write firmware provenance
         run: |
           python3 - <<'PY'
-          import hashlib, json, os
+          import hashlib, json, os, shutil
           from pathlib import Path
-          root = Path('out/edk2-output')
-          files = sorted(p for p in root.rglob('*') if p.is_file())
-          if not files:
-              raise SystemExit('firmware build produced no files')
+          build = Path('out/edk2-output')
+          root = Path('out/firmware')
+          root.mkdir(parents=True, exist_ok=True)
+          images = sorted(build.glob('boot-polaris*.img'))
+          if len(images) != 1:
+              raise SystemExit(f'expected one Polaris boot image, found {len(images)}')
+          with images[0].open('rb') as stream:
+              if stream.read(8) != b'ANDROID!':
+                  raise SystemExit('Polaris firmware is not an Android boot image')
+          shutil.copy2(images[0], root / images[0].name)
+          files = [root / images[0].name]
           payload = []
           for p in files:
+              with p.open('rb') as stream:
+                  digest = hashlib.file_digest(stream, 'sha256').hexdigest()
               payload.append({
                   'path': str(p.relative_to(root)).replace('\\', '/'),
                   'bytes': p.stat().st_size,
-                  'sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
+                  'sha256': digest,
               })
           report = {
               'board': 'xiaomi,polaris',
@@ -294,20 +303,20 @@ jobs:
               'hardware_tested': False,
               'files': payload,
           }
-          (root / 'firmware-provenance.json').write_text(json.dumps(report, indent=2) + '\\n')
+          (root / 'firmware-provenance.json').write_text(json.dumps(report, indent=2) + '\n')
           PY
 
       - name: Validate Polaris private-firmware contract
         run: |
           python3 scripts/check-polaris-firmware.py \
             --contract research/polaris-firmware-contract.json \
-            --output out/edk2-output/polaris-firmware-contract.json
+            --output out/firmware/polaris-firmware-contract.json
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: polaris-firmware
-          path: out/edk2-output/
+          path: out/firmware/
 
   package:
     name: QEMU check and platform artifacts
@@ -480,7 +489,7 @@ jobs:
         run: |
           python3 scripts/make-polaris-adt.py \
             --output out/ios-inputs/polaris-ios.adt \
-            --ram 6 --ipad-identity --include-ufs
+            --ram 6 --ipad-identity --include-ufs --trust-cache
 
       - name: Assemble guarded iPadOS stage package
         run: |
@@ -495,6 +504,7 @@ jobs:
             --system-os out/ios-inputs/044-76034-038.dmg \
             --out out/ios-stage \
             --package out/polaris-ios-one-click \
+            --firmware out/firmware \
             --driver-bundle out/host/polaris-driver-bundle \
             --input-hash-report out/ios-inputs/ios-input-hashes.json
           python3 scripts/check-polaris-package.py --package out/polaris-ios-one-click

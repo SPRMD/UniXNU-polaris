@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 DRIVER_DIRS = (
     "GopFramebuffer",
+    "PolarisDisplayRuntime",
     "ShengUfs",
     "PolarisA630Probe",
     "PolarisGeniI2c",

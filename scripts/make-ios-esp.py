@@ -66,7 +66,7 @@ def main():
         'EFI/UniXNU/Payloads/DarwinBoot.efi': efi / 'loader/build/DarwinBoot/DEBUG_GCC/AARCH64/DarwinBoot.efi',
         'EFI/UniXNU/Payloads/kernel.macho': args.kernel.resolve(),
         'EFI/UniXNU/Payloads/kernel.macho.adt': args.adt.resolve(),
-        'EFI/UniXNU/Payloads/trust.bundle': args.trust.resolve(),
+        'EFI/UniXNU/Payloads/kernel.macho.trustcache': args.trust.resolve(),
         'EFI/UniXNU/unixnu.toml': None,
     }
     for name, path in files.items():
@@ -84,6 +84,8 @@ def main():
         raise SystemExit('prelinked kernel does not match its kernel.json report')
     if report.get('original_components_prelinked') is not True:
         raise SystemExit('iOS-stage ESP requires kernel-prelinked.macho with original components')
+    if report.get('final_configured_link_passed') is not True:
+        raise SystemExit('iOS-stage ESP requires a successful final configured kernel link')
 
     out = args.out.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)

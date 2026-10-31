@@ -119,11 +119,11 @@ def compile_source(source: Path, obj: Path) -> tuple[list[str], int, str]:
             index += 1
         elif value == '-Xclang' and index + 1 < len(arguments) and arguments[index + 1].startswith('-W'):
             index += 1
-        elif not value.startswith('-W') and value not in ('-MD', '-MP'):
+        elif value in ('-MF', '-MJ', '-MT', '-MQ'):
+            index += 1
+        elif not value.startswith(('-W', '-MF', '-MJ', '-MT', '-MQ')) and value not in ('-MD', '-MMD', '-MP'):
             command.append(value)
         index += 1
-        if value in ('-MF', '-MJ'):
-            index += 1
     command += ['-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter', '-Wno-c99-designator',
                 '-Wno-reorder-init-list', '-Wno-deprecated-enum-enum-conversion',
                 '-Wno-unnecessary-virtual-specifier', '-Wno-unknown-warning-option',

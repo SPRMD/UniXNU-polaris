@@ -1,8 +1,11 @@
 import importlib.util
 import json
 import struct
+import subprocess
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -24,6 +27,138 @@ INPUTS = load("check_polaris_ios_inputs", ROOT / "scripts" / "check-ios-stage-in
 
 
 class IOSStageScriptTests(unittest.TestCase):
+    def test_real_shngroot_writer_places_apfs_windows_at_declared_offsets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sources = []
+            for name in ('OS', 'SystemOS'):
+                image = root / name
+                data = bytearray(8192)
+                struct.pack_into('<4sIQ', data, 32, b'NXSB', 4096, 2)
+                data[100:100 + len(name)] = name.encode()
+                image.write_bytes(data)
+                sources.append(image)
+            destination = root / 'darwin-root.img'
+            subprocess.run([sys.executable, str(ROOT / 'scripts/make-userdata-linux.py'),
+                            '--os', str(sources[0]), '--system-os', str(sources[1]),
+                            '--partition', 'darwin', '--out', str(destination)],
+                           check=True, capture_output=True)
+            import hashlib
+            with destination.open('rb') as stream:
+                header = stream.read(4096)
+                self.assertEqual(header[:8], b'SHNGROOT')
+                self.assertEqual(struct.unpack_from('<IIQ', header, 8), (1, 2, 3 << 20))
+                self.assertEqual(header[4064:], hashlib.sha256(header[:4064]).digest())
+                for index, source in enumerate(sources):
+                    name, offset, size, sector, flags, digest, reserved = struct.unpack_from(
+                        '<32sQQII32s40s', header, 24 + index * 128)
+                    self.assertEqual(name.rstrip(b'\0'), source.name.encode())
+                    self.assertEqual((offset, size, sector, flags), ((index + 1) << 20, 8192, 512, 1))
+                    stream.seek(offset)
+                    window = stream.read(size)
+                    self.assertEqual(window, source.read_bytes())
+                    self.assertEqual(window[32:36], b'NXSB')
+                    self.assertEqual(digest, hashlib.sha256(window).digest())
+
+    def test_esp_installs_loader_named_trust_sidecar(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            kernel = root / 'kernel.macho'
+            kernel.write_bytes(b'prelinked')
+            kernel.with_suffix('.json').write_text(json.dumps({
+                'kernel_sha256': PACKAGE.sha256(kernel),
+                'original_components_prelinked': True,
+                'final_configured_link_passed': True,
+            }))
+            adt, trust = root / 'input.adt', root / 'trust.bundle'
+            adt.write_bytes(b'adt')
+            trust.write_bytes(b'trust')
+            for relative in ('efi/Build/Out/AARCH64-DEBUG/UniXNU.efi',
+                             'loader/build/DarwinBoot/DEBUG_GCC/AARCH64/DarwinBoot.efi'):
+                path = root / relative
+                path.parent.mkdir(parents=True)
+                path.write_bytes(b'efi')
+            out, tree = root / 'esp.img', root / 'tree'
+            out.write_bytes(b'fat-placeholder')
+            argv = ['make-ios-esp.py', '--kernel', str(kernel), '--adt', str(adt),
+                    '--trust', str(trust), '--efi', str(root), '--out', str(out),
+                    '--tree', str(tree), '--ipados-stage']
+            with patch('sys.argv', argv), patch.object(ESP.subprocess, 'run') as run:
+                run.return_value.stdout = 'FAT listing'
+                ESP.main()
+            sidecar = 'EFI/UniXNU/Payloads/kernel.macho.trustcache'
+            self.assertEqual((tree / sidecar).read_bytes(), b'trust')
+            self.assertTrue(any(call.args[0][-1] == '::' + sidecar
+                                for call in run.call_args_list))
+            self.assertFalse((tree / 'EFI/UniXNU/Payloads/trust.bundle').exists())
+            report = json.loads(kernel.with_suffix('.json').read_text())
+            report['final_configured_link_passed'] = False
+            kernel.with_suffix('.json').write_text(json.dumps(report))
+            with patch('sys.argv', argv), patch.object(ESP.subprocess, 'run') as run:
+                with self.assertRaisesRegex(SystemExit, 'final configured'):
+                    ESP.main()
+                run.assert_not_called()
+
+    def test_stage_forwards_firmware_and_separate_storage_roles(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = {}
+            for name in ('kernel', 'adt', 'static-trust', 'system-trust', 'os', 'system-os'):
+                path = root / name
+                data = bytearray(8192)
+                struct.pack_into('<4sIQ', data, 32, b'NXSB', 4096, 2)
+                data[100:100 + len(name)] = name.encode()
+                path.write_bytes(data)
+                inputs[name] = path
+            inputs['efi'] = root / 'efi'
+            inputs['efi'].mkdir()
+            inputs['firmware'] = root / 'firmware'
+            inputs['firmware'].mkdir()
+            (inputs['firmware'] / 'boot-polaris.img').write_bytes(b'firmware')
+            output, package = root / 'stage', root / 'package'
+            calls = []
+
+            def assemble(script, args):
+                calls.append((script, args))
+                destination = Path(args[args.index('--out') + 1])
+                if script == 'make-polaris-package.py':
+                    PACKAGE.build_package(
+                        Path(args[args.index('--esp') + 1]),
+                        Path(args[args.index('--esp-image') + 1]), inputs['kernel'], destination,
+                        firmware=Path(args[args.index('--firmware') + 1]),
+                        userdata=Path(args[args.index('--userdata') + 1]),
+                        darwin_root=Path(args[args.index('--darwin-root') + 1]))
+                else:
+                    destination.write_bytes(script.encode())
+                if script == 'make-ios-esp.py':
+                    payloads = Path(args[args.index('--tree') + 1]) / 'EFI/UniXNU/Payloads'
+                    payloads.mkdir(parents=True)
+                    for name, source in (('kernel.macho', inputs['kernel']),
+                                         ('kernel.macho.adt', inputs['adt']),
+                                         ('kernel.macho.trustcache', output / 'trust.bundle')):
+                        (payloads / name).write_bytes(source.read_bytes())
+
+            argv = ['build-ios-stage.py', '--out', str(output), '--package', str(package)]
+            for name, path in inputs.items():
+                argv.extend(['--' + name, str(path)])
+            with patch('sys.argv', argv), patch.object(STAGE, 'run', side_effect=assemble):
+                self.assertEqual(STAGE.main(), 0)
+            manifest = json.loads((package / 'manifest.json').read_text())
+            self.assertEqual(manifest['inputs']['userdata']['path'], 'esp.img')
+            self.assertEqual(manifest['inputs']['darwin_root']['path'], 'darwin-root.img')
+            self.assertEqual((package / 'firmware/boot-polaris.img').read_bytes(), b'firmware')
+            self.assertFalse(manifest['flashable'])
+            for base in (output, package):
+                stage = json.loads((base / 'ios-stage-manifest.json').read_text())
+                for fact in stage['inputs'].values():
+                    if 'path' in fact:
+                        self.assertEqual(STAGE.digest(base / fact['path']), fact['sha256'])
+            inputs['firmware'].rename(root / 'moved-firmware')
+            with patch('sys.argv', argv), patch.object(STAGE, 'run') as run:
+                with self.assertRaises(SystemExit):
+                    STAGE.main()
+                run.assert_not_called()
+
     def test_raw_apfs_uses_object_header_and_checks_container_extent(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "root.img"

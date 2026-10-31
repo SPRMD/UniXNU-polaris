@@ -19,6 +19,46 @@ CHECK_SPEC.loader.exec_module(CHECK)
 
 
 class PolarisPackageBuilderTests(unittest.TestCase):
+    def test_split_root_keeps_same_named_inputs_separate_and_checks_roles(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            esp = root / 'esp'
+            payload = esp / 'EFI/UniXNU/Payloads'
+            payload.mkdir(parents=True)
+            kernel = root / 'kernel.macho'
+            kernel.write_bytes(b'kernel')
+            (payload / 'kernel.macho').write_bytes(b'kernel')
+            sources = []
+            for role, content in (('esp', b'fat'), ('root', b'SHNGROOT'), ('firmware', b'boot')):
+                parent = root / ('input-' + role)
+                parent.mkdir()
+                source = parent / 'image.img'
+                source.write_bytes(content)
+                sources.append(source)
+            esp_image, darwin, firmware = sources
+            output = root / 'package'
+            manifest = MODULE.build_package(esp, esp_image, kernel, output,
+                                             firmware=firmware, darwin_root=darwin)
+            self.assertEqual((output / 'esp.img').read_bytes(), b'fat')
+            self.assertEqual((output / 'darwin-root.img').read_bytes(), b'SHNGROOT')
+            self.assertEqual((output / 'firmware/image.img').read_bytes(), b'boot')
+            self.assertEqual(manifest['inputs']['userdata']['path'], 'esp.img')
+            self.assertFalse(CHECK.verify_manifest(output)['flashable'])
+            CHECK.verify_sums(output)
+            # A coherent checksum list is insufficient if roles were swapped.
+            manifest['inputs']['userdata'] = manifest['inputs']['darwin_root']
+            (output / 'manifest.json').write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, 'userdata does not match'):
+                CHECK.verify_manifest(output)
+            with self.assertRaisesRegex(ValueError, 'userdata to be the ESP'):
+                MODULE.build_package(esp, esp_image, kernel, output,
+                                     userdata=darwin, darwin_root=darwin)
+            manifest['inputs']['userdata'] = manifest['inputs']['esp_image']
+            (output / 'manifest.json').write_text(json.dumps(manifest))
+            (output / 'esp/EFI/UniXNU/Payloads/kernel.macho').write_bytes(b'wrong kernel')
+            with self.assertRaisesRegex(ValueError, 'ESP kernel does not match'):
+                CHECK.verify_manifest(output)
+
     def test_package_paths_reject_windows_absolute_and_traversal_forms(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

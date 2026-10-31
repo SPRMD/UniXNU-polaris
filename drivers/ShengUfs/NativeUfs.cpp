@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: BSD-2-Clause-Patent
 // Polaris (SDM845) read-only UFS probe. probe(), mapPhys() and inspect() are
 // based on the local UniXNU/ShengUfs port with the SDM845 constants of
-// GccUfs.h; the storage path needs generated storage ABI headers and is not
-// built here. Default-off: native-ufs-probe=2 reads GCC and host registers,
+// GccUfs.h. native-ufs-block=1 enables the experimental read-only LUN backend.
+// Generated storage ABI headers are required. Default-off: native-ufs-probe=2 reads GCC and host registers,
 // 6 dumps the firmware request list, 3/4/5/9 adopt the controller and issue
 // read-only SCSI commands (ShengUfs adoptAndRead). Storage is never written.
 #include <IOKit/IOService.h>
+#if defined(POLARIS_UFS_BLOCK_RUNTIME) && POLARIS_UFS_BLOCK_RUNTIME
+#include <IOKit/storage/IOBlockStorageDevice.h>
+#endif
+#include <kern/clock.h>
+#include <mach/mach_time.h>
 #include <IOKit/IOPlatformExpert.h>
 #include <IOKit/IODeviceMemory.h>
 #include <IOKit/IOMemoryDescriptor.h>
@@ -23,6 +28,7 @@
 #include "RootDiagnostics.h"
 #include "SmmuTakeover.h"
 #include "TransferPoll.h"
+#include "PolarisDmaHandoff.h"
 
 static UfsRootDiagnostics gRootDiagnostic;
 static bool gRootDiagnosticEnabled;
@@ -44,6 +50,9 @@ class NativeUfs : public IOService {
   void inspect (void);
   void adoptAndRead (unsigned level);
   void dumpFirmwareList (void);
+#if defined(POLARIS_UFS_BLOCK_RUNTIME) && POLARIS_UFS_BLOCK_RUNTIME
+  bool startBlock (IOService *provider);
+#endif
   static bool waitSet (uintptr_t base, unsigned offset, uint32_t mask, unsigned loops);
 public:
   IOService *probe (IOService *provider, SInt32 *score) override;
@@ -775,7 +784,7 @@ static void hostWrite (unsigned offset, uint32_t value)
 // Bring the live controller up for reading: map, SMMU pass-through for the UFS stream, take over
 // the request list, wake the device from UFS-PowerDown and wait for LUN 0 to be ready.
 // `why` receives a short reason on failure.
-static bool hostBringUp (const char **why)
+static bool hostBringUp (const char **why, bool runtime = false)
 {
   if (gHost.poisoned) {
     *why = "transport quarantined";
@@ -783,6 +792,17 @@ static bool hostBringUp (const char **why)
   }
   if (gHost.ready) {
     return true;
+  }
+  if (runtime) {
+    OSSharedPtr<IOMemoryMap> clocks;
+    uintptr_t gcc = mapPhys (GCC_BASE + 0x77000, 0x1000, clocks);
+    if (!gcc || !(read32 (gcc, GCC_UFS_PHY_GDSCR - 0x77000) & 0x80000000U) ||
+        !(read32 (gcc, GCC_UFS_PHY_AXI_ENABLE - 0x77000) & 1) ||
+        (read32 (gcc, GCC_UFS_PHY_AXI_ENABLE - 0x77000) & 0x80000000U) ||
+        !(read32 (gcc, GCC_UFS_PHY_AHB_ENABLE - 0x77000) & 1)) {
+      *why = "UFS power/clocks not inherited";
+      return false;
+    }
   }
   gRootDiagnostic.stage = "controller map";
   gHost.hc = mapPhys (UFS_HC_BASE, UFS_HC_SIZE, gHost.hcMap);
@@ -816,6 +836,15 @@ static bool hostBringUp (const char **why)
     *why = "DMA address/contiguity";
     return false;
   }
+  if (runtime) {
+    // SDM845 DTS: apps_smmu spans 0x80000, but this validator reads GR0 only.
+    uintptr_t smmu = mapPhys (0x15000000ULL, 0x1000, gHost.smmuMap);
+    if (!smmu) { *why = "SMMU handoff map"; return false; }
+    const char *failure = polarisDmaHandoff (gHost.phys, kDmaBytes,
+      [smmu](unsigned offset) { return read32 (smmu, offset); });
+    if (failure) { *why = failure; return false; }
+    // No SMR, S2CR, context-bank or global SMMU writes in runtime mode.
+  }
   bzero (gHost.virt, kDmaBytes);
   cacheCivac (gHost.virt, kDmaBytes);
   uint32_t report[3] = { 0, 0, 0 };
@@ -825,7 +854,7 @@ static bool hostBringUp (const char **why)
   // state the firmware left for stream 0x100.
   unsigned smmuTakeover = 0;
   PE_parse_boot_argn ("native-ufs-smmu", &smmuTakeover, sizeof (smmuTakeover));
-  if (smmuTakeover == 1) {
+  if (!runtime && smmuTakeover == 1) {
     smmuBypassStream (0x100, gHost.smmuMap, report, gHost.phys, kDmaBytes);
     gHost.smmu = gHost.smmuMap->getVirtualAddress ();
     uint32_t idr1 = read32 (gHost.smmu, 0x24);
@@ -897,11 +926,78 @@ static uint32_t be32w (const uint8_t *at)
 #pragma clang diagnostic pop
 }
 
+#if defined(POLARIS_UFS_BLOCK_RUNTIME) && POLARIS_UFS_BLOCK_RUNTIME
+#include "PolarisBlockDevice.h"
+
+bool NativeUfs::startBlock (IOService *provider)
+{
+  // Firmware queue ownership is single-shot. Failed/in-flight DMA allocations stay
+  // pinned for this boot; retry/free would need a proven abort/reset protocol.
+  static bool attempted = false;
+  if (attempted) return false;
+  attempted = true;
+  unsigned takeover = 0;
+  PE_parse_boot_argn ("native-ufs-smmu", &takeover, sizeof (takeover));
+  if (takeover) {
+    IOLog ("POLARIS_UFS block: SMMU takeover is not supported by runtime\n");
+    return false;
+  }
+  const char *why = "";
+  if (!hostBringUp (&why, true)) {
+    IOLog ("POLARIS_UFS block refused: %s\n", why);
+    return false;
+  }
+  uint8_t capacity[8] = {};
+  uint8_t cdb[10] = { 0x25 };
+  uint32_t scsi = 0;
+  IOLockLock (gHost.lock);
+  IOReturn result = hostScsi (0, cdb, sizeof (cdb), true, sizeof (capacity), 1000000, &scsi);
+  if (result == kIOReturnSuccess) memcpy (capacity, gHost.virt + kDataOffset, sizeof (capacity));
+  IOLockUnlock (gHost.lock);
+  uint64_t bytes = 0;
+  if (result != kIOReturnSuccess || !polarisCapacity (capacity, bytes)) {
+    IOLog ("POLARIS_UFS block: READ CAPACITY failed or unsupported geometry\n");
+    return false;
+  }
+  if (!IOService::start (provider)) return false;
+  PolarisUfsBlock *device = new PolarisUfsBlock;
+  bool attached = false;
+  bool started = false;
+  if (device && device->init (nullptr) && device->configure (bytes)) {
+    attached = device->attach (this);
+    if (attached) started = device->start (this);
+  }
+  if (!started && attached) device->detach (this);
+  if (device) device->release ();
+  if (!started) IOService::stop (provider);
+  return started;
+}
+
+#endif // POLARIS_UFS_BLOCK_RUNTIME
+
 bool NativeUfs::start (IOService *provider)
 {
+  unsigned root = 0;
+  PE_parse_boot_argn ("native-ufs-root", &root, sizeof (root));
+  if (root) {
+    IOLog ("POLARIS_UFS: SHNGROOT window publication is not implemented; refusing root mode\n");
+    return false;
+  }
   unsigned probe = 0;
   PE_parse_boot_argn ("native-ufs-probe", &probe, sizeof (probe));
   native_ufs_probe_requested = probe != 0;
+  unsigned block = 0;
+  PE_parse_boot_argn ("native-ufs-block", &block, sizeof (block));
+  if (block) {
+    // Probe and block ownership must not coexist. The root personality starts once.
+    if (block != 1 || probe || !OSDynamicCast (IOPlatformExpertDevice, provider)) return false;
+#if defined(POLARIS_UFS_BLOCK_RUNTIME) && POLARIS_UFS_BLOCK_RUNTIME
+    return startBlock (provider);
+#else
+    IOLog ("POLARIS_UFS: block runtime was not compiled in\n");
+    return false;
+#endif
+  }
   // Hardware work runs once, from the root-device personality.
   if (!probe || !OSDynamicCast (IOPlatformExpertDevice, provider)) {
     return false;

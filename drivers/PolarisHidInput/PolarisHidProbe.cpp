@@ -88,7 +88,6 @@ extern "C" __attribute__((noinline)) void polaris_hid_live_checkpoint(IOService 
 }
 
 static void polaris_hid_thread(void *, wait_result_t) {
-    polaris_hid_stage = 1;
     polaris_hid_load_status = OSKextLoadKextWithIdentifier("com.apple.iokit.IOHIDFamily");
     if (polaris_hid_load_status == 0)
         OSKext::loadKextWithIdentifier("com.apple.iokit.IOHIDEventDriver", true, false, kOSKextExcludeNone, kOSKextExcludeNone,
@@ -97,7 +96,7 @@ static void polaris_hid_thread(void *, wait_result_t) {
     const OSMetaClass *meta = name ? OSMetaClass::getMetaClassWithName(name) : nullptr;
     polaris_hid_device_size = meta ? meta->getClassSize() : 0;
     OSSafeReleaseNULL(name);
-    polaris_hid_stage = 2;
+    __atomic_store_n(&polaris_hid_stage, 2u, __ATOMIC_RELEASE);
     IOService *resource = nullptr;
     OSDictionary *match = IOService::serviceMatching("IOHIDResource");
     if (polaris_hid_load_status == 0 && match) resource = IOService::waitForMatchingService(match, 10000000000ULL);
@@ -109,7 +108,7 @@ static void polaris_hid_thread(void *, wait_result_t) {
         OSSafeReleaseNULL(resource);
         return;
     }
-    polaris_hid_stage = 3;
+    __atomic_store_n(&polaris_hid_stage, 3u, __ATOMIC_RELEASE);
     void *handle = OSMetaClass::preModLoad(g_kernel_kmod_info.name);
     if (handle) {
         polaris_hid_static_init();
@@ -125,18 +124,25 @@ static void polaris_hid_thread(void *, wait_result_t) {
         }
         // The device lives for the boot: its registry attachment and work loop stay owned by IOKit.
     }
-    polaris_hid_stage = started ? 4 : 5;
+    __atomic_store_n(&polaris_hid_stage, started ? 4u : 5u, __ATOMIC_RELEASE);
     IOLog("TOUCH hid %s device %s (metaclass status %d)\n", polaris_hid_mode == 2 ? "touch-only" : "keyboard+touch",
         started ? "started on IOHIDResource" : "FAILED to start", polaris_hid_meta_status);
     OSSafeReleaseNULL(resource);
 }
 
-// Called from the late display probe (package/LegacyDisplayProbe.cpp); polaris-touch-hid=1 (combined) or 2 (touch-only).
+// Called from PolarisRuntime after the board services are launched; polaris-touch-hid=1 (combined) or 2 (touch-only).
 extern "C" void polaris_hid_touch_start(void) {
     unsigned enabled = 0;
     PE_parse_boot_argn("polaris-touch-hid", &enabled, sizeof(enabled));
-    if ((enabled != 1 && enabled != 2) || polaris_hid_stage) return;
+    if (enabled != 1 && enabled != 2) return;
+    uint32_t expected = 0;
+    if (!__atomic_compare_exchange_n(&polaris_hid_stage, &expected, 1u, false,
+                                    __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) return;
     polaris_hid_mode = enabled;
     thread_t thread = nullptr;
-    if (kernel_thread_start(polaris_hid_thread, nullptr, &thread) == KERN_SUCCESS) thread_deallocate(thread);
+    if (kernel_thread_start(polaris_hid_thread, nullptr, &thread) == KERN_SUCCESS) {
+        if (thread) thread_deallocate(thread);
+    } else {
+        __atomic_store_n(&polaris_hid_stage, 0u, __ATOMIC_RELEASE);
+    }
 }

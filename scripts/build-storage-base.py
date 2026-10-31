@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Build the pinned IOBlockStorageDevice base class for NativeUfs.
 
-NativeUfs derives from this class, so its methods must be present at the
+The optional PolarisUfsBlock derives from this class, so its methods must be present at the
 source-kernel link. The source and public header are from the same pinned
 IOStorageFamily revision prepared by build-platform-kernel.py.
 """
 import json
+import runpy
 from pathlib import Path
 import struct
 import subprocess
@@ -23,21 +24,9 @@ def main():
     out = ROOT / 'build/storage-base'
     out.mkdir(parents=True, exist_ok=True)
     obj = out / 'IOBlockStorageDevice.o'
-    command = []
-    arguments = record['arguments']
-    index = 0
-    while index < len(arguments):
-        value = arguments[index]
-        if value == record['file']:
-            command.append(str(source))
-        elif value == '-o':
-            command.extend(['-o', str(obj)])
-            index += 1
-        elif value == '-Xclang' and arguments[index + 1].startswith('-W'):
-            index += 1
-        elif not value.startswith('-W'):
-            command.append(value)
-        index += 1
+    rewrite = runpy.run_path(str(ROOT / 'scripts/build-arm-driver.py'))['rewrite_compile_command']
+    subprocess.run(['python3', str(ROOT / 'scripts/prepare-storage-headers.py')], check=True)
+    command = rewrite(record, source, obj)
     command.extend(['-I', str(ROOT / 'build/storage-abi/include'),
                     '-I', str(ROOT / '.cache/xnu-work/osfmk'),
                     '-mgeneral-regs-only'])

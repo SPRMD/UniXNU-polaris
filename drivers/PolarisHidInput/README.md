@@ -16,3 +16,21 @@ arrive only through `PolarisPmicRuntime`'s read-only sink.
 No Windows, Android, or proprietary binary is loaded. This is experimental:
 `hardware_tested=false` and `flashable=false` remain mandatory until a GitHub
 macOS build, prelinked boot, temporary boot, and per-event runtime logs pass.
+
+The existing PolarisRuntime entry launches the HID probe; its launch claim is
+atomic. The touch sink marks pending work, and the HID work-loop timer checks
+pending/undelivered frames every 20 ms. Late event-driver matching, allocation
+failure and report errors retain the last delivered contact set and retry the
+same sequence. Sink unregister drains the callback before teardown. Registry
+checkpoint work remains at one-second intervals.
+
+The inherited edge-gesture vtable patch is disabled unless
+`polaris-touch-edge-hook=1` is supplied. Its IOHIDEvent/IOHIDEventService slots
+are not covered by the 207-slot IOHIDDevice audit. Even with the hook disabled,
+the absolute IOHIDDevice bindings require the pinned prelinked image; the
+208-byte runtime check alone does not establish ABI compatibility.
+
+Lightweight regression tests (Linux/WSL with clang++):
+`python3 -m unittest discover -s tests -p test_polaris_touch_hid_runtime.py -v`.
+These execute production producer/consumer code with host stubs; they do not
+validate hardware, IOKit scheduling, Apple linking or the final prelinked ABI.

@@ -7,6 +7,7 @@
 #include <IOKit/IOTimerEventSource.h>
 #include <libkern/c++/OSString.h>
 #include <libkern/c++/OSIterator.h>
+#include <pexpert/pexpert.h>
 extern "C" void polaris_hid_input_observed(unsigned,int);
 extern "C" void polaris_hid_live_checkpoint(IOService *);
 extern "C" bool polaris_hid_input_requested(void);
@@ -134,6 +135,8 @@ class PolarisHidInput : public IOHIDDevice {
     bool touchOnly=false;
     bool eventDriverFound=false;
     uint32_t lastSeq=0;
+    bool touchPending=false;
+    unsigned touchTicks=0;
     // Fingers sent as down in the previous report; a vanished identifier gets one explicit tip-up report.
     int prevIds[TOUCH_FINGERS]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     int prevX[TOUCH_FINGERS]={},prevY[TOUCH_FINGERS]={};
@@ -141,29 +144,24 @@ class PolarisHidInput : public IOHIDDevice {
         if(value<0)value=0;if(value>=maximum)value=maximum-1;
         return (unsigned)((long long)value*32767/(maximum-1));
     }
-    // One finger set to the event driver. The touch thread (drivers/PolarisSynapticsTouch/PolarisTouchRuntime.c) calls touchNotify after it publishes a frame; there is no timer
-    // watching the seqlock any more (it woke the work loop every 8 ms for nothing).
+    // The producer only marks work pending. Timer state belongs to the work
+    // loop; setTimeoutMS is not serialized for concurrent callers. Never wait
+    // on the loop gate here: stop() can hold it while draining this sink.
     static void touchNotify(void *context) {
         PolarisHidInput *self=static_cast<PolarisHidInput *>(context);
-        if(self && self->inputLoop)self->inputLoop->runAction(&PolarisHidInput::touchAction,self);
-    }
-    static IOReturn touchAction(OSObject *owner,void *,void *,void *,void *) {
-        PolarisHidInput *self=OSDynamicCast(PolarisHidInput,owner);if(!self)return kIOReturnSuccess;
-        self->touchSend();
-        return kIOReturnSuccess;
+        if(self)__atomic_store_n(&self->touchPending,true,__ATOMIC_RELEASE);
     }
     void touchSend() {
         PolarisHidInput *self=this;
         if(!self->hasEventDriverCached())return;
-        uint32_t before=polaris_touch_seq;
+        uint32_t before=__atomic_load_n(&polaris_touch_seq,__ATOMIC_ACQUIRE);
         if((before&1) || before==self->lastSeq)return;
         __asm__ volatile("dmb ish":::"memory");
-        unsigned count=polaris_touch_count;if(count>TOUCH_FINGERS)count=TOUCH_FINGERS;
+        unsigned count=__atomic_load_n(&polaris_touch_count,__ATOMIC_RELAXED);if(count>TOUCH_FINGERS)count=TOUCH_FINGERS;
         int ids[TOUCH_FINGERS],xs[TOUCH_FINGERS],ys[TOUCH_FINGERS];
-        for(unsigned i=0;i<count;++i){ids[i]=polaris_touch_ids[i];xs[i]=polaris_touch_x[i];ys[i]=polaris_touch_y[i];}
+        for(unsigned i=0;i<count;++i){ids[i]=__atomic_load_n(&polaris_touch_ids[i],__ATOMIC_RELAXED);xs[i]=__atomic_load_n(&polaris_touch_x[i],__ATOMIC_RELAXED);ys[i]=__atomic_load_n(&polaris_touch_y[i],__ATOMIC_RELAXED);}
         __asm__ volatile("dmb ish":::"memory");
-        if(polaris_touch_seq!=before)return;      // torn read: retry on the next tick
-        self->lastSeq=before;
+        if(__atomic_load_n(&polaris_touch_seq,__ATOMIC_ACQUIRE)!=before)return;      // torn read: retry on the next tick
         // Map the Polaris 1080 x 2160 coordinates to the HID 0..32767 range.
         unsigned char report[1+TOUCH_FINGERS*6+1]={3};
         unsigned slot=0;
@@ -175,8 +173,6 @@ class PolarisHidInput : public IOHIDDevice {
             nextIds[slot]=ids[i];nextX[slot]=(int)x;nextY[slot]=(int)y;
         }
         const unsigned downCount=slot;
-        if(downCount>=2)edge::polaris_touch_hid_multi[0]=edge::polaris_touch_hid_multi[0]+1;
-        if(downCount>edge::polaris_touch_hid_multi[1])edge::polaris_touch_hid_multi[1]=downCount;
         // Identifiers that were down and are gone: tip up at the last known position. They are matched by identifier, not by slot:
         // the producer packs its fingers, so when one lifts the others move down a slot and a slot match would lift a finger still
         // down and leave the lifted one stuck.
@@ -190,18 +186,23 @@ class PolarisHidInput : public IOHIDDevice {
             f[0]=2;f[1]=(unsigned char)(id&0xff);   // tip up, valid
             f[2]=(unsigned char)self->prevX[j];f[3]=(unsigned char)(self->prevX[j]>>8);
             f[4]=(unsigned char)self->prevY[j];f[5]=(unsigned char)(self->prevY[j]>>8);
-            ++slot;edge::polaris_touch_hid_multi[2]=edge::polaris_touch_hid_multi[2]+1;
+            ++slot;
         }
-        for(unsigned j=0;j<TOUCH_FINGERS;++j) {
-            self->prevIds[j]=j<downCount?nextIds[j]:-1;
-            if(j<downCount){self->prevX[j]=nextX[j];self->prevY[j]=nextY[j];}
-        }
-        if(!slot)return;
+        if(!slot){self->lastSeq=before;return;}
         report[1+TOUCH_FINGERS*6]=(unsigned char)slot;
         IOBufferMemoryDescriptor *buffer=IOBufferMemoryDescriptor::withBytes(report,sizeof(report),kIODirectionNone);
         IOReturn result=buffer?self->handleReport(buffer,0,0):kIOReturnNoMemory;
         OSSafeReleaseNULL(buffer);
         polaris_hid_input_observed(6,result);
+        if(result!=kIOReturnSuccess)return; // Keep previous contacts/sequence for retry.
+        self->lastSeq=before;
+        if(downCount>=2)edge::polaris_touch_hid_multi[0]=edge::polaris_touch_hid_multi[0]+1;
+        if(downCount>edge::polaris_touch_hid_multi[1])edge::polaris_touch_hid_multi[1]=downCount;
+        edge::polaris_touch_hid_multi[2]=edge::polaris_touch_hid_multi[2]+slot-downCount;
+        for(unsigned j=0;j<TOUCH_FINGERS;++j) {
+            self->prevIds[j]=j<downCount?nextIds[j]:-1;
+            if(j<downCount){self->prevX[j]=nextX[j];self->prevY[j]=nextY[j];}
+        }
         polaris_touch_hid_reports=polaris_touch_hid_reports+1;
     }
     // The button driver's thread calls buttonsNotify on every change of the pressed set.
@@ -224,7 +225,11 @@ class PolarisHidInput : public IOHIDDevice {
         if(!eventDriverFound) {
             IORegistryEntry *driver=eventDriver(this,4);
             eventDriverFound=driver!=nullptr;
-            if(driver && (touchEnabled || touchOnly))edge::install(driver);
+            // This vtable patch is a separate, unqualified private ABI.
+            unsigned edgeHook=0;
+            if(driver && (touchEnabled || touchOnly) &&
+               PE_parse_boot_argn("polaris-touch-edge-hook",&edgeHook,sizeof(edgeHook)) && edgeHook==1)
+                edge::install(driver);
         }
         return eventDriverFound;
     }
@@ -244,8 +249,18 @@ class PolarisHidInput : public IOHIDDevice {
     }
     static void tick(OSObject *owner,IOTimerEventSource *source) {
         PolarisHidInput *self=OSDynamicCast(PolarisHidInput,owner);if(!self)return;
-        polaris_hid_live_checkpoint(self);
-        if(self->touchOnly){source->setTimeoutMS(1000);return;}
+        if(!(self->touchOnly || self->touchEnabled) || self->touchTicks++%50==0)
+            polaris_hid_live_checkpoint(self);
+        // Periodic recovery also covers late IOHIDEventDriver matching, torn
+        // snapshots and failed allocations/reports without a new hardware frame.
+        if(self->touchOnly || self->touchEnabled) {
+            // Check even without a notification: a failed report or late
+            // event-driver match must retry the same stationary frame.
+            if(__atomic_exchange_n(&self->touchPending,false,__ATOMIC_ACQ_REL) ||
+               __atomic_load_n(&polaris_touch_seq,__ATOMIC_ACQUIRE)!=self->lastSeq)
+                self->touchSend();
+        }
+        if(self->touchOnly || self->touchEnabled){source->setTimeoutMS(20);return;}
         if(!self->down && !hasEventDriver(self,4)) {
             polaris_hid_input_observed(3,0);
             source->setTimeoutMS(1000);
@@ -305,7 +320,7 @@ public:
         if(!touchOnly && &polaris_buttons_set_sink)polaris_buttons_set_sink(&PolarisHidInput::buttonsNotify,this);
         setProperty("OfflineInputProbe",true);
         polaris_hid_input_observed(2,0);
-        timer->setTimeoutMS(1000);return true;
+        timer->setTimeoutMS((touchOnly||touchEnabled)?20:1000);return true;
     }
     void stop(IOService *provider) override {
         if((touchOnly||touchEnabled) && &polaris_touch_runtime_set_sink)polaris_touch_runtime_set_sink(nullptr,nullptr);

@@ -82,6 +82,29 @@ class AdtTests(unittest.TestCase):
         tree = self.tree(dram_size=polaris.DRAM_SIZE_8)
         self.assertEqual(struct.unpack('<Q', tree['/chosen']['dram-size'])[0], 0xfcc00000)
 
+    def test_ipad_identity_preserves_hardware_and_trust_is_explicit(self):
+        default = self.tree()
+        self.assertNotIn('target-type', default[''])
+        self.assertNotIn('TrustCache', default['/chosen/memory-map'])
+        tree = self.tree(ipad_identity=True, trust_cache=True)
+        self.assertEqual(tree['']['model'], b'iPad7,1\0')
+        self.assertEqual(tree['']['target-type'], b'J120\0')
+        self.assertEqual(tree['']['compatible'], default['']['compatible'])
+        self.assertEqual(tree['/chosen/memory-map']['TrustCache'], bytes(16))
+
+    def test_root_match_uses_explicit_validated_uuid(self):
+        import plistlib
+        volume = '01234567-89ab-cdef-0123-456789abcdef'
+        tree = self.tree(root_match_volume_uuid=volume)
+        payload = tree['/chosen']['root-matching']
+        self.assertTrue(payload.endswith(b'\0'))
+        match = plistlib.loads(b'<plist version="1.0">' + payload[:-1] + b'</plist>')
+        self.assertEqual(match, {'IOProviderClass': 'IOMedia',
+                                'IOPropertyMatch': {'UUID': volume.upper()}})
+        self.assertNotIn('root-matching', self.tree()['/chosen'])
+        with self.assertRaises(ValueError):
+            self.tree(root_match_volume_uuid='invalid</string>')
+
     def test_ufs_node_is_explicit_opt_in(self):
         default = self.tree()
         self.assertNotIn('/arm-io/ufshc@1d84000', default)

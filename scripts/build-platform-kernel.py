@@ -14,12 +14,51 @@ import json
 import os
 from pathlib import Path
 import platform
+import shlex
 import shutil
 import struct
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def build_archives_collect_errors(ctx, env, run, error_type):
+    """Build every ordered recipe, reporting all failures before kernel linking."""
+    failures = []
+    entries = ctx.board.get('kernel', {}).get('archives', [])
+    for index, entry in enumerate(entries, 1):
+        parts = shlex.split(entry)
+        script = ctx.tree / 'scripts' / parts[0]
+        log_file = ctx.logs / f'archive-{index:02d}-{Path(parts[0]).stem}.log'
+        print(f'Archive {index}/{len(entries)}: {entry}', flush=True)
+        if not script.is_file():
+            failures.append(f'{entry}: script missing: {script}')
+            continue
+        try:
+            run(['python3', script, *parts[1:]], cwd=ctx.tree,
+                env=env, log_file=log_file)
+        except error_type as error:
+            failures.append(f'{entry}: {error}; log: {log_file}')
+    for key, value in sorted(env.items()):
+        if key.startswith('XNU_') and key.endswith('_ARCHIVE') and value.endswith('.a'):
+            if not Path(value).is_file():
+                failures.append(f'{key}: missing archive {value}')
+    if failures:
+        raise error_type('Archive build failures (link not attempted):\n' + '\n'.join(failures))
+
+
+def prelink_preserving_source(ctx, prelink, source, destination):
+    """The pinned prelink helper overwrites kernel.macho; keep both images."""
+    prelinked_destination = destination.with_name('kernel-prelinked.macho')
+    try:
+        prelinked = prelink(ctx)
+        shutil.copyfile(prelinked, prelinked_destination)
+    finally:
+        # prelink removes its output before building, including on failure.
+        # Restore from the final linked source, never from the overwritten file.
+        shutil.copyfile(source, destination)
+    return prelinked, prelinked_destination
 
 
 def main():
@@ -118,7 +157,7 @@ def main():
         if (ctx.tree / 'refer/IOStorageFamily').is_dir() and not storage_headers.is_dir():
             run(['python3', ctx.tree / 'scripts/prepare-storage-headers.py'], cwd=ctx.tree,
                 env=env, log_file=ctx.logs / 'storage-headers.log')
-    kernel.build_archives(ctx, env)
+    build_archives_collect_errors(ctx, env, run, Error)
     # The IOHIDDevice private ABI bridge is tied to the pinned iPadOS 17.7.11
     # kernelcache. Build it only for the explicit iPadOS-stage profile; the
     # ordinary Darwin source-kernel profile must remain independent of that
@@ -143,6 +182,7 @@ def main():
     # board-specific slots for them; pass them through its documented
     # XNU_EXTRA_LD_ARCHIVES hook after the archive recipes have run.
     probe_archives = [
+        ctx.tree / 'build/polaris-display/libPolarisDisplayRuntime.a',
         ctx.tree / 'build/polaris-board-probe/libPolarisBoardProbe.a',
         ctx.tree / 'build/polaris-hardware-services/libPolarisHardwareServices.a',
         ctx.tree / 'build/polaris-pmic-input/libPolarisPmicInput.a',
@@ -186,15 +226,14 @@ def main():
     if (ctx.board.get('kernel', {}).get('prelink') and
             ctx.config.get('XNU_CRYPTO_BOOTSTRAP') == 'prelinked'):
         print('Prelink pass: composing with the original iPadOS 17 kernelcache', flush=True)
-        prelinked = kernel.prelink(ctx)
-        print(f'PASS: prelinked kernel {prelinked} sha256 '
-              f'{hashlib.sha256(prelinked.read_bytes()).hexdigest()}', flush=True)
+        prelinked, prelinked_destination = prelink_preserving_source(
+            ctx, kernel.prelink, source, destination)
+        print(f'PASS: prelinked kernel {prelinked_destination} sha256 '
+              f'{hashlib.sha256(prelinked_destination.read_bytes()).hexdigest()}', flush=True)
         # Keep the source-kernel artifact and the prelinked userland kernel as
         # separate, self-describing files. A boolean in kernel.json is not
         # enough: downstream stage assembly must not silently package the
         # plain source image and lose IOHIDFamily/Apple userland roots.
-        prelinked_destination = ctx.work / 'kernel/kernel-prelinked.macho'
-        shutil.copyfile(prelinked, prelinked_destination)
         prelinked_data = prelinked_destination.read_bytes()
         prelinked_report = {
             'kernel_sha256': hashlib.sha256(prelinked_data).hexdigest(),

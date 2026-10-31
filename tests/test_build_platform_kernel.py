@@ -1,11 +1,92 @@
+import importlib.util
+import json
+import os
+import tempfile
+import textwrap
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class PlatformKernelBuildTests(unittest.TestCase):
+    def test_archive_failure_does_not_hide_later_driver_errors(self):
+        spec = importlib.util.spec_from_file_location(
+            'platform_build_archives_test', ROOT / 'scripts/build-platform-kernel.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'scripts').mkdir()
+            (root / 'scripts/build.py').write_text('')
+            ctx = SimpleNamespace(tree=root, logs=root,
+                                  board={'kernel': {'archives': [
+                                      'build.py first', 'build.py second', 'build.py third']}})
+            attempted = []
+
+            def run(command, **kwargs):
+                attempted.append(command[-1])
+                if command[-1] != 'second':
+                    raise RuntimeError('compiler rejected ' + command[-1])
+
+            with self.assertRaises(RuntimeError) as failure:
+                module.build_archives_collect_errors(ctx, {}, run, RuntimeError)
+            self.assertEqual(attempted, ['first', 'second', 'third'])
+            self.assertIn('compiler rejected first', str(failure.exception))
+            self.assertIn('compiler rejected third', str(failure.exception))
+            self.assertIn('link not attempted', str(failure.exception))
+
+    def test_prelink_preserves_source_bytes_on_success_and_failure(self):
+        spec = importlib.util.spec_from_file_location(
+            'platform_build_test', ROOT / 'scripts/build-platform-kernel.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'source.macho'
+            source.write_bytes(b'source-kernel')
+            destination = root / 'kernel.macho'
+
+            def prelink(_):
+                destination.write_bytes(b'prelinked-kernel')
+                return destination
+
+            _, result = module.prelink_preserving_source(None, prelink, source, destination)
+            self.assertEqual(result.read_bytes(), b'prelinked-kernel')
+            self.assertEqual(destination.read_bytes(), b'source-kernel')
+
+            def fail(_):
+                destination.unlink()
+                raise RuntimeError('prelink failed')
+
+            with self.assertRaisesRegex(RuntimeError, 'prelink failed'):
+                module.prelink_preserving_source(None, fail, source, destination)
+            self.assertEqual(destination.read_bytes(), b'source-kernel')
+
+    def test_firmware_workflow_emits_parseable_provenance(self):
+        workflow = (ROOT / '.github/workflows/polaris-build.yml').read_text(encoding='utf-8')
+        body = workflow.split("python3 - <<'PY'", 1)[1].split('\n          PY', 1)[0]
+        with tempfile.TemporaryDirectory() as directory:
+            previous = Path.cwd()
+            try:
+                os.chdir(directory)
+                output = Path('out/edk2-output')
+                output.mkdir(parents=True)
+                (output / 'boot-polaris.img').write_bytes(b'ANDROID!firmware-fixture')
+                (output / 'workspace').mkdir()
+                (output / 'workspace/intermediate.o').write_bytes(b'not-for-package')
+                with patch.dict(os.environ, {'EDK2_MSM_COMMIT': 'test-revision'}):
+                    exec(compile(textwrap.dedent(body), '<workflow-provenance>', 'exec'), {})
+                report = json.loads(Path('out/firmware/firmware-provenance.json').read_text())
+                self.assertEqual(report['commit'], 'test-revision')
+                self.assertEqual(report['files'][0]['bytes'], 24)
+                self.assertFalse(Path('out/firmware/workspace').exists())
+            finally:
+                os.chdir(previous)
+
     def test_polaris_probe_archives_are_force_loaded(self):
         source = (ROOT / "scripts" / "build-platform-kernel.py").read_text(encoding="utf-8")
         self.assertIn("build/polaris-board-probe/libPolarisBoardProbe.a", source)
@@ -51,6 +132,7 @@ class PlatformKernelBuildTests(unittest.TestCase):
         package = workflow.split(package_marker, 1)[1].split("- name:", 1)[0]
         self.assertIn("--os out/ios-inputs/044-76040-038.dmg", package)
         self.assertIn("--system-os out/ios-inputs/044-76034-038.dmg", package)
+        self.assertIn("--firmware out/firmware", package)
         self.assertNotIn("--system-os out/ios-inputs/044-76040-038.dmg", package)
         self.assertIn("scripts/check-ios-stage-inputs.py", workflow)
         self.assertIn("--output out/ios-inputs/ipsw-inputs.json", workflow)

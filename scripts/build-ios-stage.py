@@ -137,11 +137,17 @@ def main() -> int:
                         help="output directory for the stage")
     parser.add_argument("--package", type=Path,
                         help="optional guarded package directory")
+    parser.add_argument("--firmware", type=Path,
+                        help="Polaris boot firmware image or directory to include in the package")
     parser.add_argument("--driver-bundle", type=Path,
                         help="optional local source/firmware provenance bundle")
     parser.add_argument("--input-hash-report", type=Path,
                         help="optional SHA-256 report from check-ios-stage-inputs.py")
     args = parser.parse_args()
+    # Subcommands run from ROOT, not from the caller's current directory.
+    for name, value in vars(args).items():
+        if isinstance(value, Path):
+            setattr(args, name, value.resolve())
 
     if args.driver_bundle and not args.driver_bundle.exists():
         parser.error(f"driver bundle not found: {args.driver_bundle}")
@@ -153,6 +159,8 @@ def main() -> int:
         paths.append(args.driver_bundle)
     if args.input_hash_report:
         paths.append(args.input_hash_report)
+    if args.firmware:
+        paths.append(args.firmware)
     missing = [str(path) for path in paths if not path.exists()]
     if missing:
         parser.error("missing input(s): " + ", ".join(missing))
@@ -162,9 +170,9 @@ def main() -> int:
         shutil.rmtree(out)
     out.mkdir(parents=True)
 
-    os_image, os_geometry = normalize_apfs_input(args.os, out / "raw-inputs")
+    os_image, os_geometry = normalize_apfs_input(args.os, out / "raw-inputs" / "os")
     system_os_image, system_os_geometry = normalize_apfs_input(
-        args.system_os, out / "raw-inputs")
+        args.system_os, out / "raw-inputs" / "system-os")
     require_distinct_apfs_images(os_image, system_os_image)
 
     trust = out / "trust.bundle"
@@ -192,9 +200,9 @@ def main() -> int:
         "hardware_tested": False,
         "temporary_boot_tested": False,
         "inputs": {
-            "kernel": {"path": args.kernel.name, "bytes": args.kernel.stat().st_size,
+            "kernel": {"path": "esp/EFI/UniXNU/Payloads/kernel.macho", "bytes": args.kernel.stat().st_size,
                        "sha256": digest(args.kernel)},
-            "adt": {"path": args.adt.name, "bytes": args.adt.stat().st_size,
+            "adt": {"path": "esp/EFI/UniXNU/Payloads/kernel.macho.adt", "bytes": args.adt.stat().st_size,
                     "sha256": digest(args.adt)},
             "esp_image": {"path": esp_image.name, "bytes": esp_image.stat().st_size,
                           "sha256": digest(esp_image)},
@@ -242,14 +250,20 @@ def main() -> int:
             shutil.rmtree(package)
         package_args = ["--esp", str(esp_tree), "--esp-image", str(esp_image),
                         "--kernel", str(args.kernel), "--darwin-root",
-                        str(darwin_root), "--out", str(package)]
+                        str(darwin_root), "--userdata", str(esp_image), "--out", str(package)]
+        if args.firmware:
+            package_args.extend(["--firmware", str(args.firmware.resolve())])
         if args.driver_bundle:
             package_args.extend(["--driver-bundle", str(args.driver_bundle)])
         run("make-polaris-package.py", package_args)
         if args.input_hash_report:
             shutil.copy2(out / "ios-input-hashes.json", package / "ios-input-hashes.json")
+        # The bundle is installed under the loader's sidecar name in a package.
+        package_manifest = json.loads(json.dumps(manifest))
+        package_manifest["inputs"]["trust_bundle"]["path"] = (
+            "esp/EFI/UniXNU/Payloads/kernel.macho.trustcache")
         (package / "ios-stage-manifest.json").write_text(
-            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            json.dumps(package_manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         rewrite_package_sums(package)
     print(f"assembled experimental Polaris iOS stage: {out}")
     print("flashable=false; no phone access performed")
