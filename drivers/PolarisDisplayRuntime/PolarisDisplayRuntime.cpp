@@ -167,7 +167,12 @@ IOReturn polaris_surface_present(PolarisSurfaceAdapter *adapter, PolarisDisplayR
     using Descriptor = IOMemoryDescriptor *(*)(OSObject *);
     using Word = uint32_t (*)(OSObject *);
     using Wide = uint64_t (*)(OSObject *);
-    auto address = [adapter](unsigned index) { return adapter->text + polaris_surface_leaves[index].offset; };
+    // The admitted module is immutable. Convert the audited code offset to an
+    // integer address before forming the private function pointer so the
+    // Darwin compiler does not treat the cast as discarding constness.
+    auto address = [adapter](unsigned index) -> uintptr_t {
+        return reinterpret_cast<uintptr_t>(adapter->text + polaris_surface_leaves[index].offset);
+    };
     const uint32_t format = reinterpret_cast<Word>(address(PDS_FORMAT))(surface);
     const uint32_t planes = reinterpret_cast<Word>(address(PDS_PLANES))(surface);
     // Reject compressed '&BGA' even though Sirius accepts it for its renderer.

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause-Patent
 #pragma once
+#include <stddef.h>
 #include <IOKit/IOReturn.h>
 #include "../GopFramebuffer/PolarisCpuScanout.h"
 class IOService;

@@ -34,14 +34,14 @@
         "sha256": "c726cade86f623e0246b1236ff77ff77e48aa7ac984be2838e709e6713ed6aeb"
       },
       {
-        "bytes": 9756,
+        "bytes": 10035,
         "path": "drivers/PolarisDisplayRuntime/PolarisDisplayRuntime.cpp",
-        "sha256": "ca73fa2d9481ac6e3978ada408606f05bee703ef05be703ebf3e694700cf6561"
+        "sha256": "73e14a7870d2a6eb82a08a9c6d29066cda92c28cedd3b026f4df28a2a7f7ef31"
       },
       {
-        "bytes": 2083,
+        "bytes": 2103,
         "path": "drivers/PolarisDisplayRuntime/PolarisDisplayRuntime.h",
-        "sha256": "b9a04b0ee1f595cb4e71a346335847024f3ee7a5cf1d42602e25e3a9ae1215c3"
+        "sha256": "840898ea9ff4e4fc97d1faacedf2e5fe2bf8e1f37104379d36316dd9603d540e"
       },
       {
         "bytes": 1776,
@@ -470,7 +470,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T09:27:38.909036+00:00",
+  "generated_at": "2026-10-31T09:39:17.977119+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,
