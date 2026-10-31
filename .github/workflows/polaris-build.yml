@@ -473,7 +473,16 @@ jobs:
       - name: Install iOS-stage tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y mtools util-linux python3 python3-pip
+          # LLVM is required by the entry-probe patcher, which reads the kernel's
+          # symbol table and assembles the stage caves. Ubuntu names the tools
+          # with a version suffix; patch-xnu-entry-probe.py resolves both forms.
+          sudo apt-get install -y mtools util-linux python3 python3-pip \
+                                  llvm clang lld
+          for tool in llvm-nm llvm-objcopy llvm-size llvm-readelf clang ld.lld; do
+            found=$(command -v "$tool" || command -v "$tool-18" || command -v "$tool-19" || true)
+            [ -n "$found" ] || { echo "::error::$tool missing after install"; exit 1; }
+            echo "found $tool -> $found"
+          done
           # PyPI has no 'liblzfse' project (HTTP 404); the maintained binding is
           # 'lzfse', which ships a cp312 manylinux x86_64 wheel and exposes the
           # same decompress() the udif extractor imports.
