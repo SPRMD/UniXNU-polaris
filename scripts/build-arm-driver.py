@@ -9,8 +9,41 @@ import json
 from pathlib import Path
 import struct
 import subprocess
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# These initializers are explicitly called inside OSMetaClass::preModLoad /
+# postModLoad by PolarisRuntime. They must not also run as automatic globals.
+RUNTIME_CLASSES = {
+    'PolarisBoardProbe', 'PolarisHardwareServices', 'PolarisPmicInput',
+    'PolarisPmicRuntime', 'PolarisSynapticsTouch', 'PolarisTransportContracts',
+    'PolarisPeripheralContracts', 'PolarisNfcContract', 'PolarisCameraContract',
+    'PolarisDisplayContract', 'PolarisA630Probe',
+}
+
+
+def llvm_tool(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    for prefix in ('/opt/homebrew/opt/llvm/bin', '/usr/local/opt/llvm/bin'):
+        candidate = Path(prefix) / name
+        if candidate.is_file():
+            return str(candidate)
+    raise SystemExit(f'{name} required to export late IOKit initializers')
+
+
+def late_initializer_object(source, destination):
+    late = destination.with_suffix('.late.o')
+    symbol = '__GLOBAL__sub_I_' + source.name
+    subprocess.run([llvm_tool('llvm-objcopy'), '--remove-section=__DATA,__mod_init_func',
+                    '--globalize-symbol=' + symbol, str(destination), str(late)], check=True)
+    exported = subprocess.check_output(
+        [llvm_tool('llvm-nm'), '--defined-only', '--extern-only', str(late)], text=True)
+    if not any(line.split()[-1:] == [symbol] for line in exported.splitlines()):
+        raise SystemExit(f'initializer was not exported: {symbol}')
+    return late
 
 
 def rewrite_compile_command(record, source, destination):
@@ -48,9 +81,13 @@ def main():
     parser.add_argument('component', choices=['ArmDTPlatform', 'ArmCpu', 'ShengUfs', 'PolarisBoardProbe', 'PolarisHardwareServices', 'PolarisPmicInput', 'PolarisPmicRuntime', 'PolarisSynapticsTouch', 'PolarisTransportContracts', 'PolarisPeripheralContracts', 'PolarisNfcContract', 'PolarisCameraContract', 'PolarisA630Probe', 'PolarisDisplayContract', 'PolarisRuntime', 'NativeMobileDisplay'])
     parser.add_argument('--ufs-block-runtime', action='store_true',
                         help='compile experimental read-only LUN backend (still boot-arg gated)')
+    parser.add_argument('--with-hid-runtime', action='store_true',
+                        help='link PolarisRuntime to the selected private HID bridge')
     args = parser.parse_args()
     if args.ufs_block_runtime and args.component != 'ShengUfs':
         parser.error('--ufs-block-runtime applies only to ShengUfs')
+    if args.with_hid_runtime and args.component != 'PolarisRuntime':
+        parser.error('--with-hid-runtime applies only to PolarisRuntime')
     output_names = {
         'ArmCpu': ('armcpu', 'ArmCpu', 'ArmCpu'),
         'ArmDTPlatform': ('armdt-platform', 'ArmDTPlatform', 'ArmDTPlatform'),
@@ -83,6 +120,8 @@ def main():
     destination = out / (args.component + '.o')
     out.mkdir(parents=True, exist_ok=True)
     command = rewrite_compile_command(record, source, destination)
+    if args.component == 'PolarisRuntime':
+        command.append('-DPOLARIS_WITH_HID_RUNTIME=' + str(int(args.with_hid_runtime)))
     command.extend(['-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter',
                     '-Wno-c99-designator', '-Wno-reorder-init-list',
                     '-Wno-deprecated-enum-enum-conversion',
@@ -112,7 +151,8 @@ def main():
         raise SystemExit(f'Expected iOS 17 deployment, got {deployment}')
     archive = out / ('lib' + archive_name + '.a')
     archive.unlink(missing_ok=True)
-    subprocess.run(['xcrun', 'ar', 'rcs', archive, destination], check=True)
+    linked_object = late_initializer_object(source, destination) if args.component in RUNTIME_CLASSES else destination
+    subprocess.run(['xcrun', 'ar', 'rcs', archive, linked_object], check=True)
     if args.component == 'NativeMobileDisplay':
         # build-xnu-4k-baseline.sh links the post-ABI display archive. Keep a
         # byte-for-byte late copy and a small report so the link can verify the

@@ -24,12 +24,16 @@ class PlatformKernelBuildTests(unittest.TestCase):
             (root / 'scripts/build-arm-driver.py').write_text('')
             for enabled in (False, True):
                 ctx = SimpleNamespace(tree=root, logs=root,
-                    config={'XNU_NATIVE_UFS': enabled},
-                    board={'kernel': {'archives': ['build-arm-driver.py ShengUfs']}})
+                    config={'XNU_NATIVE_UFS': True,
+                            'XNU_CRYPTO_BOOTSTRAP': 'prelinked' if enabled else 'source',
+                            'XNU_POLARIS_HID_INPUT': enabled},
+                    board={'kernel': {'archives': ['build-arm-driver.py ShengUfs',
+                                                  'build-arm-driver.py PolarisRuntime']}})
                 commands = []
                 module.build_archives_collect_errors(
                     ctx, {}, lambda command, **kwargs: commands.append(command), RuntimeError)
                 self.assertEqual('--ufs-block-runtime' in commands[0], enabled)
+                self.assertEqual('--with-hid-runtime' in commands[1], enabled)
 
     def test_archive_failure_does_not_hide_later_driver_errors(self):
         spec = importlib.util.spec_from_file_location(
