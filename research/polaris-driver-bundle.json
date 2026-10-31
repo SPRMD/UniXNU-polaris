@@ -124,9 +124,14 @@
         "sha256": "23304ab388f94b5d2a3d9e00351b4fa2758959ef623c6296df0e3e0f8db8dfd1"
       },
       {
-        "bytes": 1171,
+        "bytes": 1789,
+        "path": "drivers/PolarisGeniI2c/PolarisGeniI2cResources.h",
+        "sha256": "a4fe7c01b0f621200b0183805badbbf93ae8e5caa6a5d3b8da6dc4b2dcb03188"
+      },
+      {
+        "bytes": 1472,
         "path": "drivers/PolarisGeniI2c/README.md",
-        "sha256": "818fd90e90d2dd9e020f4b240ffc68a56da7cd899e025d9022a594cb421a92b2"
+        "sha256": "bb72fdb14d0efdb6bb09989b35df53c4f75fa41f937b836da51f5c622423ecb8"
       },
       {
         "bytes": 886,
@@ -259,9 +264,9 @@
         "sha256": "4534a6274af0e26f7f07cdbad46b2e235f67fe03b4601242432e24e61b4b89f4"
       },
       {
-        "bytes": 10238,
+        "bytes": 11976,
         "path": "drivers/PolarisPeripheralContracts/PolarisPeripheralContracts.cpp",
-        "sha256": "bf5c4628cf1bdf43417830d8c52e6f9d9181f1abca1a018ca9d21a75c96f6cef"
+        "sha256": "78889234149db58450240af992bacaee0d3e93799f2dbee72baf9516b965a1b3"
       },
       {
         "bytes": 847,

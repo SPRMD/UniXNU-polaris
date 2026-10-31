@@ -114,6 +114,10 @@ jobs:
             drivers/PolarisGeniI2c/PolarisGeniI2c.c \
             -o out/host-tests/polaris_geni_i2c_host
           out/host-tests/polaris_geni_i2c_host
+          clang -std=c11 -Wall -Wextra -Werror \
+            tests/polaris_geni_i2c_resources_test.c \
+            -o out/host-tests/polaris_geni_i2c_resources_test
+          out/host-tests/polaris_geni_i2c_resources_test
           python3 scripts/make-polaris-adt.py --output out/polaris.adt
           python3 scripts/make-polaris-adt.py --output out/polaris-full.adt --ram 8 --cpu-regs 0,0x100,0x200,0x300,0x400,0x500,0x600,0x700
           python3 scripts/check-cpu-prefix.py out/polaris.adt --cmdline "-v serial=3 cpus=1"

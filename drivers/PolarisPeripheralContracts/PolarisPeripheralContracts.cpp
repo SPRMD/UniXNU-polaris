@@ -17,6 +17,7 @@
 #include <pexpert/pexpert.h>
 #include <string.h>
 
+#include "../PolarisGeniI2c/PolarisGeniI2cResources.h"
 #include "../PolarisTransportContracts/PolarisCciProtocol.h"
 #include "../PolarisTransportContracts/PolarisNci.h"
 #include "../PolarisTransportContracts/PolarisProtocolSelfTest.h"
@@ -180,6 +181,31 @@ public:
     setProperty("polaris-peripheral-camera-sensor-candidates", "IMX363; OV5675; S5K3M3");
     setProperty("polaris-peripheral-camera-imx363-address", 0x34U, 32);
     setProperty("polaris-peripheral-camera-imx363-id-register", 0x0016U, 32);
+    PolarisGeniI2cResource geniSe3 = {};
+    PolarisGeniI2cResource geniSe14 = {};
+    const bool geniSe3Present =
+        polaris_geni_i2c_resource(PolarisGeniI2cNfc, &geniSe3) &&
+        polaris_geni_i2c_resource_valid(&geniSe3);
+    const bool geniSe14Present =
+        polaris_geni_i2c_resource(PolarisGeniI2cTouch, &geniSe14) &&
+        polaris_geni_i2c_resource_valid(&geniSe14);
+    setProperty("polaris-peripheral-geni-se3-resource-valid", geniSe3Present);
+    setProperty("polaris-peripheral-geni-se3-base", geniSe3.base, 64);
+    setProperty("polaris-peripheral-geni-se3-size", geniSe3.size, 32);
+    setProperty("polaris-peripheral-geni-se3-irq", geniSe3.irq, 32);
+    setProperty("polaris-peripheral-geni-se3-address", geniSe3.address7, 32);
+    setProperty("polaris-peripheral-geni-se3-irq-gpio", geniSe3.irq_gpio, 32);
+    setProperty("polaris-peripheral-geni-se3-ven-gpio", geniSe3.reset_gpio, 32);
+    setProperty("polaris-peripheral-geni-se3-bus", geniSe3.bus_index, 32);
+    setProperty("polaris-peripheral-geni-se14-resource-valid", geniSe14Present);
+    setProperty("polaris-peripheral-geni-se14-base", geniSe14.base, 64);
+    setProperty("polaris-peripheral-geni-se14-size", geniSe14.size, 32);
+    setProperty("polaris-peripheral-geni-se14-irq", geniSe14.irq, 32);
+    setProperty("polaris-peripheral-geni-se14-address", geniSe14.address7, 32);
+    setProperty("polaris-peripheral-geni-se14-irq-gpio", geniSe14.irq_gpio, 32);
+    setProperty("polaris-peripheral-geni-se14-reset-gpio", geniSe14.reset_gpio, 32);
+    setProperty("polaris-peripheral-geni-se14-bus", geniSe14.bus_index, 32);
+    setProperty("polaris-peripheral-geni-resource-io-performed", false);
     setProperty("polaris-peripheral-wifi-firmware-candidates", "wlanmdsp.mbn; bdwlan.bin");
     setProperty("polaris-peripheral-bluetooth-firmware-candidates", "crbtfw20.tlv; crbtfw21.tlv; crnv20.bin; crnv21.bin");
     setProperty("polaris-peripheral-wlfw-bdf-chunk-bytes", PolarisWlfw::kChunkSize, 32);

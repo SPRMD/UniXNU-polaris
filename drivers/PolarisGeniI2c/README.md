@@ -11,6 +11,11 @@ held-stop register reads, NACK/error reporting, and cancel-then-abort timeout
 recovery. It does not map MMIO, select clocks, configure GPIOs, claim an IRQ,
 load firmware, allocate DMA, or access a phone by itself.
 
+`PolarisGeniI2cResources.h` records the board-specific SE3/NFC and SE14/touch
+resource facts from the Polaris SDM845 device tree: physical GENI windows,
+interrupts, I2C addresses, and the NFC/touch GPIOs. It is a resolver for the
+future Darwin transport owner and performs no MMIO or GPIO operation.
+
 A Polaris consumer must first prove the selected QUPv3 serial engine, firmware
 protocol, clock/pin ownership, interrupt route, and power state. Until that
 proof and a temporary boot test exist, this component remains a portable build
