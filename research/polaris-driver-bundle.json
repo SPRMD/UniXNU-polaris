@@ -234,9 +234,9 @@
         "sha256": "749a3fe9940cfd2bf715657bf645c03568caa51bf6a114a70f7d8cdb9f0d1029"
       },
       {
-        "bytes": 5774,
+        "bytes": 5779,
         "path": "drivers/PolarisTransportContracts/PolarisProtocolSelfTest.h",
-        "sha256": "8f779cb5448a56768cb123552fda66acef87c7b8f5631b35524c8a725ad72265"
+        "sha256": "5a15f2a567dcf7ca4cd8353ee10a5136b957dec4bb6d08c128f62fb49ddf1300"
       },
       {
         "bytes": 2540,
@@ -249,9 +249,9 @@
         "sha256": "7b7bb510518d7279313445926f94d180be6a54d29760a6ad7522fb4191dd20ae"
       },
       {
-        "bytes": 2449,
+        "bytes": 2267,
         "path": "drivers/PolarisTransportContracts/PolarisWlfwProtocol.h",
-        "sha256": "9446cbbfe002d2d9a5f55a062ea1e82c248918b036303225179a2f22670007a0"
+        "sha256": "5f3d87a5cc88bb483b81e7854945f0e1f75ec57b4f442ff8f1c784cb2ee5fc82"
       },
       {
         "bytes": 1287,
