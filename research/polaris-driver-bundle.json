@@ -139,9 +139,9 @@
         "sha256": "d5260f708fa32b5f0415c46e792552e30b92ab325c4be4d7dc20e15cdb84ac7a"
       },
       {
-        "bytes": 4763,
+        "bytes": 5256,
         "path": "drivers/PolarisPmicInput/PolarisPmicInput.cpp",
-        "sha256": "070dbee14428b6e127a2f678bcf4b4c53c6058633c01cdb11e0a82083b602f3e"
+        "sha256": "1b39b3da902f3a40ff1aa22f39ce8e97ee5fcea82197943ceb7d72c20fcabce1"
       },
       {
         "bytes": 5829,
@@ -264,9 +264,9 @@
         "sha256": "4534a6274af0e26f7f07cdbad46b2e235f67fe03b4601242432e24e61b4b89f4"
       },
       {
-        "bytes": 11976,
+        "bytes": 12267,
         "path": "drivers/PolarisPeripheralContracts/PolarisPeripheralContracts.cpp",
-        "sha256": "78889234149db58450240af992bacaee0d3e93799f2dbee72baf9516b965a1b3"
+        "sha256": "6f1b544b2789809bb911b0d87bd07e8f29c8ad1c911ccc88ceb7db6b2f179d34"
       },
       {
         "bytes": 847,
@@ -279,9 +279,9 @@
         "sha256": "6abfeb63ee7b54e133b58c369066ee5c648d94e89a9bbf88f05c4a761c6de0ae"
       },
       {
-        "bytes": 5095,
+        "bytes": 5578,
         "path": "drivers/PolarisNfcContract/PolarisNfcContract.cpp",
-        "sha256": "a0f9fbeab619d2820fea07adb67bfa34a226ff9bbe042ab8a1343e926c6f3465"
+        "sha256": "fd5b1ea5e1b600c7671e39ad13c42c26b0263858e07f62f782054fe7b3e95d2a"
       },
       {
         "bytes": 2964,
@@ -299,9 +299,9 @@
         "sha256": "a982493f9f32896ef5b3145dda40a2cc3e1e1f40da17c186800022dcaa3b4647"
       },
       {
-        "bytes": 6946,
+        "bytes": 7395,
         "path": "drivers/PolarisCameraContract/PolarisCameraContract.cpp",
-        "sha256": "ca16fd9c8df75cea4d7859affeae0eae4120c12d54e9d48eb34e60f4c77313b2"
+        "sha256": "cc9554c8b2f6cc8d75eb3621f881720ef800ea4134aac4a09ab8c758dbd56808"
       },
       {
         "bytes": 3743,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T04:30:16.686632+00:00",
+  "generated_at": "2026-10-31T07:22:27.873851+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,
