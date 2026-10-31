@@ -104,8 +104,11 @@ def source_inventory() -> list[dict[str, Any]]:
         if not directory.is_dir():
             continue
         for path in sorted(
-            p for p in directory.rglob("*")
-            if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+            (
+                p for p in directory.rglob("*")
+                if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+            ),
+            key=lambda p: p.relative_to(ROOT).as_posix(),
         ):
             # Source text and build metadata are safe to hash into the bundle;
             # no generated objects or proprietary input are pulled in here.

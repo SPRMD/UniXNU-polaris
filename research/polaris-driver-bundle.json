@@ -159,14 +159,14 @@
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "bytes": 14345,
-        "path": "drivers/PolarisProtocols/polaris_protocols.py",
-        "sha256": "d6e74e537008cd403222bbcf31925c26762f235067c5589bd7c5c7226372c126"
-      },
-      {
         "bytes": 1081,
         "path": "drivers/PolarisProtocols/README.md",
         "sha256": "de324fce0396cde70f10de4da124ade48d65945145381ffaee53c1dea0646c36"
+      },
+      {
+        "bytes": 14345,
+        "path": "drivers/PolarisProtocols/polaris_protocols.py",
+        "sha256": "d6e74e537008cd403222bbcf31925c26762f235067c5589bd7c5c7226372c126"
       },
       {
         "bytes": 1169,
