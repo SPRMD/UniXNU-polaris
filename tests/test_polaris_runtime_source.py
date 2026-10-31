@@ -24,7 +24,7 @@ class PolarisRuntimeSourceTests(unittest.TestCase):
         for name in (
             '"PolarisBoardProbe"',
             '"PolarisHardwareServices"',
-            '"PolarisPmicInput"',
+            '"PolarisPmicInputService"',
             '"PolarisSynapticsTouch"',
             '"PolarisTransportContracts"',
             '"PolarisNfcContract"',

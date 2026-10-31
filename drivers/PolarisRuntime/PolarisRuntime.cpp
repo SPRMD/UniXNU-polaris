@@ -2,6 +2,7 @@
 // Explicit source-kernel start path for the board-gated Polaris services.
 
 #include <IOKit/IOService.h>
+#include <IOKit/IOPlatformExpert.h>
 #include <IOKit/IODeviceTreeSupport.h>
 #include <libkern/c++/OSMetaClass.h>
 #include <libkern/c++/OSObject.h>
@@ -153,7 +154,7 @@ extern "C" void polaris_runtime_start(IOService *platform)
     return;
   }
   static const char *const classes[] = {
-      "PolarisBoardProbe", "PolarisHardwareServices", "PolarisPmicInput",
+      "PolarisBoardProbe", "PolarisHardwareServices", "PolarisPmicInputService",
       "PolarisSynapticsTouch", "PolarisTransportContracts", "PolarisA630Probe",
   };
   for (const char *className : classes) (void)startService(className, provider);

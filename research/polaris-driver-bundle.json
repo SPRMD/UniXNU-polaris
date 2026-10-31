@@ -339,9 +339,9 @@
         "sha256": "1f76a0e4353b335ed3abf6e7c8c9a83bd9fd722dc866612737384d6914621c9b"
       },
       {
-        "bytes": 7237,
+        "bytes": 7280,
         "path": "drivers/PolarisRuntime/PolarisRuntime.cpp",
-        "sha256": "3a6f87ec4a55deb9539ae6c2841b4a60c44981aa7b1e3b4ece5c4db6e5d65a96"
+        "sha256": "12ef283df308dbbe992089140f8dfdf69747576965f0a985df60501969fba59a"
       },
       {
         "bytes": 1209,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T07:53:06.081231+00:00",
+  "generated_at": "2026-10-31T08:19:51.208840+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,
