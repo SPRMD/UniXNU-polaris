@@ -1,7 +1,7 @@
 # Experimental iPadOS 17 root attempt for polaris (SDM845).
-# NativeUfs is compiled from the pinned UniXNU driver with the SDM845 UFS
-# match and stream ID overlay in scripts/build-arm-driver.py. Its host and
-# SMMU hand-off still require first-boot validation on the phone.
+# NativeUfs includes the optional read-only block backend in this profile.
+# Host, inherited SMMU/DMA mapping, and root publication still require
+# hardware qualification; compiling this profile does not enable runtime I/O.
 CONFIG_XNU_BUILD_ARCHIVES=y
 CONFIG_XNU_SOURCE_CORECRYPTO14=y
 CONFIG_XNU_SOURCE_PTHREAD=y

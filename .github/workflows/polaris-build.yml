@@ -234,6 +234,10 @@ jobs:
             out/native/polaris/tree/build/polaris-camera-contract/
             out/native/polaris/tree/build/polaris-a630-probe/
             out/native/polaris/tree/build/polaris-display-contract/
+            out/native/polaris/tree/build/polaris-display/
+            out/native/polaris/tree/build/sheng-ufs/
+            out/native/polaris/tree/build/storage-base/
+            out/native/polaris/tree/build/storage-abi/
             out/native/polaris/tree/build/polaris-runtime/
             out/native/polaris/tree/build/gop-framebuffer/
             out/native/ipsw/
@@ -489,7 +493,8 @@ jobs:
         run: |
           python3 scripts/make-polaris-adt.py \
             --output out/ios-inputs/polaris-ios.adt \
-            --ram 6 --ipad-identity --include-ufs --trust-cache
+            --ram 6 --ipad-identity --include-ufs --trust-cache \
+            --root-match-volume-uuid 04769D26-2CA0-4825-B443-E2E5F88300F2
 
       - name: Assemble guarded iPadOS stage package
         run: |

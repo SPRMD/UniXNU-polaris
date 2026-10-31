@@ -29,6 +29,9 @@ def build_archives_collect_errors(ctx, env, run, error_type):
     entries = ctx.board.get('kernel', {}).get('archives', [])
     for index, entry in enumerate(entries, 1):
         parts = shlex.split(entry)
+        if (parts == ['build-arm-driver.py', 'ShengUfs'] and
+                getattr(ctx, 'config', {}).get('XNU_NATIVE_UFS', False)):
+            parts.append('--ufs-block-runtime')
         script = ctx.tree / 'scripts' / parts[0]
         log_file = ctx.logs / f'archive-{index:02d}-{Path(parts[0]).stem}.log'
         print(f'Archive {index}/{len(entries)}: {entry}', flush=True)

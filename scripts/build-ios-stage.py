@@ -18,6 +18,8 @@ import shutil
 import struct
 import subprocess
 import sys
+import uuid
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -78,6 +80,83 @@ def require_raw_apfs(path: Path) -> dict[str, int]:
             "container_bytes": container_bytes}
 
 
+def apfs_partition(stream, image_bytes: int, base: int = 0) -> tuple[int, int]:
+    """Locate one APFS partition in a 512-byte-sector Apple disk image.
+
+    The phone GPT uses different geometry; this only parses decoded IPSW disks.
+    Validate header/table CRCs and every occupied extent before copying bytes.
+    """
+    stream.seek(base + 512)
+    header = bytearray(stream.read(512))
+    if len(header) != 512 or header[:8] != b'EFI PART':
+        raise SystemExit('expected raw APFS or a GPT-wrapped IPSW disk')
+    revision, length, checksum, reserved = struct.unpack_from('<4I', header, 8)
+    if revision != 0x10000 or not 92 <= length <= 512 or reserved:
+        raise SystemExit('invalid GPT header')
+    struct.pack_into('<I', header, 16, 0)
+    if zlib.crc32(header[:length]) != checksum:
+        raise SystemExit('GPT header checksum mismatch')
+    current, backup, first, last = struct.unpack_from('<4Q', header, 24)
+    table_lba, count, stride, table_crc = struct.unpack_from('<QIII', header, 72)
+    sectors = image_bytes // 512
+    if (current != 1 or not 2 <= backup < sectors or not 2 <= first <= last < backup or
+            not 1 <= count <= 4096 or stride < 128 or stride > 4096 or stride % 128 or
+            table_lba < 2 or table_lba * 512 + count * stride > first * 512):
+        raise SystemExit('invalid GPT geometry')
+    stream.seek(base + table_lba * 512)
+    entries = stream.read(count * stride)
+    if len(entries) != count * stride or zlib.crc32(entries) != table_crc:
+        raise SystemExit('GPT entry checksum mismatch')
+    apfs_type = uuid.UUID('7C3457EF-0000-11AA-AA11-00306543ECAC').bytes_le
+    extents, matches, identifiers = [], [], set()
+    for index in range(count):
+        entry = entries[index * stride:(index + 1) * stride]
+        if entry[:16] == bytes(16):
+            continue
+        start, end = struct.unpack_from('<QQ', entry, 32)
+        identifier = entry[16:32]
+        if (not first <= start <= end <= last or identifier == bytes(16) or
+                identifier in identifiers or any(start <= b and a <= end for a, b in extents)):
+            raise SystemExit('invalid or overlapping GPT partitions')
+        identifiers.add(identifier)
+        extents.append((start, end))
+        if entry[:16] == apfs_type:
+            matches.append((start * 512, (end - start + 1) * 512))
+    if len(matches) != 1:
+        raise SystemExit('expected exactly one APFS partition')
+    return matches[0]
+
+
+def unwrap_apfs_partition(path: Path, workdir: Path) -> tuple[Path, dict[str, int]]:
+    with path.open('rb') as source:
+        offset, length = apfs_partition(source, path.stat().st_size)
+        source.seek(offset)
+        header = source.read(48)
+        if len(header) != 48 or header[32:36] != b'NXSB':
+            raise SystemExit('GPT APFS partition does not contain NXSB')
+        block_size, blocks = struct.unpack_from('<IQ', header, 36)
+        if (block_size < 4096 or block_size > 65536 or block_size & (block_size - 1)
+                or not blocks or block_size * blocks > length):
+            raise SystemExit('APFS container exceeds its GPT partition')
+        workdir.mkdir(parents=True, exist_ok=True)
+        output = workdir / (path.name + '.apfs.img')
+        if output.resolve() == path.resolve():
+            raise SystemExit('APFS output aliases input')
+        source.seek(offset)
+        remaining = block_size * blocks
+        with output.open('wb') as target:
+            while remaining:
+                data = source.read(min(8 * 1024 * 1024, remaining))
+                if not data:
+                    raise SystemExit('truncated APFS partition')
+                target.write(data)
+                remaining -= len(data)
+    geometry = require_raw_apfs(output)
+    geometry['source_partition_offset'] = offset
+    geometry['source_partition_bytes'] = length
+    return output, geometry
+
+
 def normalize_apfs_input(path: Path, workdir: Path) -> tuple[Path, dict[str, int]]:
     """Return a raw APFS image, extracting a UDIF wrapper when necessary.
 
@@ -95,11 +174,14 @@ def normalize_apfs_input(path: Path, workdir: Path) -> tuple[Path, dict[str, int
         except (OSError, ValueError):
             is_udif = False
         if not is_udif:
-            raise
+            return unwrap_apfs_partition(path, workdir)
         workdir.mkdir(parents=True, exist_ok=True)
         raw = workdir / (path.name + ".raw.img")
         run("udif-extract.py", [str(path), str(raw)])
-        return raw, require_raw_apfs(raw)
+        try:
+            return raw, require_raw_apfs(raw)
+        except SystemExit:
+            return unwrap_apfs_partition(raw, workdir)
 
 
 def require_distinct_apfs_images(os_image: Path, system_os_image: Path) -> None:
