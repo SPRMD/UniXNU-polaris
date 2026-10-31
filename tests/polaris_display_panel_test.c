@@ -4,8 +4,9 @@
 int main(void)
 {
     uint8_t kind = 0;
+    const char *panel = "dsi_jdi_fhd_nt35596s_video_display";
     assert(polaris_display_panel_name_kind(
-        "dsi_jdi_fhd_nt35596s_video_display", 37, &kind));
+        panel, sizeof("dsi_jdi_fhd_nt35596s_video_display") - 1, &kind));
     assert(kind == PolarisDisplayPanelJdiNt35596sVideo);
     assert(!polaris_display_panel_name_kind("dsi_unknown", 11, &kind));
 
