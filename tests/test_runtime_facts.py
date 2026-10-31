@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "tools" / "derive_runtime_facts.py"
 SPEC = importlib.util.spec_from_file_location("derive_runtime_facts", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)

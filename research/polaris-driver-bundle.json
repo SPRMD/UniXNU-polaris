@@ -4,19 +4,19 @@
     "kernel_family": "UniXNU Darwin 23",
     "source_components": [
       {
-        "bytes": 13873,
+        "bytes": 13733,
         "path": "drivers/GopFramebuffer/NativeMobileDisplay.cpp",
-        "sha256": "e3771fa685163b0f4b14cfceed77ec6eca2f46918b1c247009896e9eea60c4b1"
+        "sha256": "0261d0d22ffafaf88dfb74714e479040e1601fbca15dae3ddefea183c1a050ff"
       },
       {
-        "bytes": 6861,
+        "bytes": 6754,
         "path": "drivers/GopFramebuffer/OriginalMobileFramebufferABI.h",
-        "sha256": "cd4acab60105f980f861ebfff307c486ffeeec02297a0830367d48c52d25de68"
+        "sha256": "676e9c956683a91bf8224901cf4c94db5f0e36826b3de5c870bd54b9bab179f9"
       },
       {
-        "bytes": 504,
+        "bytes": 503,
         "path": "drivers/GopFramebuffer/README.md",
-        "sha256": "1f6d867aaeff3cdb2bb7a28ff1f499f09608e9606395193d8135ab73e0e22560"
+        "sha256": "6f6d9da828c58655374c0c389cb0b11ab93c7e65c6c4a3e4bb8d322396df9a9c"
       },
       {
         "bytes": 1351,
@@ -29,9 +29,9 @@
         "sha256": "31a7ecf9ab553dcba9c891e9c98f5f9112fddabe4703e9f472499e821484faa7"
       },
       {
-        "bytes": 1345,
+        "bytes": 1320,
         "path": "drivers/ShengUfs/LICENSE",
-        "sha256": "56c7f4c155b10c05b6c154b16af510d44434474001861da606db0437dd0679cd"
+        "sha256": "d3cdce3b19df47f2e4dcafdfd54909eb9bc64ac722645ceb1feae58695c97b09"
       },
       {
         "bytes": 42225,
@@ -44,9 +44,9 @@
         "sha256": "d5221126a58145e826de4c396c331b5c74de60caf3149b3eb97572799aa31e2d"
       },
       {
-        "bytes": 13951,
+        "bytes": 13950,
         "path": "drivers/ShengUfs/RootCommands.h",
-        "sha256": "bbfb6940cc99d8a888123944f109f38e50fa1dc38c31cedc8946c4939b4e71d6"
+        "sha256": "2fb9b43353ddf7e2f827efc27604d018b35b4da27731a25f118ed2a72b7f78c8"
       },
       {
         "bytes": 3186,
@@ -114,14 +114,14 @@
         "sha256": "17c607aa19c5f43c47fbf16c0acb7b54329ccb3d6665575f1a3f8ba04b2f3213"
       },
       {
-        "bytes": 5901,
+        "bytes": 5747,
         "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.c",
-        "sha256": "9e96344d0ad4917bce533397dfc4eec5d7bb5ec7e50e324fdce1d8680816a8bc"
+        "sha256": "d0fa719d3933242d19640e066d4610e09be6bf4f55dcec04b3402760e32b5484"
       },
       {
-        "bytes": 4915,
+        "bytes": 4814,
         "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.h",
-        "sha256": "23304ab388f94b5d2a3d9e00351b4fa2758959ef623c6296df0e3e0f8db8dfd1"
+        "sha256": "2e48c690a877c665b3765480db48249c7d1e81af45d46cd4fd3c3d0726ee8617"
       },
       {
         "bytes": 1789,
@@ -129,9 +129,9 @@
         "sha256": "a4fe7c01b0f621200b0183805badbbf93ae8e5caa6a5d3b8da6dc4b2dcb03188"
       },
       {
-        "bytes": 1472,
+        "bytes": 1469,
         "path": "drivers/PolarisGeniI2c/README.md",
-        "sha256": "bb72fdb14d0efdb6bb09989b35df53c4f75fa41f937b836da51f5c622423ecb8"
+        "sha256": "e91ee886814a3b8e689f97a7ffbfb2095884cd0d2dbeccccd2731ae0db6fae43"
       },
       {
         "bytes": 886,
@@ -179,9 +179,9 @@
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "bytes": 6543,
+        "bytes": 6542,
         "path": "drivers/PolarisSynapticsTouch/PolarisSynapticsTouch.cpp",
-        "sha256": "619f9e9578861012c95a4055b86584e010aadb0207670626b41df75d09db7a09"
+        "sha256": "9c982b79ccd839c108848ba8896329c9677790d6348c4df1bd5c7f1ccfa37cdb"
       },
       {
         "bytes": 12393,
@@ -189,24 +189,24 @@
         "sha256": "dcfedfea17848058c0da8fd19e1d789aedeb49e8c1df64ce9bb852609f3ebb39"
       },
       {
-        "bytes": 1622,
+        "bytes": 1594,
         "path": "drivers/PolarisSynapticsTouch/README.md",
-        "sha256": "bff901774eef08d2470ec53028f65f98c1ffaaa3a12f5fe66e6cb13a2af4e155"
+        "sha256": "d967527025c9e6aa890fa5b6d5d8137c0d36af81d3dfda71b882fb679f9f1c21"
       },
       {
-        "bytes": 4670,
+        "bytes": 4540,
         "path": "drivers/PolarisSynapticsTouch/SynapticsRmi4Protocol.h",
-        "sha256": "4c21cbd916a6afacf19c24c6abadb232ffccefefa47b8555a48ac435c69cf26f"
+        "sha256": "119b6916302e5721a2f51afc34aa64accce2a38a929a44a117753f96b9bcd2ac"
       },
       {
-        "bytes": 1262,
+        "bytes": 1239,
         "path": "drivers/PolarisTouch/README.md",
-        "sha256": "9d9b1314345291cab495407a048e7ff3b63c52ce79f082d337f57d33fc51b704"
+        "sha256": "6b867ba5a251110a79685113c0110d31581fc79dc0c213c24aeaa4d53d011d54"
       },
       {
-        "bytes": 6493,
+        "bytes": 6328,
         "path": "drivers/PolarisTouch/synaptics_rmi4_protocol.py",
-        "sha256": "e705887fee23700c37496b817f7c8654166a8223ad82d469cfe306b33812a4eb"
+        "sha256": "70d6825199dbc2edeb1e83b20e1bfc5ca69da1253b897c7078f76c5c641d17a7"
       },
       {
         "bytes": 878,
@@ -364,9 +364,9 @@
         "sha256": "c0c669971bf3eb2e9196aa20f2545dfe0bc5ca0bda48febc90d7088861158eed"
       },
       {
-        "bytes": 622,
+        "bytes": 621,
         "path": "drivers/PolarisHidInput/Info.plist",
-        "sha256": "ad40309ca345a9be2998fd6ac813f1ba245e8e7dca6a12716f00c3684d60c343"
+        "sha256": "63b1b2384ba3aa78ec2353ed6d1b6f5020fcfc7013f335c94d37fdcb76f11bb7"
       },
       {
         "bytes": 2681,
@@ -374,9 +374,9 @@
         "sha256": "fc56b096347b83da4a300f97ad6182484941bbeff8becf91914b7fdc203d5a9f"
       },
       {
-        "bytes": 5309,
+        "bytes": 5243,
         "path": "drivers/PolarisHidInput/OriginalHidDeviceABI.h",
-        "sha256": "7ee0c185fab877a0a114896bf3ec6d055b8c0d3806c27f2697d4225360e57bab"
+        "sha256": "fb15346bca7542e5b77fedc69ad1e46eb32312d92640b949411aaf08554bf616"
       },
       {
         "bytes": 20920,
@@ -389,9 +389,9 @@
         "sha256": "0a37af3b64689d9b2822889349856683abe1ada9a048c11a98f4bf5250f722d8"
       },
       {
-        "bytes": 1036,
+        "bytes": 1035,
         "path": "drivers/PolarisHidInput/README.md",
-        "sha256": "fc5e8c063360361c99b5c9ab8278bbc4dda4f016f1434ea6549c62cb88e62c67"
+        "sha256": "7e3edeb5c9971d27e945d19bd35819c2d98c9ebb61b8ebc3834fc2f707aed8ac"
       }
     ]
   },

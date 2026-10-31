@@ -94,7 +94,14 @@ def check(root: Path, upstream: Path, inputs: Path) -> dict[str, object]:
     patches = {name: (patch_dir / name).is_file() for name in patch_names}
 
     kernel = inputs / "kernelcache.release.ipad7.arm64.macho"
-    userdata_image = PROJECT / "out" / "polaris" / "userdata" / "userdata-root.img"
+    # Prefer artifacts under the repository being checked.  The older local
+    # workspace layout kept ``out`` beside ``device-repo``; retain that path
+    # only as a compatibility fallback for existing local evidence.
+    userdata_image = root / "out" / "polaris" / "userdata" / "userdata-root.img"
+    if not userdata_image.is_file():
+        legacy_userdata = PROJECT / "out" / "polaris" / "userdata" / "userdata-root.img"
+        if legacy_userdata.is_file():
+            userdata_image = legacy_userdata
     trust_caches = sorted(inputs.rglob("*.dmg.trustcache"))
     pinned_dmgs = [name for name in board.get("ipsw", {}).get("sha256", {}) if name.endswith(".dmg")]
     # The restore manifest calls these opaque 044-* names; their semantic

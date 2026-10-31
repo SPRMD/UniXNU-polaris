@@ -267,6 +267,7 @@ jobs:
       - name: Build Polaris firmware
         working-directory: out/edk2-msm
         run: |
+          mkdir -p "$GITHUB_WORKSPACE/out/edk2-output"
           ./build.sh --device polaris --skip-rootfs-gen \
             --outputdir "$GITHUB_WORKSPACE/out/edk2-output"
 

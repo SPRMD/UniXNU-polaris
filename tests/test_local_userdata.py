@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 
 
-PORT = Path(__file__).resolve().parents[3]
-SCRIPT = PORT / "tools" / "build-local-userdata.py"
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "tools" / "build-local-userdata.py"
 SPEC = importlib.util.spec_from_file_location("build_local_userdata", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)

@@ -77,6 +77,19 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def canonical_source_bytes(path: Path) -> bytes:
+    """Read a text source using repository-stable LF line endings.
+
+    Windows checkouts can expose CRLF or mixed line endings even when the
+    repository stores LF.  Driver provenance must describe the committed
+    source, so normalize only line endings before recording byte counts and
+    hashes.  The driver directories contain source/metadata text, not binary
+    firmware; vendor binaries continue to use the raw ``sha256`` helper.
+    """
+
+    return path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
 def relative(path: Path, root: Path) -> str:
     try:
         return path.resolve().relative_to(root.resolve()).as_posix()
@@ -96,10 +109,11 @@ def source_inventory() -> list[dict[str, Any]]:
         ):
             # Source text and build metadata are safe to hash into the bundle;
             # no generated objects or proprietary input are pulled in here.
+            data = canonical_source_bytes(path)
             files.append({
                 "path": relative(path, ROOT),
-                "bytes": path.stat().st_size,
-                "sha256": sha256(path),
+                "bytes": len(data),
+                "sha256": hashlib.sha256(data).hexdigest(),
             })
     return files
 

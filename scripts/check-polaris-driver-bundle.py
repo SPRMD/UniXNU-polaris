@@ -29,6 +29,12 @@ def digest(path: Path) -> str:
     return value.hexdigest()
 
 
+def canonical_source_bytes(path: Path) -> bytes:
+    """Return repository-stable LF bytes for a source inventory entry."""
+
+    return path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
 def safe_member(root: Path, relative: str) -> Path:
     if not isinstance(relative, str) or not relative:
         raise ValueError("bundle path is empty")
@@ -106,9 +112,11 @@ def verify_source_inventory(manifest: dict[str, Any], source_root: Path | None) 
             source = safe_member(source_root, relative)
             if not source.is_file():
                 raise ValueError(f"source component is missing: {relative}")
-            if source.stat().st_size != expected_bytes:
+            source_bytes = canonical_source_bytes(source)
+            if len(source_bytes) != expected_bytes:
                 raise ValueError(f"source byte count mismatch: {relative}")
-            if digest(source).lower() != expected_hash.lower():
+            actual_hash = hashlib.sha256(source_bytes).hexdigest()
+            if actual_hash.lower() != expected_hash.lower():
                 raise ValueError(f"source SHA-256 mismatch: {relative}")
     return len(components)
 
