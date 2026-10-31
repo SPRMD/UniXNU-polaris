@@ -134,14 +134,14 @@
         "sha256": "e91ee886814a3b8e689f97a7ffbfb2095884cd0d2dbeccccd2731ae0db6fae43"
       },
       {
-        "bytes": 886,
+        "bytes": 893,
         "path": "drivers/PolarisPmicInput/Info.plist",
-        "sha256": "d5260f708fa32b5f0415c46e792552e30b92ab325c4be4d7dc20e15cdb84ac7a"
+        "sha256": "fc3ce121568b6750852368acc22db5c30370da41b7ee45d56ab0b191a95ab945"
       },
       {
-        "bytes": 5256,
+        "bytes": 5277,
         "path": "drivers/PolarisPmicInput/PolarisPmicInput.cpp",
-        "sha256": "1b39b3da902f3a40ff1aa22f39ce8e97ee5fcea82197943ceb7d72c20fcabce1"
+        "sha256": "8f1809057cb21637713f318cfcddad1ac3e1e7a07baf2c0ce2508dff9f16b6cb"
       },
       {
         "bytes": 5829,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T07:22:27.873851+00:00",
+  "generated_at": "2026-10-31T07:35:32.566342+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,

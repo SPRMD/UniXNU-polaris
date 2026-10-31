@@ -95,8 +95,8 @@ static unsigned countCandidateNodes(IORegistryEntry *entry, unsigned depth)
 
 } // namespace
 
-class PolarisPmicInput : public IOService {
-  OSDeclareDefaultStructors(PolarisPmicInput)
+class PolarisPmicInputService : public IOService {
+  OSDeclareDefaultStructors(PolarisPmicInputService)
 
 public:
   IOService *probe(IOService *provider, SInt32 *score) override
@@ -137,4 +137,4 @@ public:
   }
 };
 
-OSDefineMetaClassAndStructors(PolarisPmicInput, IOService)
+OSDefineMetaClassAndStructors(PolarisPmicInputService, IOService)

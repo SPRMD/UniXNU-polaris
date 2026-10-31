@@ -9,7 +9,7 @@
   <key>OSBundleRequired</key><string>Root</string>
   <key>IOKitPersonalities</key><dict>
     <key>Polaris PMIC input observer</key><dict>
-      <key>IOClass</key><string>PolarisPmicInput</string>
+      <key>IOClass</key><string>PolarisPmicInputService</string>
       <key>IOProviderClass</key><string>IOPlatformDevice</string>
       <key>IONameMatch</key><string>arm-io</string>
       <key>IOProbeScore</key><integer>35</integer>
