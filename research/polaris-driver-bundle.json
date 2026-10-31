@@ -354,9 +354,9 @@
         "sha256": "1b87e01855fde07be4c22fd0db13193bb8b2b4dddd2c79e5da8bb1cc6bf1e3d4"
       },
       {
-        "bytes": 19573,
+        "bytes": 19835,
         "path": "drivers/PolarisPmicRuntime/PolarisPmicRuntime.cpp",
-        "sha256": "4adb410dca39211b24d182cde5acb6ae12589029c18d0c042dd728ac3e18af5b"
+        "sha256": "baea88828afc7674bf971e125258a5ac97115a52e68a62f0230742e472ca758b"
       },
       {
         "bytes": 906,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T07:35:32.566342+00:00",
+  "generated_at": "2026-10-31T07:44:17.932705+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,

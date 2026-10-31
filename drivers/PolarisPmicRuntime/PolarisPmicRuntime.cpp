@@ -154,7 +154,7 @@ static bool spmiRead(uint16_t peripheral, uint8_t reg, uint8_t *out,
 {
   if (!gReady || gLock == nullptr || out == nullptr ||
       !PolarisPmicInput::allowRead(peripheral, reg, count)) {
-    ++polaris_pmic_runtime_spmi_errors;
+    polaris_pmic_runtime_spmi_errors = polaris_pmic_runtime_spmi_errors + 1;
     return false;
   }
   IOLockLock(gLock);
@@ -165,7 +165,7 @@ static bool spmiRead(uint16_t peripheral, uint8_t reg, uint8_t *out,
   }
   if (apid == kNoApid || apid >= kSpmiMaxChannels || gPoisoned[apid]) {
     IOLockUnlock(gLock);
-    ++polaris_pmic_runtime_spmi_errors;
+    polaris_pmic_runtime_spmi_errors = polaris_pmic_runtime_spmi_errors + 1;
     return false;
   }
   const unsigned lane = 0x80U * apid;
@@ -187,7 +187,7 @@ static bool spmiRead(uint16_t peripheral, uint8_t reg, uint8_t *out,
             peripheral, apid);
     }
     IOLockUnlock(gLock);
-    ++polaris_pmic_runtime_spmi_errors;
+    polaris_pmic_runtime_spmi_errors = polaris_pmic_runtime_spmi_errors + 1;
     return false;
   }
   const uint32_t data0 = read32(gObserver, lane + 0x18U);
@@ -195,7 +195,7 @@ static bool spmiRead(uint16_t peripheral, uint8_t reg, uint8_t *out,
   for (unsigned i = 0; i < count; ++i)
     out[i] = static_cast<uint8_t>((i < 4 ? data0 : data1) >> (8U * (i & 3U)));
   IOLockUnlock(gLock);
-  ++polaris_pmic_runtime_spmi_reads;
+  polaris_pmic_runtime_spmi_reads = polaris_pmic_runtime_spmi_reads + 1;
   return true;
 }
 
@@ -231,7 +231,7 @@ static void *gButtonSinkContext;
 static void publishKeys(IOService *service, uint32_t mask)
 {
   publishNumber(service, "PolarisButtonMask", mask);
-  ++polaris_pmic_runtime_key_reports;
+  polaris_pmic_runtime_key_reports = polaris_pmic_runtime_key_reports + 1;
   if (gButtonSink != nullptr) gButtonSink(gButtonSinkContext, mask);
 }
 
@@ -459,7 +459,7 @@ class PolarisBatteryRuntime : public IOPMPowerSource {
 
   void poll()
   {
-    ++polaris_pmic_runtime_battery_samples;
+    polaris_pmic_runtime_battery_samples = polaris_pmic_runtime_battery_samples + 1;
     PolarisPmicInput::ObserverSnapshot snapshot = {};
     uint8_t revid[3] = {}, revid2[3] = {};
     PolarisPmicInput::Revision revision = PolarisPmicInput::kUnknown;
@@ -522,7 +522,7 @@ class PolarisBatteryRuntime : public IOPMPowerSource {
               (3400U * sample.percent + 50U) / 100U);
     putNumber("AppleRawMaxCapacity", 3400);
     putNumber("Temperature", static_cast<uint64_t>(sample.temperatureDeciCelsius * 10));
-    ++polaris_pmic_runtime_battery_valid;
+  polaris_pmic_runtime_battery_valid = polaris_pmic_runtime_battery_valid + 1;
     updateStatus();
   }
 
