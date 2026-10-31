@@ -32,6 +32,22 @@ public:
 
 OSDefineMetaClassAndStructors (PolarisBoardProbe, IOService)
 
+static bool polarisCStringContains (const char *haystack, const char *needle)
+{
+  if (haystack == nullptr || needle == nullptr) return false;
+  if (*needle == '\0') return true;
+  for (const char *start = haystack; *start != '\0'; ++start) {
+    const char *left = start;
+    const char *right = needle;
+    while (*left != '\0' && *right != '\0' && *left == *right) {
+      ++left;
+      ++right;
+    }
+    if (*right == '\0') return true;
+  }
+  return false;
+}
+
 bool PolarisBoardProbe::containsCompatible (IORegistryEntry *entry, const char *wanted)
 {
   OSData *data = OSDynamicCast (OSData, entry->getProperty ("compatible"));
@@ -51,7 +67,7 @@ bool PolarisBoardProbe::containsCompatible (IORegistryEntry *entry, const char *
 bool PolarisBoardProbe::nameContains (IORegistryEntry *entry, const char *wanted)
 {
   const char *name = entry->getName ();
-  return name != nullptr && wanted != nullptr && strstr (name, wanted) != nullptr;
+  return polarisCStringContains (name, wanted);
 }
 
 static bool polarisBoardMatches (void)
