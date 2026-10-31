@@ -338,6 +338,17 @@ jobs:
           name: host-reports
           path: out/host
 
+      - name: Normalize host report layout
+        run: |
+          # upload-artifact keeps the least common ancestor of the host
+          # reports.  With the bundle plus top-level ADT reports that can be
+          # out/host/host-tests/polaris-driver-bundle; normalize it so the
+          # package builders consume one stable path.
+          if [ -d out/host/host-tests/polaris-driver-bundle ] && [ ! -e out/host/polaris-driver-bundle ]; then
+            mv out/host/host-tests/polaris-driver-bundle out/host/polaris-driver-bundle
+          fi
+          test -d out/host/polaris-driver-bundle
+
       - name: Install packaging and QEMU tools
         run: |
           sudo apt-get update
@@ -424,6 +435,13 @@ jobs:
         with:
           name: host-reports
           path: out/host
+
+      - name: Normalize host report layout
+        run: |
+          if [ -d out/host/host-tests/polaris-driver-bundle ] && [ ! -e out/host/polaris-driver-bundle ]; then
+            mv out/host/host-tests/polaris-driver-bundle out/host/polaris-driver-bundle
+          fi
+          test -d out/host/polaris-driver-bundle
 
       - name: Install iOS-stage tools
         run: |
