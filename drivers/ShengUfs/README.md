@@ -88,6 +88,30 @@ Real whole-window IOMedia is observed, but APFS volume/root matching is not
 certified. TrustCache/ADT and IOStorageFamily matching/link remain requirements.
 No root-success property or packaging change is added. See ROOT-WINDOWS.md.
 
+## Low-address DMA pool (2026-10-31)
+
+The runtime can now use a DMA buffer that DarwinBoot reserved **below 4 GiB**,
+instead of a kernel allocation that is always in the upper bank. This is the
+`--dma-pool-size` ADT request documented in `drivers/DarwinBoot/README.md`.
+
+- `PolarisDmaPool.h` parses `/chosen/darwinboot-dma-pool` from the ADT the
+  kernel was handed and validates it against the same bounds the loader used
+  (64 KiB .. 4 MiB, 4 KiB aligned, entirely below `0x100000000`).
+- When a pool is present, `hostBringUp` builds the descriptor with
+  `IOBufferMemoryDescriptor::withPhysicalAddress` over the pool and refuses to
+  continue if the pool is smaller than `kDmaBytes`. When no pool is present the
+  previous kernel allocation is unchanged.
+- The pool is **not** a trust decision. `polarisDmaHandoff()` still runs on the
+  pool address and still requires the CAP/IDR2 widths and the explicit-bypass
+  SMR/S2CR state for SIDs `0x100..0x10f`. A pool that satisfies the address
+  axis can still be refused on SMMU evidence.
+- The pool base/size is printed at bring-up and appears in the diagnostics dump
+  as `pool=<base>+<bytes>`, so a device run distinguishes "no pool", "pool
+  refused" and "pool used" without guessing.
+
+No pool has ever been reserved on hardware, and no UFS command has been issued
+against one. This removes an address-range argument, not the evidence gap.
+
 ## Validation (2026-10-31)
 
 - WSL clang++ C++17, `-Wall -Wextra -Werror`, ASan/UBSan:

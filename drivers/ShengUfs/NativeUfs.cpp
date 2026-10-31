@@ -32,6 +32,7 @@
 #include "SmmuTakeover.h"
 #include "TransferPoll.h"
 #include "PolarisDmaHandoff.h"
+#include "PolarisDmaPool.h"
 
 static UfsRootDiagnostics gRootDiagnostic;
 static bool gRootDiagnosticEnabled;

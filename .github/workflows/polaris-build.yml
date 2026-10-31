@@ -512,10 +512,22 @@ jobs:
 
       - name: Generate Polaris iPad identity ADT
         run: |
+          # The UFS transport cannot use the upper-bank kernel window, so the
+          # stage asks DarwinBoot for a small loader-owned pool below 4 GiB.
+          # The loader refuses to boot if it cannot reserve one; the UFS guard
+          # still evaluates the pool address against CAP/IDR2/SMR/S2CR.
           python3 scripts/make-polaris-adt.py \
             --output out/ios-inputs/polaris-ios.adt \
             --ram 6 --ipad-identity --include-ufs --trust-cache \
+            --dma-pool-size 0x40000 \
             --root-match-volume-uuid 04769D26-2CA0-4825-B443-E2E5F88300F2
+          python3 - <<'EOF'
+          import struct, sys
+          blob = open('out/ios-inputs/polaris-ios.adt', 'rb').read()
+          if b'darwinboot-dma-pool-size' not in blob or b'darwinboot-dma-pool\0' not in blob:
+              sys.exit('Polaris ADT is missing the low DMA pool pair')
+          print(f'PASS: ADT requests a low DMA pool ({len(blob)} bytes)')
+          EOF
 
       - name: Assemble guarded iPadOS stage package
         run: |

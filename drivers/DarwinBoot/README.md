@@ -19,5 +19,32 @@ establish that a polaris UEFI port has a correct memory map, nor that its
 largest free run can hold the requested kernel window. No polaris UEFI
 firmware exists yet; physical validation is pending.
 
+## Optional low-address DMA pool
+
+`/chosen/darwinboot-dma-pool-size` (u64 bytes) and `/chosen/darwinboot-dma-pool`
+(16 zero bytes) are a matched pair. When the ADT declares both, `AllocateDmaPool`
+reserves that many bytes **below 4 GiB** from the real UEFI conventional-memory
+map and writes the reserved `{base, bytes}` back into the slot. When the ADT
+declares neither, nothing changes. When the ADT declares only one, or the pool
+cannot be reserved inside the 32-bit window, the loader **refuses to boot**; it
+never relocates the pool above 4 GiB and never falls back to a kernel-window
+address.
+
+Why: the kernel window comes from the upper bank (>= 4 GiB), so every kernel
+`IOBufferMemoryDescriptor` lands above 4 GiB. A bus master that cannot be shown
+to address those addresses cannot use those buffers. A pool the loader really
+owns removes the *address* axis only — it says nothing about SMMU routing, and
+`polarisDmaHandoff()` still evaluates the pool address before any command is
+submitted.
+
+Bounds (`DmaPool.h`, mirrored in `scripts/make-polaris-adt.py` and
+`drivers/ShengUfs/PolarisDmaPool.h`): 64 KiB .. 4 MiB, 4 KiB aligned, entirely
+below `0x100000000`, never overlapping the kernel window. Request it with:
+
+```sh
+python3 scripts/make-polaris-adt.py --output out/polaris.adt --include-ufs \
+  --dma-pool-size 0x40000
+```
+
 The standalone DSC builds only the loader driver. Upstream's separate
 Validation application is not included in this device override.

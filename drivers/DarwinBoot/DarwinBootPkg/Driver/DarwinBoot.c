@@ -17,6 +17,7 @@
 #include "PackedRamdisk.h"
 #include "WindowSize.h"
 #include "WindowRange.h"
+#include "DmaPool.h"
 
 #define WINDOW_SIZE  SIZE_256MB
 #define BLOCK_SIZE   SIZE_2MB
@@ -183,7 +184,8 @@ ParseKernel (CONST UINT8 *Data, UINTN Size, KERNEL *Kernel)
 
 STATIC
 BOOLEAN
-AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN ParentPath, UINTN *RamdiskOffset, UINTN *TrustCacheOffset, UINT64 *WindowSize, DARWIN_WINDOW_RANGE *WindowRange, BOOLEAN *KeepPacked)
+AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN ParentPath, UINTN *RamdiskOffset, UINTN *TrustCacheOffset,
+         UINTN *PoolCandidate, UINTN *PoolSlotCandidate, UINT64 *WindowSize, DARWIN_WINDOW_RANGE *WindowRange, BOOLEAN *KeepPacked)
 {
   UINT32 Properties;
   UINT32 Children;
@@ -194,6 +196,8 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
   UINTN  TrustCandidate;
   UINTN  MemoryCandidate;
   UINTN  RangeCandidate;
+  UINTN  PoolSize;
+  UINTN  PoolSlot;
   CONST UINT8 *Name;
   UINTN  NameLength;
 
@@ -203,6 +207,8 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
   TrustCandidate = MAX_UINTN;
   MemoryCandidate = MAX_UINTN;
   RangeCandidate = MAX_UINTN;
+  PoolSize = MAX_UINTN;
+  PoolSlot = MAX_UINTN;
   if ((Depth > 64) || (Size - *Offset < 8)) { return FALSE; }
   Properties = U32 (Data + *Offset);
   Children = U32 (Data + *Offset + 4);
@@ -240,6 +246,14 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
       if ((RangeCandidate != MAX_UINTN) || (Length != 16)) { return FALSE; }
       RangeCandidate = *Offset;
     }
+    if (AsciiStrCmp ((CONST CHAR8 *)(Data + *Offset - 36), "darwinboot-dma-pool-size") == 0) {
+      if ((PoolCandidate != MAX_UINTN) || (Length != 8)) { return FALSE; }
+      PoolCandidate = *Offset;
+    }
+    if (AsciiStrCmp ((CONST CHAR8 *)(Data + *Offset - 36), "darwinboot-dma-pool") == 0) {
+      if ((PoolSlotCandidate != MAX_UINTN) || (Length != 16)) { return FALSE; }
+      PoolSlotCandidate = *Offset;
+    }
     *Offset += Length;
     if (ALIGN_VALUE (*Offset, 4) > Size) { return FALSE; }
     *Offset = ALIGN_VALUE (*Offset, 4);
@@ -267,9 +281,22 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
     WindowRange->Bytes = U64 (Data + RangeCandidate + 8);
     if (!DarwinWindowRangeValid (WindowRange->Base, WindowRange->Bytes)) { return FALSE; }
   }
+  if (PoolSize != MAX_UINTN) {
+    // Only /chosen may declare it, exactly once, and only a sane pool size.
+    if ((Path != 1) || (*PoolCandidate != MAX_UINTN) || (U64 (Data + PoolSize) == 0) ||
+        (U64 (Data + PoolSize) > DARWIN_DMA_POOL_MAX_BYTES) ||
+        ((U64 (Data + PoolSize) & 0xfffULL) != 0)) { return FALSE; }
+    *PoolCandidate = PoolSize;
+  }
+  if (PoolSlot != MAX_UINTN) {
+    // A 16-byte slot the loader fills with {base, bytes}; must start as zeroes.
+    if ((Path != 1) || (*PoolSlotCandidate != MAX_UINTN) || (U64 (Data + PoolSlot) != 0) ||
+        (U64 (Data + PoolSlot + 8) != 0)) { return FALSE; }
+    *PoolSlotCandidate = PoolSlot;
+  }
   if (Children > (Size - *Offset) / 8) { return FALSE; }
   for (Index = 0; Index < Children; Index++) {
-    if (!AdtNode (Data, Size, Offset, Depth + 1, Path, RamdiskOffset, TrustCacheOffset, WindowSize, WindowRange, KeepPacked)) { return FALSE; }
+    if (!AdtNode (Data, Size, Offset, Depth + 1, Path, RamdiskOffset, TrustCacheOffset, PoolCandidate, PoolSlotCandidate, WindowSize, WindowRange, KeepPacked)) { return FALSE; }
   }
   return TRUE;
 }
@@ -454,6 +481,66 @@ AllocateWindow (KERNEL *Kernel, UINT64 WindowSize, CONST DARWIN_WINDOW_RANGE *Wi
   return Status;
 }
 
+// Reserve an OPTIONAL low-address DMA pool. This never runs unless the ADT
+// declares /chosen/darwinboot-dma-pool-size, and it never falls back above
+// 4 GiB: a caller that asked for a low pool and did not get one must see the
+// boot fail rather than silently receive an unusable address.
+STATIC
+EFI_STATUS
+AllocateDmaPool (UINT64 PoolSize, UINT64 KernelBase, UINT64 KernelBytes,
+    DARWIN_DMA_POOL *Pool)
+{
+  EFI_MEMORY_DESCRIPTOR *Map;
+  EFI_MEMORY_DESCRIPTOR *Descriptor;
+  EFI_STATUS            Status;
+  UINTN                 Capacity;
+  UINTN                 Size;
+  UINTN                 Key;
+  UINTN                 Stride;
+  UINTN                 Offset;
+  UINT64                End;
+  UINT64                Candidate;
+
+  Pool->Base = 0;
+  Pool->Bytes = 0;
+  if (PoolSize == 0) { return EFI_SUCCESS; }
+  if ((PoolSize < DARWIN_DMA_POOL_MIN_BYTES) || (PoolSize > DARWIN_DMA_POOL_MAX_BYTES) ||
+      (PoolSize & 0xfffULL)) {
+    return EFI_INVALID_PARAMETER;
+  }
+  Map = NULL;
+  Capacity = 0;
+  Status = GetMap (&Map, &Capacity, &Size, &Key, &Stride);
+  if (EFI_ERROR (Status)) { if (Map != NULL) { FreePool (Map); } return Status; }
+  Status = EFI_OUT_OF_RESOURCES;
+  for (Offset = 0; Offset + Stride <= Size; Offset += Stride) {
+    Descriptor = (EFI_MEMORY_DESCRIPTOR *)((UINT8 *)Map + Offset);
+    if ((Descriptor->Type != EfiConventionalMemory) || (Descriptor->NumberOfPages == 0)) { continue; }
+    if (Descriptor->NumberOfPages > ((MAX_UINT64 - Descriptor->PhysicalStart) >> EFI_PAGE_SHIFT)) { continue; }
+    End = RunEnd (Map, Size, Stride, Descriptor->PhysicalStart,
+                  Descriptor->PhysicalStart + EFI_PAGES_TO_SIZE (Descriptor->NumberOfPages));
+    if (!DarwinDmaPoolCandidate (Descriptor->PhysicalStart, End, PoolSize, &Candidate)) { continue; }
+    // The pool must not be carved out of the kernel window the caller just took.
+    if (DarwinDmaPoolOverlaps (Candidate, PoolSize, KernelBase, KernelBytes)) { continue; }
+    Status = gBS->AllocatePages (AllocateAddress, EfiBootServicesData,
+                                 EFI_SIZE_TO_PAGES (PoolSize), &Candidate);
+    if (EFI_ERROR (Status)) { continue; }
+    if (!DarwinDmaPoolValid (Candidate, PoolSize)) {
+      // AllocatePages honoured the address but the result is unusable; give the
+      // pages back rather than hand the kernel a bad pool.
+      gBS->FreePages (Candidate, EFI_SIZE_TO_PAGES (PoolSize));
+      Status = EFI_LOAD_ERROR;
+      break;
+    }
+    Pool->Base = Candidate;
+    Pool->Bytes = PoolSize;
+    Status = EFI_SUCCESS;
+    break;
+  }
+  FreePool (Map);
+  return Status;
+}
+
 STATIC
 EFI_STATUS
 EFIAPI
@@ -490,6 +577,9 @@ Boot (
   BOOLEAN                         KeepPacked;
   UINTN                           TrustCacheOffset;
   UINT64                          TrustCacheAddress;
+  UINTN                           PoolCandidate;
+  UINTN                           PoolSlotCandidate;
+  DARWIN_DMA_POOL                  DmaPool;
   DARWIN_BOOT_ARGS                *Args;
   EFI_MEMORY_DESCRIPTOR           *Map;
   UINTN                           Capacity;
@@ -544,10 +634,16 @@ Boot (
   Offset = 0;
   RamdiskOffset = MAX_UINTN;
   TrustCacheOffset = MAX_UINTN;
+  PoolCandidate = MAX_UINTN;
+  PoolSlotCandidate = MAX_UINTN;
   WindowSize = 0;
   ZeroMem (&WindowRange, sizeof (WindowRange));
+  ZeroMem (&DmaPool, sizeof (DmaPool));
   KeepPacked = FALSE;
-  if (!AdtNode (Tree, TreeSize, &Offset, 0, 3, &RamdiskOffset, &TrustCacheOffset, &WindowSize, &WindowRange, &KeepPacked) || (Offset != TreeSize)) { Status = EFI_COMPROMISED_DATA; goto Fail; }
+  if (!AdtNode (Tree, TreeSize, &Offset, 0, 3, &RamdiskOffset, &TrustCacheOffset,
+                &PoolCandidate, &PoolSlotCandidate, &WindowSize, &WindowRange, &KeepPacked) || (Offset != TreeSize)) { Status = EFI_COMPROMISED_DATA; goto Fail; }
+  // A declared slot without a declared size (or the reverse) is a broken ADT.
+  if ((PoolCandidate == MAX_UINTN) != (PoolSlotCandidate == MAX_UINTN)) { Status = EFI_COMPROMISED_DATA; goto Fail; }
   if (KeepPacked && (!RamdiskPacked || (RamdiskOffset == MAX_UINTN))) { Status = EFI_COMPROMISED_DATA; goto Fail; }
   if (WindowSize == 0) { WindowSize = WINDOW_SIZE; }
   if (Kernel.Base > MAX_UINT64 - WindowSize) { Status = EFI_LOAD_ERROR; goto Fail; }
@@ -576,6 +672,16 @@ Boot (
   if (EFI_ERROR (Status)) { goto Fail; }
   Status = AllocateWindow (&Kernel, WindowSize, &WindowRange, &Address);
   if (EFI_ERROR (Status)) { goto Fail; }
+  // Optional low-address DMA pool. Requested through the ADT only, allocated
+  // against the real memory map only, and refused (never relocated above 4 GiB)
+  // when the firmware cannot provide one.
+  if (PoolCandidate != MAX_UINTN) {
+    Status = AllocateDmaPool (U64 (Tree + PoolCandidate), Address, WindowSize, &DmaPool);
+    if (EFI_ERROR (Status)) {
+      Print (L"DARWINBOOT: low DMA pool unavailable; refusing to boot\n");
+      goto Fail;
+    }
+  }
   ArgsAddress = ALIGN_VALUE (Address + Kernel.End - Kernel.Base, SIZE_16KB);
   TreeAddress = ArgsAddress + EFI_PAGE_SIZE;
   RamdiskAddress = ALIGN_VALUE (TreeAddress + TreeSize, EFI_PAGE_SIZE);
@@ -606,6 +712,12 @@ Boot (
     else { CopyRamdisk ((VOID *)(UINTN)RamdiskAddress, Request->Ramdisk, Request->RamdiskSize, RamdiskPacked); }
     WriteUnaligned64 ((UINT64 *)(UINTN)(TreeAddress + RamdiskOffset), RamdiskAddress);
     WriteUnaligned64 ((UINT64 *)(UINTN)(TreeAddress + RamdiskOffset + 8), KeepPacked ? Request->RamdiskSize : RamdiskBytes);
+  }
+  if (DmaPool.Bytes != 0) {
+    // Publish the address the loader really reserved, not the request.
+    WriteUnaligned64 ((UINT64 *)(UINTN)(TreeAddress + PoolSlotCandidate), DmaPool.Base);
+    WriteUnaligned64 ((UINT64 *)(UINTN)(TreeAddress + PoolSlotCandidate + 8), DmaPool.Bytes);
+    DEBUG ((DEBUG_ERROR, "dma pool 0x%lx + 0x%lx\n", DmaPool.Base, DmaPool.Bytes));
   }
   if (TrustCaches != NULL) {
     CopyMem ((VOID *)(UINTN)TrustCacheAddress, TrustCaches, TrustCacheSize);
@@ -669,6 +781,7 @@ Fail:
   if (TreePath != NULL) { FreePool (TreePath); }
   if (Map != NULL) { FreePool (Map); }
   if (Address != 0) { gBS->FreePages (Address, EFI_SIZE_TO_PAGES (WindowSize)); }
+  if (DmaPool.Base != 0) { gBS->FreePages (DmaPool.Base, EFI_SIZE_TO_PAGES (DmaPool.Bytes)); }
   Print (L"DARWINBOOT: boot refused: %r; firmware retained\n", Status);
   return Status;
 }

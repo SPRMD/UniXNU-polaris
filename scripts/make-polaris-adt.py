@@ -77,9 +77,32 @@ def empty_nvram_proxy():
             ('nvram-proxy-data', bytes(image))]
 
 
+DMA_POOL_MIN = 64 * 1024
+DMA_POOL_MAX = 4 * 1024 * 1024
+DMA_POOL_CEILING = 0x100000000
+
+
+def dma_pool_chosen(*, size):
+    """The optional /chosen pair that asks DarwinBoot for a low-address pool.
+
+    Both properties are emitted together or not at all: a size without a slot
+    would have nowhere to report the reserved address, and a slot without a
+    size would ask for nothing. DarwinBoot refuses either half on its own.
+    """
+    if size is None:
+        return []
+    if not isinstance(size, int) or not DMA_POOL_MIN <= size <= DMA_POOL_MAX or size % 4096:
+        raise ValueError('DMA pool size must be a 4 KiB multiple in '
+                         f'[{DMA_POOL_MIN}, {DMA_POOL_MAX}] bytes')
+    if size > DMA_POOL_CEILING:
+        raise ValueError('DMA pool must stay below 4 GiB')
+    return [('darwinboot-dma-pool-size', u64(size)),
+            ('darwinboot-dma-pool', bytes(16))]
+
+
 def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000,
           seed=None, include_ufs=False, ipad_identity=False, trust_cache=False,
-          root_match_volume_uuid=None):
+          root_match_volume_uuid=None, dma_pool_size=None):
     if cpu_count not in range(1, 9):
         raise ValueError('cpu count must be 1..8')
     if dram_size not in (DRAM_SIZE_6, DRAM_SIZE_8):
@@ -135,6 +158,7 @@ def build(*, cpu_count=1, dram_size=DRAM_SIZE_6, owned_memory_size=0x40000000,
             ('dram-base', u64(DRAM_BASE)), ('dram-size', u64(dram_size)),
             ('darwinboot-memory-size', u64(owned_memory_size)),
             ('darwinboot-memory-range', u64(DRAM_BASE, dram_size)),
+            *dma_pool_chosen(size=dma_pool_size),
             ('crypto-hash-method', b'sha2-384\0'),
             *empty_nvram_proxy(),
             *root_matching,
@@ -170,6 +194,10 @@ def main():
                         help='reserve the loader mapping; requires a kernel.macho.trustcache sidecar')
     parser.add_argument('--root-match-volume-uuid',
                         help='verified APFS root volume UUID, not the partition or container UUID')
+    parser.add_argument('--dma-pool-size', type=lambda value: int(value, 0),
+                        help='optional low-address DMA pool request in bytes '
+                             '(4 KiB multiple, 64 KiB..4 MiB); DarwinBoot reserves it '
+                             'below 4 GiB or refuses to boot')
     args = parser.parse_args()
     try:
         regs = [int(value, 0) for value in args.cpu_regs.split(',')]
@@ -178,7 +206,8 @@ def main():
         blob = build(cpu_count=len(regs), dram_size=DRAM_SIZE_6 if args.ram == 6 else DRAM_SIZE_8,
                      owned_memory_size=args.owned_memory_size, include_ufs=args.include_ufs,
                      ipad_identity=args.ipad_identity, trust_cache=args.trust_cache,
-                     root_match_volume_uuid=args.root_match_volume_uuid)
+                     root_match_volume_uuid=args.root_match_volume_uuid,
+                     dma_pool_size=args.dma_pool_size)
     except ValueError as error:
         parser.error(str(error))
     args.output.parent.mkdir(parents=True, exist_ok=True)
