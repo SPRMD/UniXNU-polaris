@@ -60,6 +60,84 @@ class IOSStageScriptTests(unittest.TestCase):
                     self.assertEqual(window[32:36], b'NXSB')
                     self.assertEqual(digest, hashlib.sha256(window).digest())
 
+    def test_probe_patches_a_private_copy_and_leaves_the_artifact_alone(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            kernel = root / 'kernel.macho'
+            kernel.write_bytes(b'prelinked-original')
+            kernel.with_suffix('.json').write_text(json.dumps({
+                'kernel_sha256': PACKAGE.sha256(kernel),
+                'original_components_prelinked': True,
+                'final_configured_link_passed': True,
+            }))
+            adt, trust = root / 'input.adt', root / 'trust.bundle'
+            adt.write_bytes(b'adt')
+            trust.write_bytes(b'trust')
+            for relative in ('efi/Build/Out/AARCH64-DEBUG/UniXNU.efi',
+                             'loader/build/DarwinBoot/DEBUG_GCC/AARCH64/DarwinBoot.efi'):
+                path = root / relative
+                path.parent.mkdir(parents=True)
+                path.write_bytes(b'efi')
+            out, tree = root / 'esp.img', root / 'tree'
+            out.write_bytes(b'fat-placeholder')
+            argv = ['make-ios-esp.py', '--kernel', str(kernel), '--adt', str(adt),
+                    '--trust', str(trust), '--efi', str(root), '--out', str(out),
+                    '--tree', str(tree), '--ipados-stage', '--probe', 'panic']
+            with patch('sys.argv', argv), patch.object(ESP.subprocess, 'run') as run:
+                run.return_value.stdout = 'FAT listing'
+                ESP.main()
+            # The prelinked artifact must survive byte-identical: its sidecar
+            # report still describes it, and later consumers re-check the hash.
+            self.assertEqual(kernel.read_bytes(), b'prelinked-original')
+            self.assertEqual(json.loads(kernel.with_suffix('.json').read_text())['kernel_sha256'],
+                             PACKAGE.sha256(kernel))
+            # Both the probe and the FIPS re-seal must target that private copy,
+            # never the artifact.
+            patched = [call.args[0] for call in run.call_args_list
+                       if call.args and call.args[0] and 'patch-xnu-entry-probe.py' in str(call.args[0][1])]
+            self.assertTrue(patched, 'the probe tool was never invoked')
+            probe_target = Path(patched[0][2])
+            self.assertNotEqual(probe_target, kernel)
+            self.assertEqual(probe_target.name, 'kernel.macho')
+            sealed = [call.args[0] for call in run.call_args_list
+                      if call.args and call.args[0] and 'seal-source-crypto-kernel.py' in str(call.args[0][1])]
+            self.assertTrue(sealed, 'the FIPS seal was never re-run')
+            self.assertEqual(Path(sealed[0][2]), probe_target)
+            report = json.loads(out.with_suffix('.json').read_text())
+            self.assertEqual(report['probe'], 'panic')
+            self.assertEqual(report['input_kernel_sha256'], PACKAGE.sha256(kernel))
+
+    def test_no_probe_flag_keeps_the_artifact_kernel(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            kernel = root / 'kernel.macho'
+            kernel.write_bytes(b'prelinked-original')
+            kernel.with_suffix('.json').write_text(json.dumps({
+                'kernel_sha256': PACKAGE.sha256(kernel),
+                'original_components_prelinked': True,
+                'final_configured_link_passed': True,
+            }))
+            adt, trust = root / 'input.adt', root / 'trust.bundle'
+            adt.write_bytes(b'adt')
+            trust.write_bytes(b'trust')
+            for relative in ('efi/Build/Out/AARCH64-DEBUG/UniXNU.efi',
+                             'loader/build/DarwinBoot/DEBUG_GCC/AARCH64/DarwinBoot.efi'):
+                path = root / relative
+                path.parent.mkdir(parents=True)
+                path.write_bytes(b'efi')
+            out, tree = root / 'esp.img', root / 'tree'
+            out.write_bytes(b'fat-placeholder')
+            argv = ['make-ios-esp.py', '--kernel', str(kernel), '--adt', str(adt),
+                    '--trust', str(trust), '--efi', str(root), '--out', str(out),
+                    '--tree', str(tree), '--ipados-stage', '--probe', 'panic', '--no-probe']
+            with patch('sys.argv', argv), patch.object(ESP.subprocess, 'run') as run:
+                run.return_value.stdout = 'FAT listing'
+                ESP.main()
+            self.assertFalse([c for c in run.call_args_list
+                              if c.args and c.args[0] and 'patch-xnu-entry-probe.py' in str(c.args[0][1])])
+            report = json.loads(out.with_suffix('.json').read_text())
+            self.assertIsNone(report['probe'])
+
     def test_esp_installs_loader_named_trust_sidecar(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

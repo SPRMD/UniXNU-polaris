@@ -58,6 +58,12 @@ def main():
                         help='optional directory copy of the exact FAT tree used for the image')
     parser.add_argument('--ipados-stage', action='store_true',
                         help='request the experimental HID, key and battery services')
+    parser.add_argument('--probe', default=None,
+                        help='patch boot-progress probes into the ESP kernel copy: '
+                             '"panic" draws panic() text on screen; otherwise pass '
+                             'patch-xnu-entry-probe.py arguments (e.g. "--no-reset")')
+    parser.add_argument('--no-probe', action='store_true',
+                        help='never patch the ESP kernel copy')
     args = parser.parse_args()
 
     efi = args.efi.resolve()
@@ -89,6 +95,29 @@ def main():
 
     out = args.out.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
+    # The probes are applied to a private copy. The input kernel artifact and
+    # the prelinked-kernel report that describes it must keep matching, so
+    # patching in place would break the hash check above and corrupt the
+    # artifact for every later consumer. A kernel whose layout the probe tool
+    # cannot verify makes the tool exit non-zero, so a diagnostic-only patch
+    # can never ship silently broken.
+    kernel_path = args.kernel.resolve()
+    if args.probe and not args.no_probe:
+        import shlex
+        import tempfile
+        probe = ROOT / 'scripts/patch-xnu-entry-probe.py'
+        extra = ['--panic-screen'] if args.probe == 'panic' else shlex.split(args.probe)
+        staged = Path(tempfile.mkdtemp(prefix='ios-esp-probe-')) / 'kernel.macho'
+        shutil.copyfile(kernel_path, staged)
+        subprocess.run([sys.executable, str(probe), str(staged), *extra], check=True)
+        # Rewriting __text invalidates the sealed FIPS POST integrity HMAC that
+        # the base build wrote into __fips_hmacs. Re-seal the patched copy so
+        # corecrypto measures the image that is actually running.
+        subprocess.run([sys.executable, str(ROOT / 'scripts/seal-source-crypto-kernel.py'),
+                        str(staged)], check=True)
+        kernel_path = staged
+        print('probed kernel copy:', staged)
+    files['EFI/UniXNU/Payloads/kernel.macho'] = kernel_path
     tree = args.tree.resolve() if args.tree else None
     if tree and tree.exists():
         shutil.rmtree(tree)
@@ -121,7 +150,9 @@ def main():
     listing = subprocess.run(['mdir', '-i', str(out), '-/', '::'], capture_output=True, text=True, check=True).stdout
     print(listing)
     report = {'image': str(out), 'image_bytes': out.stat().st_size,
-              'kernel_sha256': hashlib.sha256(args.kernel.read_bytes()).hexdigest(),
+              'kernel_sha256': hashlib.sha256(kernel_path.read_bytes()).hexdigest(),
+              'input_kernel_sha256': hashlib.sha256(args.kernel.read_bytes()).hexdigest(),
+              'probe': (args.probe if (args.probe and not args.no_probe) else None),
               'trust_sha256': hashlib.sha256(args.trust.read_bytes()).hexdigest(),
               'tree': str(tree) if tree else None,
               'boot_profile': 'ipados-stage' if args.ipados_stage else 'platform',

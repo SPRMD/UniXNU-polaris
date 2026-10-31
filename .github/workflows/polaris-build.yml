@@ -569,7 +569,8 @@ jobs:
             --package out/polaris-ios-one-click \
             --firmware out/firmware \
             --driver-bundle out/host/polaris-driver-bundle \
-            --input-hash-report out/ios-inputs/ios-input-hashes.json
+            --input-hash-report out/ios-inputs/ios-input-hashes.json \
+            --probe panic
           python3 scripts/check-polaris-package.py --package out/polaris-ios-one-click
           test "$(python3 -c 'import json; print(json.load(open("out/polaris-ios-one-click/manifest.json"))["flashable"])')" = "False"
           (cd out/polaris-ios-one-click && sha256sum -c SHA256SUMS)

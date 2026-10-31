@@ -225,6 +225,10 @@ def main() -> int:
                         help="optional local source/firmware provenance bundle")
     parser.add_argument("--input-hash-report", type=Path,
                         help="optional SHA-256 report from check-ios-stage-inputs.py")
+    parser.add_argument("--probe", default=None,
+                        help="patch boot-progress probes into the ESP kernel copy: "
+                             "'panic' draws panic() text on screen, otherwise the "
+                             "string is passed to patch-xnu-entry-probe.py")
     args = parser.parse_args()
     # Subcommands run from ROOT, not from the caller's current directory.
     for name, value in vars(args).items():
@@ -263,10 +267,13 @@ def main() -> int:
 
     esp_tree = out / "esp"
     esp_image = out / "esp.img"
-    run("make-ios-esp.py", ["--kernel", str(args.kernel), "--adt", str(args.adt),
-                             "--trust", str(trust), "--efi", str(args.efi),
-                             "--out", str(esp_image), "--tree", str(esp_tree),
-                             "--ipados-stage"])
+    esp_args = ["--kernel", str(args.kernel), "--adt", str(args.adt),
+                "--trust", str(trust), "--efi", str(args.efi),
+                "--out", str(esp_image), "--tree", str(esp_tree),
+                "--ipados-stage"]
+    if args.probe:
+        esp_args.extend(["--probe", args.probe])
+    run("make-ios-esp.py", esp_args)
 
     darwin_root = out / "darwin-root.img"
     run("make-userdata-linux.py", ["--os", str(os_image), "--system-os", str(system_os_image),
