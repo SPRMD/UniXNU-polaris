@@ -23,6 +23,22 @@ volatile uint32_t polaris_pmic_input_power_source_published = 0;
 
 namespace {
 
+static bool polarisCStringContains(const char *haystack, const char *needle)
+{
+  if (haystack == nullptr || needle == nullptr) return false;
+  if (*needle == '\0') return true;
+  for (const char *start = haystack; *start != '\0'; ++start) {
+    const char *left = start;
+    const char *right = needle;
+    while (*left != '\0' && *right != '\0' && *left == *right) {
+      ++left;
+      ++right;
+    }
+    if (*right == '\0') return true;
+  }
+  return false;
+}
+
 static bool compatibleContains(IORegistryEntry *entry, const char *wanted)
 {
   if (entry == nullptr || wanted == nullptr) return false;
@@ -58,9 +74,9 @@ static unsigned countCandidateNodes(IORegistryEntry *entry, unsigned depth)
   unsigned count = 0;
   const char *name = entry->getName();
   if ((name != nullptr &&
-       (strstr(name, "pmic") != nullptr || strstr(name, "spmi") != nullptr ||
-        strstr(name, "pon") != nullptr || strstr(name, "fuel-gauge") != nullptr ||
-        strstr(name, "battery") != nullptr || strstr(name, "gpio-keys") != nullptr)) ||
+       (polarisCStringContains(name, "pmic") || polarisCStringContains(name, "spmi") ||
+        polarisCStringContains(name, "pon") || polarisCStringContains(name, "fuel-gauge") ||
+        polarisCStringContains(name, "battery") || polarisCStringContains(name, "gpio-keys"))) ||
       compatibleContains(entry, "qcom,pm8998") ||
       compatibleContains(entry, "qcom,pmi8998") ||
       compatibleContains(entry, "qcom,qpnp-power-on") ||

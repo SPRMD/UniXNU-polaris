@@ -13,6 +13,22 @@
 
 namespace {
 
+static bool polarisCStringContains(const char *haystack, const char *needle)
+{
+  if (haystack == nullptr || needle == nullptr) return false;
+  if (*needle == '\0') return true;
+  for (const char *start = haystack; *start != '\0'; ++start) {
+    const char *left = start;
+    const char *right = needle;
+    while (*left != '\0' && *right != '\0' && *left == *right) {
+      ++left;
+      ++right;
+    }
+    if (*right == '\0') return true;
+  }
+  return false;
+}
+
 static bool compatibleContains(IORegistryEntry *entry, const char *wanted)
 {
   if (entry == nullptr || wanted == nullptr) return false;
@@ -46,8 +62,8 @@ static bool candidateNode(IORegistryEntry *entry)
   if (entry == nullptr) return false;
   const char *name = entry->getName();
   if (name != nullptr &&
-      (strstr(name, "nfc") != nullptr || strstr(name, "nq") != nullptr ||
-       strstr(name, "pn5") != nullptr || strstr(name, "pn54") != nullptr)) {
+      (polarisCStringContains(name, "nfc") || polarisCStringContains(name, "nq") ||
+       polarisCStringContains(name, "pn5") || polarisCStringContains(name, "pn54"))) {
     return true;
   }
   return compatibleContains(entry, "qcom,nq-nci") ||

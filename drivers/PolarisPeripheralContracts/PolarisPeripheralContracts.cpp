@@ -42,7 +42,18 @@ struct Fact {
 
 static bool contains(const char *text, const char *wanted)
 {
-  return text != nullptr && wanted != nullptr && strstr(text, wanted) != nullptr;
+  if (text == nullptr || wanted == nullptr) return false;
+  if (*wanted == '\0') return true;
+  for (const char *start = text; *start != '\0'; ++start) {
+    const char *left = start;
+    const char *right = wanted;
+    while (*left != '\0' && *right != '\0' && *left == *right) {
+      ++left;
+      ++right;
+    }
+    if (*right == '\0') return true;
+  }
+  return false;
 }
 
 static bool compatibleContains(IORegistryEntry *entry, const char *wanted)

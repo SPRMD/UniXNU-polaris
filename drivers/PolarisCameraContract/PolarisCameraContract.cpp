@@ -13,6 +13,22 @@
 
 namespace {
 
+static bool polarisCStringContains(const char *haystack, const char *needle)
+{
+  if (haystack == nullptr || needle == nullptr) return false;
+  if (*needle == '\0') return true;
+  for (const char *start = haystack; *start != '\0'; ++start) {
+    const char *left = start;
+    const char *right = needle;
+    while (*left != '\0' && *right != '\0' && *left == *right) {
+      ++left;
+      ++right;
+    }
+    if (*right == '\0') return true;
+  }
+  return false;
+}
+
 static bool compatibleContains(IORegistryEntry *entry, const char *wanted)
 {
   if (entry == nullptr || wanted == nullptr) return false;
@@ -49,7 +65,7 @@ static bool hasNameOrCompatible(IORegistryEntry *entry,
   if (entry == nullptr) return false;
   const char *name = entry->getName();
   for (unsigned i = 0; i < nameCount; ++i) {
-    if (name != nullptr && strstr(name, names[i]) != nullptr) return true;
+    if (polarisCStringContains(name, names[i])) return true;
   }
   for (unsigned i = 0; i < compatibleCount; ++i) {
     if (compatibleContains(entry, compatibles[i])) return true;
