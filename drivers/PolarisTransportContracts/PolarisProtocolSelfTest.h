@@ -84,7 +84,7 @@ static inline bool nci()
       command[2] != 1 || command[3] != 0) return false;
   const uint8_t reset[] = {0x40, 0x00, 0x03, 0x00, 0x10, 0x00};
   if (!handshake.acceptResponse(reset, sizeof(reset)) || handshake.nextCommand(command, sizeof(command)) != 3) return false;
-  const uint8_t init[] = {0x40, 0x01, 17, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  const uint8_t init[20] = {0x40, 0x01, 17, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   return handshake.acceptResponse(init, sizeof(init)) && handshake.state() == PolarisNci::CoreHandshake::Ready;
 }
 static inline bool cci()
