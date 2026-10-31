@@ -64,7 +64,7 @@ static void testWlfw()
   uint8_t payload[64] = {};
   const size_t size = PolarisWlfw::bdfRequest(file, sizeof(file), 0, payload,
                                               sizeof(payload));
-  assert(size != 0 && payload[0] == 1);
+  assert(size == sizeof(file) + PolarisWlfw::kOverhead && payload[0] == 1);
   const uint8_t accepted[] = {2, 4, 0, 0, 0, 0, 0};
   assert(PolarisWlfw::bdfAccepted(accepted, sizeof(accepted)));
 }

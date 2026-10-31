@@ -11,7 +11,10 @@
 
 namespace PolarisWlfw {
 
-enum { kBdfMessage = 0x25, kChunkSize = 6144, kOverhead = 34 };
+// The fixed TLV framing occupies 35 bytes before the board-data payload:
+// message header plus three scalar TLVs, the data TLV header/length, and the
+// final end-of-transfer TLV.
+enum { kBdfMessage = 0x25, kChunkSize = 6144, kOverhead = 35 };
 
 static inline void put16(uint8_t *p, uint16_t value)
 {
