@@ -196,8 +196,6 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
   UINTN  TrustCandidate;
   UINTN  MemoryCandidate;
   UINTN  RangeCandidate;
-  UINTN  PoolSize;
-  UINTN  PoolSlot;
   UINTN  PoolCandidate;
   UINTN  PoolSlotCandidate;
   CONST UINT8 *Name;
@@ -209,8 +207,6 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
   TrustCandidate = MAX_UINTN;
   MemoryCandidate = MAX_UINTN;
   RangeCandidate = MAX_UINTN;
-  PoolSize = MAX_UINTN;
-  PoolSlot = MAX_UINTN;
   PoolCandidate = MAX_UINTN;
   PoolSlotCandidate = MAX_UINTN;
   if ((Depth > 64) || (Size - *Offset < 8)) { return FALSE; }
