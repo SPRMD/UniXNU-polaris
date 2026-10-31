@@ -185,7 +185,7 @@ ParseKernel (CONST UINT8 *Data, UINTN Size, KERNEL *Kernel)
 STATIC
 BOOLEAN
 AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN ParentPath, UINTN *RamdiskOffset, UINTN *TrustCacheOffset,
-         UINTN *PoolCandidate, UINTN *PoolSlotCandidate, UINT64 *WindowSize, DARWIN_WINDOW_RANGE *WindowRange, BOOLEAN *KeepPacked)
+         UINTN *PoolSizeOffset, UINTN *PoolSlotOffset, UINT64 *WindowSize, DARWIN_WINDOW_RANGE *WindowRange, BOOLEAN *KeepPacked)
 {
   UINT32 Properties;
   UINT32 Children;
@@ -198,6 +198,8 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
   UINTN  RangeCandidate;
   UINTN  PoolSize;
   UINTN  PoolSlot;
+  UINTN  PoolCandidate;
+  UINTN  PoolSlotCandidate;
   CONST UINT8 *Name;
   UINTN  NameLength;
 
@@ -209,6 +211,8 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
   RangeCandidate = MAX_UINTN;
   PoolSize = MAX_UINTN;
   PoolSlot = MAX_UINTN;
+  PoolCandidate = MAX_UINTN;
+  PoolSlotCandidate = MAX_UINTN;
   if ((Depth > 64) || (Size - *Offset < 8)) { return FALSE; }
   Properties = U32 (Data + *Offset);
   Children = U32 (Data + *Offset + 4);
@@ -281,22 +285,22 @@ AdtNode (CONST UINT8 *Data, UINTN Size, UINTN *Offset, UINTN Depth, UINTN Parent
     WindowRange->Bytes = U64 (Data + RangeCandidate + 8);
     if (!DarwinWindowRangeValid (WindowRange->Base, WindowRange->Bytes)) { return FALSE; }
   }
-  if (PoolSize != MAX_UINTN) {
+  if (PoolCandidate != MAX_UINTN) {
     // Only /chosen may declare it, exactly once, and only a sane pool size.
-    if ((Path != 1) || (*PoolCandidate != MAX_UINTN) || (U64 (Data + PoolSize) == 0) ||
-        (U64 (Data + PoolSize) > DARWIN_DMA_POOL_MAX_BYTES) ||
-        ((U64 (Data + PoolSize) & 0xfffULL) != 0)) { return FALSE; }
-    *PoolCandidate = PoolSize;
+    if ((Path != 1) || (*PoolSizeOffset != MAX_UINTN) || (U64 (Data + PoolCandidate) == 0) ||
+        (U64 (Data + PoolCandidate) > DARWIN_DMA_POOL_MAX_BYTES) ||
+        ((U64 (Data + PoolCandidate) & 0xfffULL) != 0)) { return FALSE; }
+    *PoolSizeOffset = PoolCandidate;
   }
-  if (PoolSlot != MAX_UINTN) {
+  if (PoolSlotCandidate != MAX_UINTN) {
     // A 16-byte slot the loader fills with {base, bytes}; must start as zeroes.
-    if ((Path != 1) || (*PoolSlotCandidate != MAX_UINTN) || (U64 (Data + PoolSlot) != 0) ||
-        (U64 (Data + PoolSlot + 8) != 0)) { return FALSE; }
-    *PoolSlotCandidate = PoolSlot;
+    if ((Path != 1) || (*PoolSlotOffset != MAX_UINTN) || (U64 (Data + PoolSlotCandidate) != 0) ||
+        (U64 (Data + PoolSlotCandidate + 8) != 0)) { return FALSE; }
+    *PoolSlotOffset = PoolSlotCandidate;
   }
   if (Children > (Size - *Offset) / 8) { return FALSE; }
   for (Index = 0; Index < Children; Index++) {
-    if (!AdtNode (Data, Size, Offset, Depth + 1, Path, RamdiskOffset, TrustCacheOffset, PoolCandidate, PoolSlotCandidate, WindowSize, WindowRange, KeepPacked)) { return FALSE; }
+    if (!AdtNode (Data, Size, Offset, Depth + 1, Path, RamdiskOffset, TrustCacheOffset, PoolSizeOffset, PoolSlotOffset, WindowSize, WindowRange, KeepPacked)) { return FALSE; }
   }
   return TRUE;
 }

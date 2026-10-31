@@ -125,9 +125,20 @@ class DmaPoolHeaderTests(unittest.TestCase):
 
     def test_pool_properties_are_only_read_from_chosen(self):
         source = (ROOT / "drivers" / "DarwinBoot" / "DarwinBootPkg" / "Driver" / "DarwinBoot.c").read_text()
-        self.assertRegex(source, r"darwinboot-dma-pool-size[\s\S]{0,400}?Length != 8")
-        self.assertRegex(source, r"darwinboot-dma-pool\"[\s\S]{0,400}?Length != 16")
-        self.assertIn("(Path != 1) || (*PoolCandidate != MAX_UINTN)", source)
+        # Both properties are length-checked where they are scanned.
+        self.assertRegex(source, r"darwinboot-dma-pool-size[\s\S]{0,200}?Length != 8")
+        self.assertRegex(source, r"darwinboot-dma-pool\"[\s\S]{0,200}?Length != 16")
+        # And both are rejected outside /chosen and when seen twice.
+        self.assertIn("(Path != 1) || (*PoolSizeOffset != MAX_UINTN)", source)
+        self.assertIn("(Path != 1) || (*PoolSlotOffset != MAX_UINTN)", source)
+
+    def test_pool_scan_locals_do_not_shadow_the_outputs(self):
+        # A previous revision reused the output parameter names as locals, which
+        # only the EDK2 build caught; keep the two namespaces separate.
+        source = (ROOT / "drivers" / "DarwinBoot" / "DarwinBootPkg" / "Driver" / "DarwinBoot.c").read_text()
+        self.assertIn("UINTN *PoolSizeOffset, UINTN *PoolSlotOffset", source)
+        self.assertIn("UINTN  PoolCandidate;", source)
+        self.assertIn("UINTN  PoolSlotCandidate;", source)
 
 
 if __name__ == "__main__":
