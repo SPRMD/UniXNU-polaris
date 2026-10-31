@@ -268,7 +268,7 @@ jobs:
         working-directory: out/edk2-msm
         run: |
           mkdir -p "$GITHUB_WORKSPACE/out/edk2-output"
-          ./build.sh --device polaris --skip-rootfs-gen \
+          ./build.sh --device polaris \
             --outputdir "$GITHUB_WORKSPACE/out/edk2-output"
 
       - name: Write firmware provenance
