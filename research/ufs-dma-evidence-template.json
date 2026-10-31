@@ -1,0 +1,59 @@
+{
+  "schema": "polaris.ufs-dma-evidence.v1",
+  "mode": "low_pool",
+  "status": "unqualified-template",
+  "note": "Empty record shape for one read-only, user-authorized observation. Every null must be replaced by a measured value from the documented source before the evaluator can return anything other than incomplete. Do not hand-edit a verdict: the evaluator ignores this status field.",
+  "device_authorization_required": true,
+  "controller": {
+    "cap": null,
+    "version": null
+  },
+  "smmu": {
+    "control": null,
+    "idr0": null,
+    "idr1": null,
+    "idr2": null,
+    "smr": [],
+    "s2cr": []
+  },
+  "streams": {
+    "ufs_stream_ids": [],
+    "base": null,
+    "mask": null,
+    "source": null
+  },
+  "dma": {
+    "address": null,
+    "bytes": null,
+    "allocator": null,
+    "physically_contiguous": null,
+    "firmware_request_list": null
+  },
+  "firmware_handoff": {
+    "powered": null,
+    "clocks": null,
+    "controller_idle": null,
+    "ufs_used_by_firmware_after_handoff": null,
+    "source": null,
+    "artifact_sha256": null
+  },
+  "registers_stable": null,
+  "pool": {
+    "base": null,
+    "bytes": null,
+    "owner": null,
+    "adt_property": null,
+    "loader_allocated": null,
+    "uefi_memory_map_verified": null,
+    "borrowed_firmware_pages": null,
+    "provenance_sha256": null
+  },
+  "observations": {
+    "media_ready": false,
+    "observer": null,
+    "whole": null,
+    "writable": null,
+    "size_bytes": null,
+    "ancestry_verified": null
+  }
+}

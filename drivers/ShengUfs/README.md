@@ -40,7 +40,10 @@ DMA buffer (never reuses firmware request pages), and checks all sixteen UFS
 streams for explicit pre-existing SMMUv2 BYPASS mappings before changing the
 request list. Missing, overlapping, translated, extended-ID or disabled-SMMU
 mappings are refused. No runtime SMMU register is written. DMA is deliberately
-restricted below 4 GiB. Qualcomm's disabled-context bypass quirk is NOT assumed.
+restricted to the proven CAP/SMMU address window: because current kernel RAM is
+at or above 4 GiB and no capability evidence is recorded, the effective default
+is refusal (see research/ufs-dma-qualification.md). Qualcomm's disabled-context
+bypass quirk is NOT assumed.
 An attempted runtime start is single-shot. DMA allocations and maps remain
 pinned for the boot, including failures, because a proven abort/reset and safe
 unload protocol is not implemented. This is an experimental built-in driver.

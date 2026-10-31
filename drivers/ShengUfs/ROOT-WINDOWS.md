@@ -56,15 +56,24 @@ root-matching and TrustCache/ADT remain integrator prerequisites, unchanged here
 
 ## Hard blocker: DMA above 4 GiB
 
-Current ADT kernel RAM starts at 0x100000000. The existing DMA guard requires
-an allocated buffer below 4 GiB, so this profile cannot start either runtime.
-CAP bit 24 (64AS) and UTRD/PRDT high address words already exist in the transport,
-but controller capability alone does not prove that the active apps-SMMU path
-accepts and identity-routes above-32-bit addresses. The guard is NOT removed.
-Required evidence: actual CAP, SMMU IDR/address widths, active stream routing
-and safe firmware handoff. A low DMA pool would need owned/reserved memory and
-allocator integration; never borrow firmware pages. Tests do not remove this
-blocker and no root-run capability is claimed.
+Current ADT kernel RAM starts at 0x100000000 and DarwinBoot allocates the kernel
+window from that upper bank (2026-10-24 phone handoff measured
+pa=0x100004000, owned=0x40000000), so every runtime DMA allocation is at or
+above 4 GiB. The guard in PolarisDmaHandoff.h is NOT a literal "<4 GiB" test: it
+derives its limit from UFSHCI CAP bit 24 (64AS) and the active SMMU IDR2 UBS/OAS
+widths, then requires a single explicit-BYPASS SMR/S2CR mapping for every stream
+ID in 0x100..0x10f and unchanged registers on re-read. No artifact records
+CAP[24], IDR0/IDR1/IDR2, sCR0, SMR or S2CR for the current Renegade UEFI
+handoff, so an above-4-GiB buffer must be refused. The guard is NOT removed.
+
+CAP bit 24 and the UTRD/PRDT high address words already present in the transport
+only show the driver can express 64-bit descriptors; they do not prove the
+active apps-SMMU accepts and identity-routes them. The evidence matrix (what to
+read, where, and the pass/fail criterion for each item), the owned low-address
+DMA pool design draft (loader-allocated UEFI conventional memory recorded in
+the ADT; never borrow firmware pages) and the offline evaluator are in
+research/ufs-dma-qualification.md. Host tests cannot replace a read-only,
+user-authorized register observation; no root-run capability is claimed.
 
 ## Primary implementations checked online
 
