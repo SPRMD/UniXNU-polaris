@@ -1,57 +1,84 @@
 {
-  "schema": 1,
+  "schema": 2,
   "board": "xiaomi,polaris",
   "soc": "qcom,sdm845",
-  "source_policy": "static DT evidence only; no live MMIO or GPU identity read",
+  "source_policy": "stock Polaris device tree only; no live MMIO or GPU identity read",
   "sources": [
     {
-      "kind": "linux-dts",
-      "path": "polaris_ios16_driver_research/refs/WSL2-Linux-Kernel-linux-msft-wsl-6.18.y/arch/arm64/boot/dts/qcom/sdm845.dtsi",
-      "compatible": ["qcom,adreno-630.2", "qcom,adreno-gmu-630.2"]
-    },
-    {
-      "kind": "miui-dt-report",
-      "path": "polaris_ios16_driver_research/reports/polaris_dt.json",
-      "compatible": ["qcom,kgsl-3d0", "qcom,gpu-gmu", "qcom,smmu-v2"]
+      "kind": "stock-polaris-dtb",
+      "path": "polaris_ios16_driver_research/.local/fdt-offline-disabled-9ef_dsri/out/polaris-dtb.bin",
+      "dtb_chain_entries": 65,
+      "selected_model": "Xiaomi Technologies, Inc. Polaris P2 v2.1",
+      "selected_offset": 1408674,
+      "selected_bytes": 491286,
+      "root_compatible": ["qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"],
+      "note": "All 15 Polaris model DTBs in the chain agree on the GPU/GMU/SMMU/GPUCC nodes; P2 v2.1 is recorded as the representative entry."
     }
   ],
   "gpu": {
     "node": "/soc/qcom,kgsl-3d0@5000000",
+    "compatible": ["qcom,kgsl-3d0", "qcom,kgsl-3d"],
     "base": "0x05000000",
     "bytes": "0x00040000",
+    "reg_names": ["kgsl_3d0_reg_memory", "kgsl_3d0_cx_dbgc_memory", "cx_misc"],
+    "cx_dbgc_base": "0x05061000",
+    "cx_dbgc_bytes": "0x00000800",
     "cx_mem_base": "0x0509e000",
     "cx_mem_bytes": "0x00001000",
-    "chip_id_candidates": ["0x06030000", "0x06030001"],
-    "irq_spi": 300
+    "chip_id": "0x06030001",
+    "chip_id_source": "qcom,chipid in the stock DT",
+    "chip_id_candidates_retired": ["0x06030000"],
+    "irq_spi": 300,
+    "irq_intid": 332,
+    "interrupt_names": ["kgsl_3d0_irq"],
+    "initial_pwrlevel": 6
   },
   "gmu": {
-    "linux_node": "/soc/gmu@506a000",
-    "miui_node": "/soc/qcom,gmu",
+    "node": "/soc/qcom,gmu",
+    "compatible": ["qcom,gpu-gmu"],
     "base": "0x0506a000",
     "bytes": "0x00030000",
+    "reg_names": ["kgsl_gmu_reg", "kgsl_gmu_pdc_reg"],
+    "pdc_base": "0x0b200000",
+    "pdc_bytes": "0x00300000",
     "irq_spi": {"hfi": 304, "gmu": 305},
-    "additional_dt_windows": [
-      {"base": "0x0b280000", "bytes": "0x00010000", "source": "linux-dts"},
-      {"base": "0x0b480000", "bytes": "0x00010000", "source": "linux-dts"},
-      {"base": "0x0b200000", "bytes": "0x00300000", "source": "miui-dt-report"}
-    ]
+    "irq_intid": {"hfi": 336, "gmu": 337},
+    "interrupt_names": ["kgsl_hfi_irq", "kgsl_gmu_irq"]
   },
   "smmu": {
     "node": "/soc/arm,smmu-kgsl@5040000",
+    "compatible": ["qcom,smmu-v2"],
     "base": "0x05040000",
     "bytes": "0x00010000",
     "global_irq_spi": [229, 231],
-    "context_irq_spi": [364, 365, 366, 367, 368, 369, 370, 371]
+    "context_irq_spi": [364, 365, 366, 367, 368, 369, 370, 371],
+    "context_irq_count": 8,
+    "context_banks": [
+      {"node": "gfx3d_user", "compatible": "qcom,smmu-kgsl-cb", "sid": 0},
+      {"node": "gfx3d_secure", "compatible": "qcom,smmu-kgsl-cb", "sid": [1, 2]}
+    ],
+    "note": "This is the GPU's own SMMU instance, distinct from the apps-SMMU that the UFS transport qualifies."
   },
   "gpucc": {
     "node": "/soc/qcom,gpucc@5090000",
+    "compatible": ["qcom,gpucc-sdm845-v2", "syscon"],
     "base": "0x05090000",
     "bytes": "0x00009000"
+  },
+  "supporting_windows": {
+    "gcc": {"base": "0x00100000", "bytes": "0x001f0000", "compatible": ["qcom,gcc-sdm845-v2.1", "syscon"]},
+    "pdc": {"base": "0x0b220000", "bytes": "0x00000400", "compatible": ["qcom,pdc-sdm845-v2"]},
+    "rscc": {"base": "0x0af20000", "bytes": "0x00001c44", "compatible": ["qcom,sde-rsc"]}
+  },
+  "firmware_regions": {
+    "gpu_region": {"base": "0x8c415000", "bytes": "0x00002000", "compatible": ["removed-dma-pool"]},
+    "pil_spss_region": {"base": "0x97f00000", "bytes": "0x00100000", "compatible": ["removed-dma-pool"]}
   },
   "runtime": {
     "mmio_allowed": false,
     "firmware_load_allowed": false,
     "dma_allowed": false,
+    "smmu_programming_allowed": false,
     "darwin_driver_ready": false,
     "hardware_tested": false
   }

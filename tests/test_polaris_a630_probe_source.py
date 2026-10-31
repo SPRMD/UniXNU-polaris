@@ -37,8 +37,10 @@ class PolarisA630ProbeSourceTests(unittest.TestCase):
             "/soc/arm,smmu-kgsl@5040000",
             "a630_gmu.bin,a630_sqe.fw,a630_zap.mdt",
             "Adreno 630 / A630v2",
-            "0x06030000,0x06030001",
             '"polaris-a630-chip-id-confirmed", false',
+            # The stock DT declares exactly one revision; a candidate list here
+            # would let a port claim either part without reading anything.
+            '"polaris-a630-chip-id-dt-declared", POLARIS_A630_CHIP_ID_DT_DECLARED',
         ):
             self.assertIn(value, source)
         for value in (
@@ -48,6 +50,7 @@ class PolarisA630ProbeSourceTests(unittest.TestCase):
         ):
             self.assertIn(value, source)
         self.assertNotIn('setProperty("polaris-a630-chip-id",', source)
+        self.assertNotIn("chip-id-candidates", source)
 
     def test_archive_is_selected_for_darwin_build(self):
         board = (ROOT / "board.toml").read_text(encoding="utf-8")

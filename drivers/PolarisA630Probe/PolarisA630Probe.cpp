@@ -89,6 +89,25 @@ static unsigned readRanges(IORegistryEntry *entry, Range *out, unsigned capacity
   return count;
 }
 
+/* iommus tuples are {phandle, stream-id} pairs, not {address, size} ranges.
+ * Reading them with readRanges() would silently reinterpret a SID as a size. */
+static unsigned readStreamIds(IORegistryEntry *entry, uint32_t *out,
+                              unsigned capacity)
+{
+  if (entry == nullptr || out == nullptr || capacity == 0) return 0;
+  OSData *data = OSDynamicCast(OSData, entry->getProperty("iommus"));
+  if (data == nullptr || data->getBytesNoCopy() == nullptr) return 0;
+  const uint8_t *bytes = static_cast<const uint8_t *>(data->getBytesNoCopy());
+  const size_t length = data->getLength();
+  if (length == 0 || length % 8 != 0) return 0;
+  unsigned count = 0;
+  for (size_t offset = 0; offset + 8 <= length && count < capacity;
+       offset += 8) {
+    out[count++] = be32(bytes + offset + 4);  /* the SID, not the phandle */
+  }
+  return count;
+}
+
 static IORegistryEntry *nodeAt(const char *path)
 {
   return path == nullptr ? nullptr : IORegistryEntry::fromPath(path, gIODTPlane);
@@ -142,15 +161,74 @@ public:
     IORegistryEntry *gpu = nodeAt("/soc/qcom,kgsl-3d0@5000000");
     IORegistryEntry *gmu = nodeAt("/soc/qcom,gmu");
     IORegistryEntry *smmu = nodeAt("/soc/arm,smmu-kgsl@5040000");
+    IORegistryEntry *gpucc = nodeAt("/soc/qcom,gpucc@5090000");
+    IORegistryEntry *iommu = nodeAt("/soc/qcom,kgsl-iommu");
     Range gpuRanges[4] = {};
     Range gmuRanges[4] = {};
     Range smmuRanges[4] = {};
+    Range gpuccRanges[4] = {};
     unsigned gpuCount = readRanges(gpu, gpuRanges, 4);
     publishRange(this, "gpu", gpuRanges, gpuCount);
     unsigned gmuCount = readRanges(gmu, gmuRanges, 4);
     publishRange(this, "gmu", gmuRanges, gmuCount);
     unsigned smmuCount = readRanges(smmu, smmuRanges, 4);
     publishRange(this, "smmu", smmuRanges, smmuCount);
+    unsigned gpuccCount = readRanges(gpucc, gpuccRanges, 4);
+    publishRange(this, "gpucc", gpuccRanges, gpuccCount);
+
+    /* The second reg tuple of the GMU is the PDC window it shares; publish it
+     * separately so a backend never has to re-derive it from a range list. */
+    if (gmuCount >= 2) {
+      setProperty("polaris-a630-gmu-pdc-base", gmuRanges[1].address, 64);
+      setProperty("polaris-a630-gmu-pdc-bytes", gmuRanges[1].size, 64);
+    }
+    /* kgsl exposes three windows; the middle one is the CX debug block. */
+    if (gpuCount >= 3) {
+      setProperty("polaris-a630-gpu-cx-dbgc-base", gpuRanges[1].address, 64);
+      setProperty("polaris-a630-gpu-cx-dbgc-bytes", gpuRanges[1].size, 64);
+      setProperty("polaris-a630-gpu-cx-misc-base", gpuRanges[2].address, 64);
+      setProperty("polaris-a630-gpu-cx-misc-bytes", gpuRanges[2].size, 64);
+    }
+    /* Context-bank stream IDs come from the iommus tuples, never guessed.
+     * gfx3d_user -> {phandle, 0}; gfx3d_secure -> {phandle, 2} and {phandle, 1}. */
+    uint32_t sids[8] = {};
+    unsigned sidCount = 0;
+    if (iommu != nullptr) {
+      IORegistryEntry *user = nodeAt("/soc/qcom,kgsl-iommu/gfx3d_user");
+      IORegistryEntry *secure = nodeAt("/soc/qcom,kgsl-iommu/gfx3d_secure");
+      uint32_t userSids[2] = {};
+      uint32_t secureSids[2] = {};
+      const unsigned userCount = readStreamIds(user, userSids, 2);
+      const unsigned secureCount = readStreamIds(secure, secureSids, 2);
+      for (unsigned i = 0; i < userCount && sidCount < 8; ++i)
+        sids[sidCount++] = userSids[i];
+      for (unsigned i = 0; i < secureCount && sidCount < 8; ++i)
+        sids[sidCount++] = secureSids[i];
+      setProperty("polaris-a630-gfx3d-user-sid-count", userCount, 32);
+      setProperty("polaris-a630-gfx3d-secure-sid-count", secureCount, 32);
+      OSSafeReleaseNULL(user);
+      OSSafeReleaseNULL(secure);
+    }
+    setProperty("polaris-a630-gpu-iommu-node-present", iommu != nullptr);
+    setProperty("polaris-a630-gpu-sid-count", sidCount, 32);
+    for (unsigned i = 0; i < sidCount; ++i) {
+      char key[64];
+      snprintf(key, sizeof(key), "polaris-a630-gpu-sid-%u", i);
+      setProperty(key, sids[i], 32);
+    }
+    /* The DT-declared set must be exactly the three SIDs this contract names;
+     * a mismatch means the tree changed and the backend must not assume them. */
+    bool sidsMatch = (sidCount == POLARIS_A630_GPU_SID_COUNT);
+    if (sidsMatch) {
+      bool sawGpu = false, sawSecureA = false, sawSecureB = false;
+      for (unsigned i = 0; i < sidCount; ++i) {
+        sawGpu |= sids[i] == POLARIS_A630_GPU_SID;
+        sawSecureA |= sids[i] == POLARIS_A630_GPU_SECURE_SID_A;
+        sawSecureB |= sids[i] == POLARIS_A630_GPU_SECURE_SID_B;
+      }
+      sidsMatch = sawGpu && sawSecureA && sawSecureB;
+    }
+    setProperty("polaris-a630-gpu-sids-match-contract", sidsMatch);
 
     uint32_t dtChipId = 0;
     uint32_t dtHighestBankBit = 0;
@@ -210,10 +288,10 @@ public:
     setProperty("polaris-a630-family", "Adreno 630 / A630v2");
     setProperty("polaris-a630-firmware-candidates",
                 "a630_gmu.bin,a630_sqe.fw,a630_zap.mdt");
-    /* The stock Polaris DT inventory contains both A630 revisions.  Do not
-     * collapse that evidence into one chip ID before the selected DTB and a
-     * safe runtime identification read have been captured. */
-    setProperty("polaris-a630-chip-id-candidates", "0x06030000,0x06030001");
+    /* The stock Polaris DT declares one revision, 0x06030001. That is a
+     * firmware claim about the part, still not a live read from this GPU: the
+     * probe never maps the GPU, so chip_id_confirmed above stays 0. */
+    setProperty("polaris-a630-chip-id-dt-declared", POLARIS_A630_CHIP_ID_DT_DECLARED, 32);
     setProperty("polaris-a630-chip-id-confirmed", false);
     setProperty("polaris-a630-gpu-mmio-performed", false);
     setProperty("polaris-a630-gpu-writes-performed", false);
@@ -225,6 +303,8 @@ public:
                 (gpu != nullptr && gmu != nullptr && smmu != nullptr) ?
                 "resource-only; GPU backend pending" :
                 "resource-missing; GPU backend withheld");
+    setProperty("polaris-a630-resource-source",
+                "stock Polaris DT (qcom,sdm845-mtp); no live MMIO");
     setName("PolarisA630Probe");
     registerService();
     IOLog("PolarisA630Probe: gpu=%u gmu=%u smmu=%u; MMIO=0 writes=0 DMA=0\\n",
@@ -232,6 +312,8 @@ public:
     OSSafeReleaseNULL(gpu);
     OSSafeReleaseNULL(gmu);
     OSSafeReleaseNULL(smmu);
+    OSSafeReleaseNULL(gpucc);
+    OSSafeReleaseNULL(iommu);
     return true;
   }
 };

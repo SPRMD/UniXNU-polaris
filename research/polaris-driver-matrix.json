@@ -38,10 +38,12 @@
       "evidence": "GPIO33/GPIO34 RMI4 runtime plus the gated PolarisHidInput bridge against the pinned iPadOS 17.7.11 IOHID ABI; no independent Darwin 23 temporary-boot log or input-event trace"
     },
     "gpu_adreno630": {
-      "status": "not-implemented",
+      "status": "resource-contract",
       "enabled_by_default": false,
       "userland_ready": false,
-      "evidence": "The upstream Adreno740 component is incompatible with SDM845/A630"
+      "evidence": "Board windows, interrupts, chip ID and stream IDs are read from the stock Polaris DT (qcom,chipid=0x06030001, GPU 0x05000000+0x40000, GMU 0x0506a000+0x30000, GPU SMMU 0x05040000+0x10000, SIDs 0/1/2). The probe performs no MMIO, firmware load, DMA or SMMU programming; the upstream Adreno740 component is incompatible with SDM845/A630 and the local A642L reference needs its procedures re-derived.",
+      "resources": "research/polaris-a630-resources.json",
+      "component": "PolarisA630Probe"
     },
     "wifi_wcn3998": {
       "status": "not-implemented",

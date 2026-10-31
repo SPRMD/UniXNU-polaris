@@ -185,8 +185,8 @@
       },
       {
         "path": "drivers/PolarisA630Probe/PolarisA630Board.h",
-        "bytes": 1236,
-        "sha256": "c6c6b83519dff687d514824682cd9aa7b91d326d33a400f49e35337b52c53d00"
+        "bytes": 4140,
+        "sha256": "5704d2171dbf4d161b4a826e43e92d8364fe3d6cdd035462cfa473b0cc7c4abf"
       },
       {
         "path": "drivers/PolarisA630Probe/PolarisA630Policy.h",
@@ -195,13 +195,13 @@
       },
       {
         "path": "drivers/PolarisA630Probe/PolarisA630Probe.cpp",
-        "bytes": 9691,
-        "sha256": "c09728cd4c6906c35f3b0ffe0b0cf185d864877c5181dc6df27239977d47d1a2"
+        "bytes": 13794,
+        "sha256": "4ab2cab8796048e021b5b833787cc0325983bb24fe236268c88270784af7420b"
       },
       {
         "path": "drivers/PolarisA630Probe/README.md",
-        "bytes": 1665,
-        "sha256": "17c607aa19c5f43c47fbf16c0acb7b54329ccb3d6665575f1a3f8ba04b2f3213"
+        "bytes": 3064,
+        "sha256": "88530fe6c05e6b6e97ee7169d28f23304a91c55540dabcec609fd1cda8793021"
       },
       {
         "path": "drivers/PolarisGeniI2c/PolarisGeniI2c.c",
