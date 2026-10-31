@@ -123,14 +123,14 @@ public:
     setProperty("polaris-rmi4-touch-pdt-read", false);
     setProperty("polaris-rmi4-touch-reset-performed", false);
     setProperty("polaris-rmi4-touch-mmio-performed", false);
-    setProperty("polaris-rmi4-touch-i2c-transactions", 0U, 32);
+    setProperty("polaris-rmi4-touch-i2c-transactions", static_cast<uint64_t>(0), 32);
     setProperty("polaris-rmi4-touch-hid-registered", false);
     setProperty("polaris-rmi4-touch-runtime-gate", "polaris-touch-runtime=1");
     setProperty("polaris-rmi4-touch-runtime-transport", "GPIO33/GPIO34 open-drain RMI4");
     setProperty("polaris-rmi4-touch-runtime-mmio", false);
-    setProperty("polaris-rmi4-touch-runtime-state", 0U, 32);
-    setProperty("polaris-rmi4-touch-runtime-slots", 0U, 32);
-    setProperty("polaris-rmi4-touch-runtime-reports", 0U, 32);
+    setProperty("polaris-rmi4-touch-runtime-state", static_cast<uint64_t>(0), 32);
+    setProperty("polaris-rmi4-touch-runtime-slots", static_cast<uint64_t>(0), 32);
+    setProperty("polaris-rmi4-touch-runtime-reports", static_cast<uint64_t>(0), 32);
     setProperty("polaris-rmi4-touch-darwin-driver-ready", false);
     unsigned runtime = 0;
     const bool runtimeRequested =

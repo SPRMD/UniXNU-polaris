@@ -179,9 +179,9 @@
         "sha256": "9d456a5bd7ea3ade60c00fe349e1c9b29be1a33fcb1ba4d7d12101d77849bd90"
       },
       {
-        "bytes": 6577,
+        "bytes": 6665,
         "path": "drivers/PolarisSynapticsTouch/PolarisSynapticsTouch.cpp",
-        "sha256": "10ef7281ea53d32746b349c735a4637f22156f5414ed2610ecc847835e1e31e5"
+        "sha256": "a94a128b76e69de2a1db5784eebda54b25d3bb155443bbbead1f28ef02051c87"
       },
       {
         "bytes": 12467,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "generated_at": "2026-10-31T07:45:25.673780+00:00",
+  "generated_at": "2026-10-31T07:53:06.081231+00:00",
   "inputs": {
     "a630_resources": true,
     "driver_matrix": true,
