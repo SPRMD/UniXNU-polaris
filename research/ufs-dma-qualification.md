@@ -118,10 +118,22 @@ Any single required `fail` refuses the route. `missing` means "not qualified
 yet", never "probably fine". **Every device-side item is explicitly marked as
 waiting for user authorization; this task performed zero device operations.**
 
-## 4. Owned low-address DMA pool: design draft (not implemented)
+## 4. Owned low-address DMA pool: implemented, still unqualified on hardware
 
 Goal: give `NativeUfs` a DMA buffer below 4 GiB that is demonstrably ours,
 without borrowing firmware pages and without weakening the SMMU guard.
+
+**This section was a design draft; it is now built.** The loader side lives in
+`drivers/DarwinBoot/DarwinBootPkg/Driver/DarwinBoot.c` (`AllocateDmaPool`) with
+its contract in `DmaPool.h`, the ADT side in `scripts/make-polaris-adt.py`
+(`--dma-pool-size`), and the driver side in `drivers/ShengUfs/PolarisDmaPool.h`
+plus `NativeUfs.cpp` (`hostBringUp`). CI run 41217948359 produced a stage ADT
+containing both `darwinboot-dma-pool-size` (0x40000) and the all-zero
+`darwinboot-dma-pool` slot, so the contract is exercised end to end. What that
+does **not** establish is that UFS works: the pool removes the address axis
+(E1/E2) only, and every SMMU routing condition (E3-E6) still has to pass
+against a live read that has never been taken. The paragraphs below are kept
+as written so the acceptance rules stay reviewable against the code.
 
 ### 4.1 Memory source
 

@@ -11,26 +11,41 @@
       "selected_model": "Xiaomi Technologies, Inc. Polaris P2 v2.1",
       "selected_offset": 1408674,
       "selected_bytes": 491286,
-      "root_compatible": ["qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"],
+      "root_compatible": [
+        "qcom,sdm845-mtp",
+        "qcom,sdm845",
+        "qcom,mtp"
+      ],
       "note": "All 15 Polaris model DTBs in the chain agree on the GPU/GMU/SMMU/GPUCC nodes; P2 v2.1 is recorded as the representative entry."
     }
   ],
   "gpu": {
     "node": "/soc/qcom,kgsl-3d0@5000000",
-    "compatible": ["qcom,kgsl-3d0", "qcom,kgsl-3d"],
+    "compatible": [
+      "qcom,kgsl-3d0",
+      "qcom,kgsl-3d"
+    ],
     "base": "0x05000000",
     "bytes": "0x00040000",
-    "reg_names": ["kgsl_3d0_reg_memory", "kgsl_3d0_cx_dbgc_memory", "cx_misc"],
+    "reg_names": [
+      "kgsl_3d0_reg_memory",
+      "kgsl_3d0_cx_dbgc_memory",
+      "cx_misc"
+    ],
     "cx_dbgc_base": "0x05061000",
     "cx_dbgc_bytes": "0x00000800",
     "cx_mem_base": "0x0509e000",
     "cx_mem_bytes": "0x00001000",
     "chip_id": "0x06030001",
     "chip_id_source": "qcom,chipid in the stock DT",
-    "chip_id_candidates_retired": ["0x06030000"],
+    "chip_id_candidates_retired": [
+      "0x06030000"
+    ],
     "irq_spi": 300,
     "irq_intid": 332,
-    "interrupt_names": ["kgsl_3d0_irq"],
+    "interrupt_names": [
+      "kgsl_3d0_irq"
+    ],
     "initial_pwrlevel": 6,
     "highest_bank_bit": 15,
     "highest_bank_bit_source": "qcom,highest-bank-bit in the stock DT",
@@ -101,15 +116,37 @@
       }
     ],
     "power_levels_source": "qcom,gpu-pwrlevels/qcom,gpu-pwrlevel@N in the stock DT",
-    "quirks": ["gpu-quirk-hfi-use-reg", "gpu-quirk-secvid-set-once", "no-nap"],
-    "quirks_source": "empty (boolean) properties present in the stock DT node"
+    "quirks": [
+      "gpu-quirk-hfi-use-reg",
+      "gpu-quirk-secvid-set-once",
+      "no-nap"
+    ],
+    "quirks_source": "empty (boolean) properties present in the stock DT node",
+    "gmem_bytes": 1048576,
+    "gmem_base": "0x00100000",
+    "gmem_range_registers": {
+      "min": {
+        "name": "REG_A6XX_UCHE_GMEM_RANGE_MIN",
+        "offset": "0x00000e0b"
+      },
+      "max": {
+        "name": "REG_A6XX_UCHE_GMEM_RANGE_MAX",
+        "offset": "0x00000e0d"
+      }
+    },
+    "gmem_source": "hakios-xnu-kernel xnu/files/bsd/dev/hakios.adreno.c: the a640 path writes UCHE_GMEM_RANGE_MIN=0x100000 and MAX=0x1fffff, and its GMEM_SIZE query returns 1024*1024 for a640 vs 512*1024 otherwise. That file's a640 branch also loads a630_sqe.fw and a630_zap.mdt, so a640 there denotes the A630/A640-generation part, matching polaris qcom,chipid 0x06030001."
   },
   "gmu": {
     "node": "/soc/qcom,gmu",
-    "compatible": ["qcom,gpu-gmu"],
+    "compatible": [
+      "qcom,gpu-gmu"
+    ],
     "base": "0x0506a000",
     "bytes": "0x00030000",
-    "reg_names": ["kgsl_gmu_reg", "kgsl_gmu_pdc_reg"],
+    "reg_names": [
+      "kgsl_gmu_reg",
+      "kgsl_gmu_pdc_reg"
+    ],
     "pdc_base": "0x0b200000",
     "pdc_bytes": "0x00300000",
     "irq_spi": {
@@ -120,7 +157,10 @@
       "hfi": 336,
       "gmu": 337
     },
-    "interrupt_names": ["kgsl_hfi_irq", "kgsl_gmu_irq"],
+    "interrupt_names": [
+      "kgsl_hfi_irq",
+      "kgsl_gmu_irq"
+    ],
     "power_levels": [
       {
         "level": 0,
@@ -139,11 +179,25 @@
   },
   "smmu": {
     "node": "/soc/arm,smmu-kgsl@5040000",
-    "compatible": ["qcom,smmu-v2"],
+    "compatible": [
+      "qcom,smmu-v2"
+    ],
     "base": "0x05040000",
     "bytes": "0x00010000",
-    "global_irq_spi": [229, 231],
-    "context_irq_spi": [364, 365, 366, 367, 368, 369, 370, 371],
+    "global_irq_spi": [
+      229,
+      231
+    ],
+    "context_irq_spi": [
+      364,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371
+    ],
     "context_irq_count": 8,
     "context_banks": [
       {
@@ -154,7 +208,10 @@
       {
         "node": "gfx3d_secure",
         "compatible": "qcom,smmu-kgsl-cb",
-        "sid": [2, 1],
+        "sid": [
+          2,
+          1
+        ],
         "sid_source": "iommus = <&kgsl_smmu 2>, <&kgsl_smmu 1>; the pair is the DT order, not a sort"
       }
     ],
@@ -171,11 +228,207 @@
         "sid": 5
       }
     ],
-    "gmu_context_banks_source": "iommus = <&kgsl_smmu 4> and <&kgsl_smmu 5> under /soc/qcom,gmu"
+    "gmu_context_banks_source": "iommus = <&kgsl_smmu 4> and <&kgsl_smmu 5> under /soc/qcom,gmu",
+    "asid_and_context_bank_policy": {
+      "question": "How does SMMU-v2 select a context bank, and is the A642L 'three distinct non-zero ASIDs' policy derivable here?",
+      "answer": "A context bank is selected by bank index, not by ASID. No ASID field exists in SMR, S2CR, CBAR, CBA2R or any per-bank register; the A642L policy is a reference-side stage-1 identity plus a pre-map sanity gate, not a device-tree fact.",
+      "device_tree_proves": {
+        "context_irq_count": 8,
+        "context_irq_spi": [
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371
+        ],
+        "global_irq_spi": [
+          229,
+          231
+        ],
+        "stream_ids": {
+          "gfx3d_user": 0,
+          "gfx3d_secure": [
+            2,
+            1
+          ],
+          "gmu_user": 4,
+          "gmu_kernel": 5
+        },
+        "asid_property_present_on_any_cb_node": false,
+        "bank_index_property_present_on_any_cb_node": false,
+        "note": "Eight context fault lines are a fault-reporting fan-out; the implemented bank count is IDR1[7:0] and is only readable live.",
+        "interrupt_decoding": {
+          "source": "interrupts on /soc/arm,smmu-kgsl@5040000, ten 3-cell entries",
+          "global_entries": [
+            [
+              229,
+              4,
+              0
+            ],
+            [
+              231,
+              4,
+              0
+            ]
+          ],
+          "context_entries": [
+            [
+              364,
+              4,
+              0
+            ],
+            [
+              365,
+              4,
+              0
+            ],
+            [
+              366,
+              4,
+              0
+            ],
+            [
+              367,
+              4,
+              0
+            ],
+            [
+              368,
+              4,
+              0
+            ],
+            [
+              369,
+              4,
+              0
+            ],
+            [
+              370,
+              4,
+              0
+            ],
+            [
+              371,
+              4,
+              0
+            ]
+          ],
+          "global_interrupts_property": 2,
+          "note": "#global-interrupts = 2 is the tree's own statement that the first two entries are the global pair."
+        },
+        "property_search": {
+          "artifact": "stock-boot-unpacked/polaris-dtb-tail.bin",
+          "artifact_bytes": 30355119,
+          "fdt_count": 65,
+          "fdts_parsed_cleanly": 65,
+          "fdt_totalsize_sum_matches_file_bytes": true,
+          "total_properties_scanned": 1010273,
+          "gpu_smmu_subtree": [
+            "/soc/arm,smmu-kgsl@5040000",
+            "/soc/qcom,kgsl-iommu"
+          ],
+          "gpu_smmu_subtree_property_names": [
+            "#global-interrupts",
+            "#iommu-cells",
+            "attach-impl-defs",
+            "clock-names",
+            "clocks",
+            "compatible",
+            "interrupts",
+            "iommus",
+            "label",
+            "linux,phandle",
+            "phandle",
+            "qcom,disable-atos",
+            "qcom,dynamic",
+            "qcom,gpu-offset",
+            "qcom,hyp_secure_alloc",
+            "qcom,micro-mmu-control",
+            "qcom,protect",
+            "qcom,regulator-names",
+            "qcom,retention",
+            "qcom,secure_align_mask",
+            "qcom,use-3-lvl-tables",
+            "reg",
+            "status",
+            "vdd-supply"
+          ],
+          "properties_with_asid_in_name_in_gpu_subtree": 0,
+          "properties_with_asid_in_name_in_whole_blob": [
+            "qcom,no-asid-retention on /soc/apps-smmu@0x15000000"
+          ],
+          "secure_context_bank_nodes_in_blob": [
+            "/soc/qcom,msm_fastrpc/qcom,msm_fastrpc_compute_cb9",
+            "/soc/qcom,msm_fastrpc/qcom,msm_fastrpc_compute_cb10",
+            "/soc/qcedev@1de0000/qcom_cedev_s_cb",
+            "/soc/qcom,vidc@aa00000/secure_bitstream_cb",
+            "/soc/qcom,vidc@aa00000/secure_pixel_cb",
+            "/soc/qcom,vidc@aa00000/secure_non_pixel_cb"
+          ],
+          "secure_context_bank_on_any_gpu_cb_node": false,
+          "method": "offline read-only FDT walk; no device, no MMIO",
+          "fdt_count_declaring_gpu_smmu_node": 64,
+          "gpu_smmu_node_identical_across_all_declaring_fdts": true
+        },
+        "unexplained_values": {
+          "qcom,gpu-offset": {
+            "node": "/soc/qcom,kgsl-iommu/gfx3d_user",
+            "value": "0x48000",
+            "reading": "recorded, not interpreted; far larger than any bank index and undocumented in the tree"
+          }
+        }
+      },
+      "register_layout_evidence": {
+        "smr": "0x0800 + 4*slot: bit31 VALID, SID in bits15:0",
+        "s2cr": "0x0c00 + 4*slot: TYPE bits17:16 (0=translate), CBNDX bits7:0",
+        "cbar": "0x1000 + 4*bank: translation-table base + type",
+        "cba2r": "0x1800 + 4*bank: bit0 VA64 address-size extension",
+        "context_block": "(pages + bank) * page, pages = 1 << (((IDR1>>28)&7)+1); SCTLR +0x00, ACTLR +0x04, TCR2 +0x10, TTBR0 +0x20, TTBR1 +0x28, TCR +0x30, MAIR0 +0x38, MAIR1 +0x3c, FSR +0x58",
+        "selection_path": "SID -> SMR slot (VALID + ID match) -> S2CR TYPE=0 -> S2CR CBNDX names the bank -> CBAR/CBA2R/SCTLR configure and enable it",
+        "sources": [
+          "drivers/ShengUfs/SmmuTakeover.h",
+          ".cache/reference/UniXNU-sheng/package/SmmuBypass.h",
+          ".cache/reference/unixnu-adreno6xx/NativeAdrenoGmuContext.cpp"
+        ]
+      },
+      "asid_field_in_hardware": false,
+      "asid_used_by": [
+        "NativeAdrenoSmmuContext::prepare(..., asid, ...) bounded to <= 0xffff",
+        "ArmSmmu4KSyncContextTlb(io, context_offset, asid, 1, ...)",
+        "NativeAdrenoVm.h TLB invalidation prose (unmap synchronizes by ASID; TLBIALL drops the whole bank)"
+      ],
+      "asid_ttbr0_bit_position": "unknown; kits/ArmSmmu4K sources are absent from this checkout (.gitkeep only), so the field position is a live-source question and is not asserted here",
+      "reference_policy": {
+        "gate": "gpuAsid, gmuAsid, lpacAsid each non-zero, each <= 0xffff, pairwise distinct",
+        "derivable_from_polaris_device_tree": false,
+        "reason": "The gate accepts any three distinct non-zero values that fit the ASID width; the device tree supplies stream IDs and interrupt mapping only, and declares no LPAC node or LPAC stream ID.",
+        "lpac_sid": "unresolved",
+        "lpac_sid_note": "SID 1 exists here only as the second gfx3d_secure bank; it must not be reused as an LPAC stream ID.",
+        "line_reference": "NativeAdrenoService.cpp:376-387 (gate), :415-555 (bank allocator)"
+      },
+      "bank_assignment_is_runtime": {
+        "decided_by": "the reference allocator reading IDR0/IDR1 for the implemented bank count and choosing free banks from first-stage-1 onwards",
+        "known_offline": false,
+        "unknown": [
+          "IDR0",
+          "IDR1",
+          "IDR2",
+          "which banks are free at handoff",
+          "whether CBA2R is present on this instance"
+        ]
+      },
+      "authorises_nothing": true
+    }
   },
   "gpucc": {
     "node": "/soc/qcom,gpucc@5090000",
-    "compatible": ["qcom,gpucc-sdm845-v2", "syscon"],
+    "compatible": [
+      "qcom,gpucc-sdm845-v2",
+      "syscon"
+    ],
     "base": "0x05090000",
     "bytes": "0x00009000"
   },
@@ -183,30 +436,379 @@
     "gcc": {
       "base": "0x00100000",
       "bytes": "0x001f0000",
-      "compatible": ["qcom,gcc-sdm845-v2.1", "syscon"]
+      "compatible": [
+        "qcom,gcc-sdm845-v2.1",
+        "syscon"
+      ]
     },
     "pdc": {
       "base": "0x0b220000",
       "bytes": "0x00000400",
-      "compatible": ["qcom,pdc-sdm845-v2"]
+      "compatible": [
+        "qcom,pdc-sdm845-v2"
+      ]
     },
     "rscc": {
       "base": "0x0af20000",
       "bytes": "0x00001c44",
-      "compatible": ["qcom,sde-rsc"]
+      "compatible": [
+        "qcom,sde-rsc"
+      ]
     }
   },
   "firmware_regions": {
     "gpu_region": {
       "base": "0x8c415000",
       "bytes": "0x00002000",
-      "compatible": ["removed-dma-pool"]
+      "compatible": [
+        "removed-dma-pool"
+      ]
     },
     "pil_spss_region": {
       "base": "0x97f00000",
       "bytes": "0x00100000",
-      "compatible": ["removed-dma-pool"]
-    }
+      "compatible": [
+        "removed-dma-pool"
+      ]
+    },
+    "a630_firmware_inventory": [
+      {
+        "path": "polaris_ios16_driver_research/.local/miui-a630/a630_gmu.bin",
+        "bytes": 32768,
+        "sha256": "b07f90299ff2ae33948fcfd6ed67f53fbd287b5bf85ff2d43db11d4d32c1621f",
+        "kind": "gmu-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. A630 GMU firmware in the A6xx legacy flat ITCM format; its block headers were not verified as loadable and no GMU handshake, signature check or execution was performed."
+      },
+      {
+        "path": "polaris_ios16_driver_research/.local/miui-a630/a630_sqe.fw",
+        "bytes": 31980,
+        "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+        "kind": "sqe-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. SQE microcode for the A630 command processor; no CP/SQE upload path exists in this tree and the file is not signed for Darwin."
+      },
+      {
+        "path": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b00",
+        "bytes": 148,
+        "sha256": "b2975f6a4c28a98197c1d694f6e275e71b23ec7e31e32ff5d1f83fdb80a94282",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone."
+      },
+      {
+        "path": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b01",
+        "bytes": 6536,
+        "sha256": "c94da0d6edf4820885b814ecda2f91c89b9d766126c3574c05d580c418815b5f",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone."
+      },
+      {
+        "path": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b02",
+        "bytes": 1968,
+        "sha256": "519b5538809f54ee566246b0520746a8ea82ca9384ea6bddb0b0e0d3c2de520c",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone."
+      },
+      {
+        "path": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.mdt",
+        "bytes": 6684,
+        "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+        "kind": "zap-elf-header",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. First segment of the split ZAP ELF (an ELF header with 3 program headers and no section table); it is a container fragment, not a standalone shader."
+      },
+      {
+        "path": "polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630/a630_gmu.bin",
+        "bytes": 32768,
+        "sha256": "b07f90299ff2ae33948fcfd6ed67f53fbd287b5bf85ff2d43db11d4d32c1621f",
+        "kind": "gmu-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. A630 GMU firmware in the A6xx legacy flat ITCM format; its block headers were not verified as loadable and no GMU handshake, signature check or execution was performed.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_gmu.bin"
+      },
+      {
+        "path": "polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630/a630_sqe.fw",
+        "bytes": 31980,
+        "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+        "kind": "sqe-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. SQE microcode for the A630 command processor; no CP/SQE upload path exists in this tree and the file is not signed for Darwin.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_sqe.fw"
+      },
+      {
+        "path": "polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630/a630_zap.b00",
+        "bytes": 148,
+        "sha256": "b2975f6a4c28a98197c1d694f6e275e71b23ec7e31e32ff5d1f83fdb80a94282",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b00"
+      },
+      {
+        "path": "polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630/a630_zap.b01",
+        "bytes": 6536,
+        "sha256": "c94da0d6edf4820885b814ecda2f91c89b9d766126c3574c05d580c418815b5f",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b01"
+      },
+      {
+        "path": "polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630/a630_zap.b02",
+        "bytes": 1968,
+        "sha256": "519b5538809f54ee566246b0520746a8ea82ca9384ea6bddb0b0e0d3c2de520c",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b02"
+      },
+      {
+        "path": "polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630/a630_zap.mdt",
+        "bytes": 6684,
+        "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+        "kind": "zap-elf-header",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. First segment of the split ZAP ELF (an ELF header with 3 program headers and no section table); it is a container fragment, not a standalone shader.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.mdt"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_gmu.bin",
+        "bytes": 32768,
+        "sha256": "b07f90299ff2ae33948fcfd6ed67f53fbd287b5bf85ff2d43db11d4d32c1621f",
+        "kind": "gmu-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. A630 GMU firmware in the A6xx legacy flat ITCM format; its block headers were not verified as loadable and no GMU handshake, signature check or execution was performed.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_gmu.bin"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_sqe.fw",
+        "bytes": 31980,
+        "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+        "kind": "sqe-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. SQE microcode for the A630 command processor; no CP/SQE upload path exists in this tree and the file is not signed for Darwin.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_sqe.fw"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_zap.b00",
+        "bytes": 148,
+        "sha256": "b2975f6a4c28a98197c1d694f6e275e71b23ec7e31e32ff5d1f83fdb80a94282",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b00"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_zap.b01",
+        "bytes": 6536,
+        "sha256": "c94da0d6edf4820885b814ecda2f91c89b9d766126c3574c05d580c418815b5f",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b01"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_zap.b02",
+        "bytes": 1968,
+        "sha256": "519b5538809f54ee566246b0520746a8ea82ca9384ea6bddb0b0e0d3c2de520c",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b02"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_zap.elf",
+        "bytes": 14256,
+        "sha256": "c0a830808c7ae886e5a5b6dec48afb9c9805d0579d9cac498ebc36b8b06bedde",
+        "kind": "zap-elf-linked",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Pre-linked ZAP ELF assembled outside this tree; its header matches a630_zap.mdt but it is not the mdt+b00+b01+b02 concatenation (14256 vs 15336 bytes), so its provenance and completeness are unproven."
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_zap.mdt",
+        "bytes": 6684,
+        "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+        "kind": "zap-elf-header",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. First segment of the split ZAP ELF (an ELF header with 3 program headers and no section table); it is a container fragment, not a standalone shader.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.mdt"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-20261031/vendor/a630_gmu.bin",
+        "bytes": 32768,
+        "sha256": "b07f90299ff2ae33948fcfd6ed67f53fbd287b5bf85ff2d43db11d4d32c1621f",
+        "kind": "gmu-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. A630 GMU firmware in the A6xx legacy flat ITCM format; its block headers were not verified as loadable and no GMU handshake, signature check or execution was performed.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_gmu.bin"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-20261031/vendor/a630_sqe.fw",
+        "bytes": 31980,
+        "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+        "kind": "sqe-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. SQE microcode for the A630 command processor; no CP/SQE upload path exists in this tree and the file is not signed for Darwin.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_sqe.fw"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-20261031/vendor/a630_zap.b00",
+        "bytes": 148,
+        "sha256": "b2975f6a4c28a98197c1d694f6e275e71b23ec7e31e32ff5d1f83fdb80a94282",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b00"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-20261031/vendor/a630_zap.b01",
+        "bytes": 6536,
+        "sha256": "c94da0d6edf4820885b814ecda2f91c89b9d766126c3574c05d580c418815b5f",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b01"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-20261031/vendor/a630_zap.b02",
+        "bytes": 1968,
+        "sha256": "519b5538809f54ee566246b0520746a8ea82ca9384ea6bddb0b0e0d3c2de520c",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b02"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-20261031/vendor/a630_zap.mdt",
+        "bytes": 6684,
+        "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+        "kind": "zap-elf-header",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. First segment of the split ZAP ELF (an ELF header with 3 program headers and no section table); it is a container fragment, not a standalone shader.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.mdt"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-with-a630/vendor/a630_gmu.bin",
+        "bytes": 32768,
+        "sha256": "b07f90299ff2ae33948fcfd6ed67f53fbd287b5bf85ff2d43db11d4d32c1621f",
+        "kind": "gmu-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. A630 GMU firmware in the A6xx legacy flat ITCM format; its block headers were not verified as loadable and no GMU handshake, signature check or execution was performed.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_gmu.bin"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-with-a630/vendor/a630_sqe.fw",
+        "bytes": 31980,
+        "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+        "kind": "sqe-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. SQE microcode for the A630 command processor; no CP/SQE upload path exists in this tree and the file is not signed for Darwin.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_sqe.fw"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-with-a630/vendor/a630_zap.b00",
+        "bytes": 148,
+        "sha256": "b2975f6a4c28a98197c1d694f6e275e71b23ec7e31e32ff5d1f83fdb80a94282",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b00"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-with-a630/vendor/a630_zap.b01",
+        "bytes": 6536,
+        "sha256": "c94da0d6edf4820885b814ecda2f91c89b9d766126c3574c05d580c418815b5f",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b01"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-with-a630/vendor/a630_zap.b02",
+        "bytes": 1968,
+        "sha256": "519b5538809f54ee566246b0520746a8ea82ca9384ea6bddb0b0e0d3c2de520c",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b02"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/local-driver-bundle-with-a630/vendor/a630_zap.mdt",
+        "bytes": 6684,
+        "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+        "kind": "zap-elf-header",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. First segment of the split ZAP ELF (an ELF header with 3 program headers and no section table); it is a container fragment, not a standalone shader.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.mdt"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_gmu.bin",
+        "bytes": 20480,
+        "sha256": "894ae5550352d2d12596dc6d4b65af628307cf2c6adc5d112e6f5c9ffcd4ec11",
+        "kind": "gmu-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. 20480-byte variant whose bytes are a strict prefix of the 32768-byte MIUI image (last non-zero byte at offset 18020), so it carries no extra payload and is not the image the A6xx legacy loader's 0x8000-byte ITCM bound is stated against."
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_sqe.fw",
+        "bytes": 31980,
+        "sha256": "34edacb6fdedfbfc07ed5cd1d29b0b57a3543ef5be6ab34a43bd64686826fa1e",
+        "kind": "sqe-firmware",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. SQE microcode for the A630 command processor; no CP/SQE upload path exists in this tree and the file is not signed for Darwin.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_sqe.fw"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_zap.b00",
+        "bytes": 148,
+        "sha256": "b2975f6a4c28a98197c1d694f6e275e71b23ec7e31e32ff5d1f83fdb80a94282",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b00"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_zap.b01",
+        "bytes": 6536,
+        "sha256": "c94da0d6edf4820885b814ecda2f91c89b9d766126c3574c05d580c418815b5f",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b01"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_zap.b02",
+        "bytes": 1968,
+        "sha256": "519b5538809f54ee566246b0520746a8ea82ca9384ea6bddb0b0e0d3c2de520c",
+        "kind": "zap-elf-segment",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Continuation segment of the split ZAP ELF; meaningless without the matching .mdt and sibling segments and cannot be loaded alone.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.b02"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_zap.elf",
+        "bytes": 14256,
+        "sha256": "c0a830808c7ae886e5a5b6dec48afb9c9805d0579d9cac498ebc36b8b06bedde",
+        "kind": "zap-elf-linked",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. Pre-linked ZAP ELF assembled outside this tree; its header matches a630_zap.mdt but it is not the mdt+b00+b01+b02 concatenation (14256 vs 15336 bytes), so its provenance and completeness are unproven.",
+        "duplicate_of": "polaris_unixnu_ios17_port/device-repo/UniXNU-polaris/out/bundle-miui-firmware-casefold/vendor/a630_zap.elf"
+      },
+      {
+        "path": "polaris_unixnu_ios17_port/proprietary/sdm845-a630-firmware/a630_zap.mdt",
+        "bytes": 6684,
+        "sha256": "1882b214d24c13eae4ffc39ba5456d5e61c80b089fb77e8b15f7bdd04bc9c831",
+        "kind": "zap-elf-header",
+        "usable_for_polaris": false,
+        "reason": "Local MIUI V12.5.1.0.QDGCNXM vendor blob; an Android firmware container, not a Darwin image. First segment of the split ZAP ELF (an ELF header with 3 program headers and no section table); it is a container fragment, not a standalone shader.",
+        "duplicate_of": "polaris_ios16_driver_research/.local/miui-a630/a630_zap.mdt"
+      }
+    ],
+    "a630_firmware_inventory_source": "MIUI polaris vendor partition dump; the same bytes also appear under polaris_ios16_flashable_drivers_0115_20261030/drivers/firmware/a630",
+    "a630_firmware_inventory_note": "Every A630-named firmware artefact reachable offline on this host, hashed in place. No A660 firmware image exists locally: the only A660 material is reference source code (references/unixnu-adreno6xx/NativeAdrenoA6xxGmu.cpp), so the gap is not 'A660 instead of A630'. Entries sharing a sha256 are byte-identical copies; duplicate_of names the MIUI original. usable_for_polaris is false for every entry because nothing here proves loadability, signature or execution."
   },
   "runtime": {
     "mmio_allowed": false,
